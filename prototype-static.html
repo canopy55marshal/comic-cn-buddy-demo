@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>漫展搭子 App 原型</title>
+  <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="%23ff5db1"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="30" font-family="Arial" fill="white">漫</text></svg>' />
+  <style>
+    :root {
+      --bg: #0f1023;
+      --bg-soft: rgba(255, 255, 255, 0.08);
+      --panel: rgba(14, 16, 41, 0.82);
+      --panel-strong: rgba(23, 28, 66, 0.95);
+      --line: rgba(255, 255, 255, 0.12);
+      --text: #f8f8ff;
+      --muted: #bbbfe0;
+      --primary: #ff5db1;
+      --primary-2: #8a7dff;
+      --accent: #58d6ff;
+      --success: #7ef7b8;
+      --warn: #ffd66b;
+      --danger: #ff8b94;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 93, 177, 0.22), transparent 25%),
+        radial-gradient(circle at top right, rgba(88, 214, 255, 0.18), transparent 30%),
+        linear-gradient(180deg, #0b0c1a 0%, #10122b 45%, #0a0c19 100%);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.85), transparent 90%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      border: none;
+      cursor: pointer;
+    }
+
+    .shell {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 16px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(10, 12, 32, 0.72);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-badge {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 12px 24px rgba(255, 93, 177, 0.3);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .nav button {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      transition: 0.24s ease;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-main {
+      padding: 32px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      right: -60px;
+      bottom: -70px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(88,214,255,0.28), transparent 65%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: var(--success);
+      background: rgba(126, 247, 184, 0.12);
+      border: 1px solid rgba(126, 247, 184, 0.24);
+      font-size: 13px;
+    }
+
+    .hero-main h2 {
+      margin: 18px 0 14px;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.08;
+    }
+
+    .hero-main p {
+      margin: 0;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .cta,
+    .ghost {
+      padding: 13px 20px;
+      border-radius: 16px;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+
+    .cta {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 14px 28px rgba(138, 125, 255, 0.24);
+    }
+
+    .ghost {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+    }
+
+    .cta:hover,
+    .ghost:hover,
+    .tag:hover,
+    .list-item:hover,
+    .service-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero-side {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03)),
+        var(--panel-strong);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .stat {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .quick-feed {
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature {
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature::before {
+      content: "";
+      position: absolute;
+      inset: auto -20px -30px auto;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 70%);
+    }
+
+    .feature-badge {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      font-size: 20px;
+      margin-bottom: 14px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .feature h4,
+    .service-card h4 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .feature p,
+    .service-card p,
+    .feed-item span,
+    .merchant-meta,
+    .buddy-meta,
+    .map-note,
+    .empty {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .tabs,
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid transparent;
+      transition: 0.22s ease;
+    }
+
+    .tag.active {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.14);
+      background: linear-gradient(135deg, rgba(255,93,177,0.2), rgba(138,125,255,0.18));
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-item,
+    .service-card,
+    .map-card,
+    .schedule-card,
+    .match-card {
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+
+    .list-item:hover,
+    .service-card:hover,
+    .map-card:hover,
+    .schedule-card:hover,
+    .match-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .item-top,
+    .split-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .merchant-title,
+    .buddy-name,
+    .map-card strong,
+    .service-card strong,
+    .schedule-card strong {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .price,
+    .score,
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .price {
+      background: rgba(255, 214, 107, 0.12);
+      color: var(--warn);
+    }
+
+    .score {
+      background: rgba(126, 247, 184, 0.12);
+      color: var(--success);
+    }
+
+    .status-pill {
+      background: rgba(88, 214, 255, 0.12);
+      color: var(--accent);
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .action-button,
+    .outline-button {
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    .action-button {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    }
+
+    .outline-button {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+    }
+
+    .map-grid,
+    .service-grid,
+    .schedule-grid,
+    .buddy-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .map-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mini-map {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    }
+
+    .zone {
+      padding: 14px 10px;
+      text-align: center;
+      border-radius: 16px;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .zone.active {
+      color: #fff;
+      border-color: rgba(255,255,255,0.18);
+      background: linear-gradient(135deg, rgba(88,214,255,0.22), rgba(138,125,255,0.18));
+    }
+
+    .buddy-list {
+      max-height: 510px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .buddy-card {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .buddy-tags,
+    .meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .meta-tags span,
+    .buddy-tags span {
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .schedule-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .alert-board {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .feed-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .feed-item:last-child {
+      border-bottom: none;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-top: 7px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      flex: 0 0 auto;
+    }
+
+    .floating-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 999px;
+      background: rgba(8, 10, 28, 0.86);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      z-index: 30;
+    }
+
+    .floating-bar button {
+      min-width: 104px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .floating-bar button.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(255,93,177,0.28), rgba(138,125,255,0.26));
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 90px;
+      min-width: 260px;
+      max-width: 360px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(10, 12, 32, 0.94);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      color: #fff;
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+      transition: 0.24s ease;
+      z-index: 40;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hidden-section {
+      display: none;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 32px;
+      padding-bottom: 92px;
+    }
+
+    @media (max-width: 1080px) {
+      .hero,
+      .layout,
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .map-grid,
+      .schedule-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: min(100% - 20px, 100%);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        border-radius: 24px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero-main,
+      .hero-side,
+      .panel {
+        padding: 18px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .mini-map {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .floating-bar {
+        width: calc(100% - 20px);
+        justify-content: space-between;
+      }
+
+      .floating-bar button {
+        min-width: 0;
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">漫</div>
+        <div>
+          <h1>漫展搭子</h1>
+          <p>二次元漫展一站式陪玩与逛展工具</p>
+        </div>
+      </div>
+      <nav class="nav" id="topNav">
+        <button class="active" data-section="home">首页</button>
+        <button data-section="food">吃谷补给</button>
+        <button data-section="map">场馆地图</button>
+        <button data-section="buddy">搭子匹配</button>
+        <button data-section="service">妆造服务</button>
+      </nav>
+    </header>
+
+    <section id="home" class="page-section">
+      <div class="hero">
+        <div class="card hero-main">
+          <div class="eyebrow">MVP 原型已上线 · 适合继续扩展成 H5 / 小程序</div>
+          <h2>漫展不只逛展<br />还要有人、有饭、有路线、有状态</h2>
+          <p>
+            这是一个围绕漫展场景打造的前端原型，聚焦逛展前准备、场内补给、实时找人、路线导航，以及化妆师补妆、毛娘修假发、摄影分流等强需求服务，整体采用更二次元潮流的视觉风格。
+          </p>
+          <div class="hero-actions">
+            <button class="cta" data-jump="food">立即点餐</button>
+            <button class="ghost" data-jump="buddy">寻找搭子</button>
+            <button class="ghost" data-jump="service">预约救场服务</button>
+          </div>
+        </div>
+
+        <div class="card hero-side">
+          <div class="stats">
+            <div class="stat">
+              <strong>4 大</strong>
+              <span>首版核心模块</span>
+            </div>
+            <div class="stat">
+              <strong>28 min</strong>
+              <span>平均补给送达时长</span>
+            </div>
+            <div class="stat">
+              <strong>1,248</strong>
+              <span>今日在线搭子</span>
+            </div>
+            <div class="stat">
+              <strong>16 个</strong>
+              <span>馆内关键服务点</span>
+            </div>
+          </div>
+
+          <div class="quick-feed">
+            <div class="split-line">
+              <strong>展会实时播报</strong>
+              <span class="status-pill">上海·11:20</span>
+            </div>
+            <div class="alert-board">
+              <div class="feed-item">
+                <div class="dot"></div>
+                <span>A3 摄影区排队 42 分钟，建议先去 B1 谷子区再折返。</span>
+              </div>
+              <div class="feed-item">
+                <div class="dot"></div>
+                <span>北门补妆点有空位，当前等待 8 分钟。</span>
+              </div>
+              <div class="feed-item">
+                <div class="dot"></div>
+                <span>1 号餐饮口已开放馆内配送，奶茶单满 2 杯免配送费。</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h3>首版功能</h3>
+            <p>以“逛展当天最常用的事”为核心设计交互。</p>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <div class="card feature">
+            <div class="feature-badge">🍱</div>
+            <h4>馆内补给</h4>
+            <p>支持饮品、小食、应急用品快速下单，减少暴走与脱妆状态下外出补给。</p>
+          </div>
+          <div class="card feature">
+            <div class="feature-badge">🗺️</div>
+            <h4>展馆路线</h4>
+            <p>按馆区、排队热度、服务点位置快速规划顺路逛法，少走回头路。</p>
+          </div>
+          <div class="card feature">
+            <div class="feature-badge">💞</div>
+            <h4>搭子组队</h4>
+            <p>基于属性、目的和时间段匹配同行搭子，降低一个人逛展的陌生感。</p>
+          </div>
+          <div class="card feature">
+            <div class="feature-badge">💄</div>
+            <h4>现场救场</h4>
+            <p>整合化妆师补妆、毛娘修假发、摄影分流等高频临时服务。</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="layout">
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>今日行程建议</h3>
+              <p>根据漫展高峰时段给出更省体力的逛展节奏。</p>
+            </div>
+            <span class="score">推荐路线</span>
+          </div>
+          <div class="schedule-grid">
+            <div class="schedule-card">
+              <strong>09:30 入馆准备</strong>
+              <p>签到后先去存包与补妆点，避免中午高峰排队。</p>
+            </div>
+            <div class="schedule-card">
+              <strong>10:10 逛主舞台周边</strong>
+              <p>主活动区人流开始上升，建议优先完成想打卡的点位。</p>
+            </div>
+            <div class="schedule-card">
+              <strong>11:40 预约馆内补给</strong>
+              <p>提前下单午餐和饮品，卡在排队空档送达最省心。</p>
+            </div>
+            <div class="schedule-card">
+              <strong>14:00 摄影分流</strong>
+              <p>摄影区高峰建议分流去侧馆空场地，避开主通道拥堵。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>服务热力榜</h3>
+              <p>现场最容易临时需要的救场服务。</p>
+            </div>
+          </div>
+          <div class="service-grid" id="homeServiceGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="food" class="page-section hidden-section">
+      <div class="layout">
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>吃谷补给</h3>
+              <p>馆内快速补能，适合暴走和长排队状态下随时下单。</p>
+            </div>
+            <span class="status-pill" id="cartStatus">购物车 0 件</span>
+          </div>
+          <div class="filters" id="foodFilters"></div>
+          <div class="list" id="merchantList"></div>
+        </div>
+
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>订单追踪</h3>
+              <p>优先展示最适合逛展场景的即时配送订单。</p>
+            </div>
+          </div>
+          <div class="list" id="orderList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="map" class="page-section hidden-section">
+      <div class="layout">
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>场馆地图</h3>
+              <p>支持按馆区查看热门点位、补给点和服务点。</p>
+            </div>
+            <span class="score" id="activeZoneLabel">当前：A 馆主舞台</span>
+          </div>
+          <div class="tabs" id="zoneTabs"></div>
+          <div class="mini-map" id="miniMap"></div>
+          <div class="map-note" id="zoneNote" style="margin-top: 14px;"></div>
+        </div>
+
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>点位清单</h3>
+              <p>根据当前馆区推荐最值得优先去的点。</p>
+            </div>
+          </div>
+          <div class="map-grid" id="mapCards"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="buddy" class="page-section hidden-section">
+      <div class="layout">
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>搭子匹配</h3>
+              <p>按兴趣、角色属性、时间段快速找到适合同行的人。</p>
+            </div>
+            <span class="status-pill" id="buddyCount">共 0 位候选</span>
+          </div>
+          <div class="filters" id="buddyFilters"></div>
+          <div class="buddy-list" id="buddyList"></div>
+        </div>
+
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>组队建议</h3>
+              <p>为第一次见面的漫展搭子降低破冰成本。</p>
+            </div>
+          </div>
+          <div class="list">
+            <div class="match-card">
+              <strong>先定集合点</strong>
+              <p>推荐选择馆外显眼地标或补给点附近，防止馆内手机信号不稳定。</p>
+            </div>
+            <div class="match-card">
+              <strong>先同步目标</strong>
+              <p>明确是逛摊、拍照、看舞台还是吃谷，避免临时分歧影响体验。</p>
+            </div>
+            <div class="match-card">
+              <strong>提前设散场预案</strong>
+              <p>漫展结束常打不到车，建议组队叫车或提前预约返程线路。</p>
+            </div>
+            <div class="match-card">
+              <strong>社交节奏可控</strong>
+              <p>支持一键约同逛，也适合只拼补给、拼摄影、拼排队搭伴的轻社交。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="service" class="page-section hidden-section">
+      <div class="layout">
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>妆造与现场救场</h3>
+              <p>面向高频临时需求的预约入口，优先解决脱妆、假发和摄影排队问题。</p>
+            </div>
+          </div>
+          <div class="filters" id="serviceFilters"></div>
+          <div class="service-grid" id="serviceGrid"></div>
+        </div>
+
+        <div class="card panel">
+          <div class="section-head">
+            <div>
+              <h3>提醒中心</h3>
+              <p>把关键行程和紧急服务聚合到同一个视图。</p>
+            </div>
+          </div>
+          <div class="list">
+            <div class="schedule-card">
+              <strong>12:10 补妆提醒</strong>
+              <p>角色妆面在高温下容易掉色，建议中午前补一次高光和定妆。</p>
+            </div>
+            <div class="schedule-card">
+              <strong>13:30 毛娘检查</strong>
+              <p>长时间外拍后建议检查前额、鬓角和发网边缘稳定度。</p>
+            </div>
+            <div class="schedule-card">
+              <strong>15:20 摄影转场</strong>
+              <p>主摄影区拥挤时自动推荐侧馆拍摄位和空闲摄影师。</p>
+            </div>
+            <div class="schedule-card">
+              <strong>18:00 返程提醒</strong>
+              <p>散场前 30 分钟提醒预约打车或转地铁，避免高峰被困门口。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      漫展搭子前端原型 · 当前为静态交互演示版，可继续扩展为 React / Vue 应用、小程序或前后端 MVP。
+    </div>
+  </div>
+
+  <div class="floating-bar" id="floatingBar">
+    <button class="active" data-section="home">首页</button>
+    <button data-section="food">补给</button>
+    <button data-section="map">地图</button>
+    <button data-section="buddy">搭子</button>
+    <button data-section="service">救场</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = {
+      section: "home",
+      foodCategory: "全部",
+      cartCount: 0,
+      activeZone: "A馆主舞台",
+      buddyFilter: "全部",
+      serviceFilter: "全部"
+    };
+
+    const foodCategories = ["全部", "奶茶", "主食", "甜品", "应急用品"];
+    const merchants = [
+      { name: "樱桃汽泡补给站", category: "奶茶", eta: "18 分钟送达", price: "￥22 起", score: "4.9 分", desc: "主打高颜值奶茶和应援杯套，适合馆内边逛边拿。", hot: "爆款：桃桃气泡波波" },
+      { name: "次元便当研究所", category: "主食", eta: "26 分钟送达", price: "￥34 起", score: "4.8 分", desc: "热食便当、饭团和意面都有，适合长线逛展补充体力。", hot: "推荐：照烧鸡排饭团" },
+      { name: "喵团烘焙屋", category: "甜品", eta: "20 分钟送达", price: "￥18 起", score: "4.7 分", desc: "奶油小蛋糕、曲奇和轻食甜品，适合拍照打卡。", hot: "推荐：草莓奶盖卷" },
+      { name: "应援急救小铺", category: "应急用品", eta: "12 分钟送达", price: "￥9 起", score: "4.9 分", desc: "补妆棉签、发夹、充电线、创可贴、防走光贴一站补齐。", hot: "热卖：便携定妆补给包" },
+      { name: "狐火乌冬车", category: "主食", eta: "24 分钟送达", price: "￥29 起", score: "4.6 分", desc: "热乌冬和炸物套餐，适合阴雨天或空调馆降温时暖胃。", hot: "推荐：咖喱炸鸡乌冬" },
+      { name: "星野冰饮站", category: "奶茶", eta: "16 分钟送达", price: "￥19 起", score: "4.8 分", desc: "偏轻口果茶和低糖饮品，对穿妆出片更友好。", hot: "人气：柚见星河果茶" }
+    ];
+
+    const orders = [
+      { name: "樱桃汽泡补给站", status: "正在制作", detail: "桃桃气泡波波 ×2，预计 11:38 送达 A 馆西侧休息区" },
+      { name: "应援急救小铺", status: "骑手取货中", detail: "便携定妆补给包 ×1，预计 11:24 送达 2 号服务台" },
+      { name: "次元便当研究所", status: "可再次下单", detail: "上次购买：照烧鸡排饭团，推荐复购套餐减 6 元" }
+    ];
+
+    const zones = [
+      {
+        name: "A馆主舞台",
+        note: "活动密度最高，适合优先看舞台和官方互动，当前人流较高。",
+        spots: [
+          { title: "官方主舞台", tag: "排队 18 分钟", text: "签售、互动演出和主舞台活动集中在这里。" },
+          { title: "饮品补给点", tag: "配送点", text: "支持奶茶与轻食自提，也是搭子集合的热门点。" },
+          { title: "快速补妆位", tag: "空位 3 个", text: "补妆镜、插座和应急用品比较齐全。" },
+          { title: "谷子热门摊位", tag: "热门", text: "高流量摊位集中，建议早去或错峰。" }
+        ]
+      },
+      {
+        name: "B馆摄影区",
+        note: "适合摄影和约拍，主通道容易拥堵，建议按拍摄时段分流。",
+        spots: [
+          { title: "主摄影棚入口", tag: "拥堵", text: "人流高峰建议先预约摄影再入场。" },
+          { title: "侧馆空景区", tag: "推荐", text: "更适合拍单人和双人，背景干净。" },
+          { title: "摄影师集合点", tag: "在线 22 人", text: "可以现场匹配空闲摄影师和返图风格。" },
+          { title: "发型急救台", tag: "等待 10 分钟", text: "适合拍摄前处理毛娘前额和发尾。" }
+        ]
+      },
+      {
+        name: "C馆同人摊位",
+        note: "适合买本、逛摊和交换无料，建议提前收藏目标摊位。",
+        spots: [
+          { title: "同人本岛区", tag: "高热", text: "热门摊位集中，容易形成短时拥堵。" },
+          { title: "无料交换台", tag: "轻社交", text: "适合搭子之间交换物料和同好认识。" },
+          { title: "休息补给区", tag: "低人流", text: "适合短暂停留吃东西和整理战利品。" },
+          { title: "寄存服务点", tag: "推荐", text: "买本较多时可先寄存，减轻负重。" }
+        ]
+      },
+      {
+        name: "北门服务区",
+        note: "应急服务最集中，适合入场前后做妆造、物资和返程处理。",
+        spots: [
+          { title: "补妆快修站", tag: "等待 8 分钟", text: "适合脱妆、睫毛开胶、局部修容补救。" },
+          { title: "毛娘修复点", tag: "等待 12 分钟", text: "假发乱翘、发包松动可快速处理。" },
+          { title: "返程拼车点", tag: "散场必看", text: "可临时组车，降低打车难度。" },
+          { title: "应援补给车", tag: "热卖", text: "售卖充电宝、雨衣、小风扇等应急物品。" }
+        ]
+      }
+    ];
+
+    const buddies = [
+      { name: "铃音", purpose: "逛摊+吃谷", role: "LOLITA", time: "全天", vibe: "社牛一点点", tags: ["同人本", "谷子", "奶茶控"], intro: "想找能一起冲热门摊位、顺便拍几张日常感照片的搭子。" },
+      { name: "阿澄", purpose: "摄影互拍", role: "COSER", time: "下午", vibe: "偏安静", tags: ["互拍", "返图快", "不赶场"], intro: "主要去 B 馆拍照，想找节奏合适、愿意互相看构图的搭子。" },
+      { name: "小羽", purpose: "舞台活动", role: "IP 粉", time: "上午", vibe: "超能聊", tags: ["舞台", "应援", "打卡"], intro: "会优先冲主舞台和签售，想找同 IP 同担结伴。" },
+      { name: "眠眠", purpose: "补给搭伴", role: "妆造党", time: "中午", vibe: "慢节奏", tags: ["补妆", "吃饭", "休息区"], intro: "中午想找人一起补妆、吃饭，别一个人狼狈找地方坐。" },
+      { name: "柚子", purpose: "逛摊+摄影", role: "COSER", time: "全天", vibe: "有规划", tags: ["路线控", "错峰", "效率派"], intro: "希望一起规划路线，先摊位后摄影，尽量少走回头路。" }
+    ];
+
+    const serviceCategories = ["全部", "补妆", "修假发", "摄影分流", "应急用品"];
+    const services = [
+      { name: "北门闪修补妆站", category: "补妆", eta: "8 分钟可接待", price: "￥39 / 次", desc: "适合底妆斑驳、唇妆掉色、睫毛开胶等快速补救。", badge: "热门" },
+      { name: "毛娘救场工位", category: "修假发", eta: "12 分钟可接待", price: "￥58 / 次", desc: "修碎发、前额、发网外露和假发松动，适合拍摄前急救。", badge: "高需求" },
+      { name: "摄影分流协调台", category: "摄影分流", eta: "即时响应", price: "免费", desc: "按空闲摄影师与场地拥堵程度推荐更合适的拍摄点位。", badge: "效率提升" },
+      { name: "应援急救物资包", category: "应急用品", eta: "10 分钟送达", price: "￥19 / 包", desc: "含定妆纸巾、发夹、创可贴、防走光贴和小镜子。", badge: "刚需" },
+      { name: "舞台前妆面维护位", category: "补妆", eta: "15 分钟可接待", price: "￥49 / 次", desc: "适合准备上台或拍正片前的整体妆面提亮和修饰。", badge: "高颜值" }
+    ];
+
+    const topNav = document.getElementById("topNav");
+    const floatingBar = document.getElementById("floatingBar");
+    const toast = document.getElementById("toast");
+    const merchantList = document.getElementById("merchantList");
+    const orderList = document.getElementById("orderList");
+    const foodFilters = document.getElementById("foodFilters");
+    const cartStatus = document.getElementById("cartStatus");
+    const zoneTabs = document.getElementById("zoneTabs");
+    const miniMap = document.getElementById("miniMap");
+    const mapCards = document.getElementById("mapCards");
+    const zoneNote = document.getElementById("zoneNote");
+    const activeZoneLabel = document.getElementById("activeZoneLabel");
+    const buddyFilters = document.getElementById("buddyFilters");
+    const buddyList = document.getElementById("buddyList");
+    const buddyCount = document.getElementById("buddyCount");
+    const serviceFilters = document.getElementById("serviceFilters");
+    const serviceGrid = document.getElementById("serviceGrid");
+    const homeServiceGrid = document.getElementById("homeServiceGrid");
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2200);
+    }
+
+    function setSection(section) {
+      state.section = section;
+      document.querySelectorAll(".page-section").forEach((sectionEl) => {
+        sectionEl.classList.toggle("hidden-section", sectionEl.id !== section);
+      });
+      [...topNav.querySelectorAll("button"), ...floatingBar.querySelectorAll("button")].forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.section === section);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderFoodFilters() {
+      foodFilters.innerHTML = foodCategories.map((category) => `
+        <button class="tag ${state.foodCategory === category ? "active" : ""}" data-food="${category}">${category}</button>
+      `).join("");
+    }
+
+    function renderMerchants() {
+      const items = merchants.filter((item) => state.foodCategory === "全部" || item.category === state.foodCategory);
+      merchantList.innerHTML = items.map((item, index) => `
+        <div class="list-item">
+          <div class="item-top">
+            <div>
+              <div class="merchant-title">${item.name}</div>
+              <div class="merchant-meta">${item.category} · ${item.eta}</div>
+            </div>
+            <div class="price">${item.price}</div>
+          </div>
+          <p class="merchant-meta">${item.desc}</p>
+          <div class="split-line">
+            <span class="score">${item.score}</span>
+            <span class="merchant-meta">${item.hot}</span>
+          </div>
+          <div class="actions-row">
+            <button class="action-button" data-add="${index}">加入购物车</button>
+            <button class="outline-button" data-order="${index}">立即下单</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderOrders() {
+      orderList.innerHTML = orders.map((item) => `
+        <div class="list-item">
+          <div class="item-top">
+            <div class="merchant-title">${item.name}</div>
+            <div class="status-pill">${item.status}</div>
+          </div>
+          <p class="merchant-meta">${item.detail}</p>
+        </div>
+      `).join("");
+    }
+
+    function renderMap() {
+      zoneTabs.innerHTML = zones.map((zone) => `
+        <button class="tag ${state.activeZone === zone.name ? "active" : ""}" data-zone="${zone.name}">${zone.name}</button>
+      `).join("");
+
+      miniMap.innerHTML = zones.map((zone) => `
+        <button class="zone ${state.activeZone === zone.name ? "active" : ""}" data-zone="${zone.name}">${zone.name.replace("馆", "馆 ")}</button>
+      `).join("");
+
+      const currentZone = zones.find((zone) => zone.name === state.activeZone);
+      activeZoneLabel.textContent = `当前：${currentZone.name}`;
+      zoneNote.textContent = currentZone.note;
+      mapCards.innerHTML = currentZone.spots.map((spot) => `
+        <div class="map-card">
+          <strong>${spot.title}</strong>
+          <div class="meta-tags"><span>${spot.tag}</span></div>
+          <p>${spot.text}</p>
+          <button class="outline-button" data-spot="${spot.title}">设为途经点</button>
+        </div>
+      `).join("");
+    }
+
+    function renderBuddyFilters() {
+      const types = ["全部", "逛摊+吃谷", "摄影互拍", "舞台活动", "补给搭伴", "逛摊+摄影"];
+      buddyFilters.innerHTML = types.map((type) => `
+        <button class="tag ${state.buddyFilter === type ? "active" : ""}" data-buddy="${type}">${type}</button>
+      `).join("");
+    }
+
+    function renderBuddies() {
+      const items = buddies.filter((item) => state.buddyFilter === "全部" || item.purpose === state.buddyFilter);
+      buddyCount.textContent = `共 ${items.length} 位候选`;
+      if (!items.length) {
+        buddyList.innerHTML = `<div class="empty">当前筛选下暂无匹配结果，可以切换条件试试。</div>`;
+        return;
+      }
+      buddyList.innerHTML = items.map((item) => `
+        <div class="buddy-card">
+          <div class="item-top">
+            <div>
+              <div class="buddy-name">${item.name}</div>
+              <div class="buddy-meta">${item.role} · ${item.time} · ${item.vibe}</div>
+            </div>
+            <div class="score">${item.purpose}</div>
+          </div>
+          <p class="buddy-meta">${item.intro}</p>
+          <div class="buddy-tags">
+            ${item.tags.map((tag) => `<span>${tag}</span>`).join("")}
+          </div>
+          <div class="actions-row">
+            <button class="action-button" data-connect="${item.name}">发起同逛邀请</button>
+            <button class="outline-button" data-plan="${item.name}">一起规划路线</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderServiceFilters() {
+      serviceFilters.innerHTML = serviceCategories.map((category) => `
+        <button class="tag ${state.serviceFilter === category ? "active" : ""}" data-service="${category}">${category}</button>
+      `).join("");
+    }
+
+    function renderServices() {
+      const items = services.filter((item) => state.serviceFilter === "全部" || item.category === state.serviceFilter);
+      serviceGrid.innerHTML = items.map((item) => `
+        <div class="service-card">
+          <div class="item-top">
+            <strong>${item.name}</strong>
+            <span class="price">${item.price}</span>
+          </div>
+          <div class="meta-tags">
+            <span>${item.category}</span>
+            <span>${item.eta}</span>
+            <span>${item.badge}</span>
+          </div>
+          <p>${item.desc}</p>
+          <div class="actions-row">
+            <button class="action-button" data-book="${item.name}">立即预约</button>
+            <button class="outline-button" data-remind="${item.name}">加入提醒</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderHomeServices() {
+      homeServiceGrid.innerHTML = services.slice(0, 4).map((item) => `
+        <div class="service-card">
+          <div class="item-top">
+            <strong>${item.name}</strong>
+            <span class="status-pill">${item.badge}</span>
+          </div>
+          <p>${item.desc}</p>
+        </div>
+      `).join("");
+    }
+
+    function bindEvents() {
+      document.body.addEventListener("click", (event) => {
+        const section = event.target.dataset.section;
+        const jump = event.target.dataset.jump;
+        const food = event.target.dataset.food;
+        const add = event.target.dataset.add;
+        const order = event.target.dataset.order;
+        const zone = event.target.dataset.zone;
+        const buddy = event.target.dataset.buddy;
+        const connect = event.target.dataset.connect;
+        const plan = event.target.dataset.plan;
+        const service = event.target.dataset.service;
+        const book = event.target.dataset.book;
+        const remind = event.target.dataset.remind;
+        const spot = event.target.dataset.spot;
+
+        if (section) {
+          setSection(section);
+        }
+
+        if (jump) {
+          setSection(jump);
+        }
+
+        if (food) {
+          state.foodCategory = food;
+          renderFoodFilters();
+          renderMerchants();
+        }
+
+        if (add !== undefined) {
+          state.cartCount += 1;
+          cartStatus.textContent = `购物车 ${state.cartCount} 件`;
+          showToast(`已将 ${merchants[add].name} 加入购物车`);
+        }
+
+        if (order !== undefined) {
+          showToast(`已为你创建 ${merchants[order].name} 的模拟订单`);
+        }
+
+        if (zone) {
+          state.activeZone = zone;
+          renderMap();
+        }
+
+        if (buddy) {
+          state.buddyFilter = buddy;
+          renderBuddyFilters();
+          renderBuddies();
+        }
+
+        if (connect) {
+          showToast(`已向 ${connect} 发起同逛邀请`);
+        }
+
+        if (plan) {
+          showToast(`已为你和 ${plan} 生成漫展路线建议`);
+        }
+
+        if (service) {
+          state.serviceFilter = service;
+          renderServiceFilters();
+          renderServices();
+        }
+
+        if (book) {
+          showToast(`已预约 ${book}，稍后会在提醒中心同步状态`);
+        }
+
+        if (remind) {
+          showToast(`已将 ${remind} 加入你的漫展提醒`);
+        }
+
+        if (spot) {
+          showToast(`已将 ${spot} 设为当前路线途经点`);
+        }
+      });
+    }
+
+    function init() {
+      renderFoodFilters();
+      renderMerchants();
+      renderOrders();
+      renderMap();
+      renderBuddyFilters();
+      renderBuddies();
+      renderServiceFilters();
+      renderServices();
+      renderHomeServices();
+      bindEvents();
+    }
+
+    init();
+  </script>
+</body>
+</html>
