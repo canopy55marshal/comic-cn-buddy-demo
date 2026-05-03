@@ -12,9 +12,13 @@ import { navItems } from "./data/mockData";
 import { api } from "./services/api";
 
 function App() {
+  const storage = typeof window === "undefined" ? null : window.localStorage;
   const [section, setSection] = useState("home");
   const [foodFilter, setFoodFilter] = useState("全部");
-  const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState(() => {
+    if (!storage) return 0;
+    return Number(storage.getItem("comic-con-buddy-cart-count") || 0);
+  });
   const [activeZone, setActiveZone] = useState("");
   const [buddyFilter, setBuddyFilter] = useState("全部");
   const [serviceFilter, setServiceFilter] = useState("全部");
@@ -73,6 +77,11 @@ function App() {
     window.clearTimeout(notify.timer);
     notify.timer = window.setTimeout(() => setToast(""), 2200);
   };
+
+  useEffect(() => {
+    if (!storage) return;
+    storage.setItem("comic-con-buddy-cart-count", String(cartCount));
+  }, [cartCount, storage]);
 
   useEffect(() => {
     const bootstrap = async () => {

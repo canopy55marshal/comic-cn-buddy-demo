@@ -545,6 +545,15 @@ button {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02)),
     rgba(20, 28, 58, 0.36);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(198, 221, 255, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
+    rgba(23, 32, 66, 0.42);
 }
 
 .info-card strong {
@@ -626,6 +635,13 @@ button {
   color: #fff;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(183,207,255,0.14);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  box-shadow: none;
+  filter: saturate(0.8);
 }
 
 .mini-grid {

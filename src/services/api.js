@@ -52,15 +52,46 @@ const demoUsers = [
 const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
 const DEFAULT_API_BASE = "http://127.0.0.1:3001/api";
 const API_BASE = (import.meta.env.VITE_API_BASE || DEFAULT_API_BASE).replace(/\/$/, "");
+const DEMO_STORAGE_KEY = "comic-con-buddy-demo-state";
 
-const demoState = {
-  orders: [...mockOrders],
-  invitations: [],
-  bookings: [],
-  queueOptions: mockQueueOptions.map((item) => ({ ...item, booked: false })),
-  reminders: mockReminderOptions.map((item) => ({ ...item, enabled: item.id === 1 || item.id === 3 })),
-  travelOptions: mockTravelOptions.map((item) => ({ ...item, selected: false }))
-};
+function getStorage() {
+  if (typeof window === "undefined") return null;
+  return window.localStorage;
+}
+
+function loadDemoState() {
+  const baseState = {
+    orders: [...mockOrders],
+    invitations: [],
+    bookings: [],
+    queueOptions: mockQueueOptions.map((item) => ({ ...item, booked: false })),
+    reminders: mockReminderOptions.map((item) => ({ ...item, enabled: item.id === 1 || item.id === 3 })),
+    travelOptions: mockTravelOptions.map((item) => ({ ...item, selected: false }))
+  };
+
+  const storage = getStorage();
+  if (!storage) return baseState;
+
+  try {
+    const raw = storage.getItem(DEMO_STORAGE_KEY);
+    if (!raw) return baseState;
+    const parsed = JSON.parse(raw);
+    return {
+      ...baseState,
+      ...parsed
+    };
+  } catch {
+    return baseState;
+  }
+}
+
+function saveDemoState() {
+  const storage = getStorage();
+  if (!storage) return;
+  storage.setItem(DEMO_STORAGE_KEY, JSON.stringify(demoState));
+}
+
+const demoState = loadDemoState();
 
 function resolveZoneSpots(zoneName) {
   const zone = mockZones.find((item) => item.name === zoneName);
@@ -115,6 +146,7 @@ async function requestDemo(path, options = {}) {
       detail: `${(body?.items || []).join("、")}，演示模式下已创建订单`
     };
     demoState.orders = [order, ...demoState.orders];
+    saveDemoState();
     return order;
   }
 
@@ -130,6 +162,7 @@ async function requestDemo(path, options = {}) {
       message: body?.message,
       status: "pending"
     });
+    saveDemoState();
     return { ok: true };
   }
 
@@ -147,6 +180,7 @@ async function requestDemo(path, options = {}) {
     demoState.queueOptions = demoState.queueOptions.map((item) => (
       item.id === body?.queueId ? { ...item, booked: true } : item
     ));
+    saveDemoState();
     return { ok: true };
   }
 
@@ -158,6 +192,7 @@ async function requestDemo(path, options = {}) {
     demoState.reminders = demoState.reminders.map((item) => (
       item.id === body?.reminderId ? { ...item, enabled: !item.enabled } : item
     ));
+    saveDemoState();
     return { ok: true };
   }
 
@@ -170,11 +205,13 @@ async function requestDemo(path, options = {}) {
       ...item,
       selected: item.id === body?.travelId
     }));
+    saveDemoState();
     return { ok: true };
   }
 
   if (path === "/bookings" && method === "POST") {
     demoState.bookings.push(body);
+    saveDemoState();
     return { ok: true };
   }
 
