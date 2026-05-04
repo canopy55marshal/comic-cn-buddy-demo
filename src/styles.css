@@ -863,6 +863,24 @@ button {
   border: 1px solid rgba(183,207,255,0.1);
 }
 
+.floor-hint {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(183,207,255,0.1);
+  background: rgba(255,255,255,0.03);
+}
+
+.floor-hint strong,
+.floor-hint p {
+  margin: 0;
+}
+
+.floor-hint p {
+  margin-top: 6px;
+}
+
 .route-board {
   position: relative;
   min-height: 360px;
@@ -873,6 +891,28 @@ button {
     rgba(8, 14, 36, 0.6);
   overflow: hidden;
   perspective: 1200px;
+}
+
+.route-board.floor-l2 {
+  background:
+    linear-gradient(180deg, rgba(197,214,255,0.05), rgba(255,255,255,0.01)),
+    rgba(12, 18, 44, 0.78);
+}
+
+.route-board.floor-outdoor {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(100, 181, 246, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
+    rgba(9, 16, 34, 0.78);
+}
+
+.route-board.floor-l2 .route-node {
+  transform: skewY(-4deg) rotateX(12deg) translateY(-6px) scale(0.98);
+  opacity: 0.92;
+}
+
+.route-board.floor-outdoor .route-node {
+  transform: skewY(-3deg) rotateX(10deg) scale(0.96);
 }
 
 .route-node {

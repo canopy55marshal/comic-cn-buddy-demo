@@ -44,6 +44,14 @@ const zonePositions = {
   "北门服务区": "zone-d"
 };
 
+const floorOptions = ["L1 主馆层", "L2 连廊层", "屋外动线"];
+
+const floorNotes = {
+  "L1 主馆层": "适合看主舞台、摄影区、同人摊位与服务区的核心活动路线。",
+  "L2 连廊层": "更适合馆间切换、俯瞰动线和错峰穿行，适合作为中转观察层。",
+  "屋外动线": "适合看北门服务区、返程点和外场补给位置，偏向进出馆与返程场景。"
+};
+
 function getRecommendedQueueCard(zoneName) {
   if (zoneName.includes("摄影")) return queueCards[0];
   if (zoneName.includes("服务")) return queueCards[1];
@@ -114,6 +122,7 @@ export function MapSection({
     () => getMarkerList({ activeZone, currentZone, liveMapContext }),
     [activeZone, currentZone, liveMapContext]
   );
+  const [floor, setFloor] = useState("L1 主馆层");
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [selectedZoneDetail, setSelectedZoneDetail] = useState(null);
 
@@ -126,6 +135,13 @@ export function MapSection({
           side={<span className="pill success">当前：{currentZone.name}</span>}
         />
         <FilterBar items={zoneOptions.map((item) => item.name)} value={activeZone} onChange={onZoneChange} />
+        <div style={{ marginTop: 10 }}>
+          <FilterBar items={floorOptions} value={floor} onChange={setFloor} />
+        </div>
+        <div className="floor-hint">
+          <strong>{floor}</strong>
+          <p className="muted">{floorNotes[floor]}</p>
+        </div>
         {liveMapContext && (
           <div className="stack" style={{ marginTop: 16 }}>
             <InfoCard>
@@ -148,7 +164,7 @@ export function MapSection({
               <span key={item.key} className="route-legend-item">{item.icon} {item.label}</span>
             ))}
           </div>
-          <div className="route-board">
+          <div className={`route-board floor-${floor === "L1 主馆层" ? "l1" : floor === "L2 连廊层" ? "l2" : "outdoor"}`}>
             {["A馆主舞台", "B馆摄影区", "C馆同人摊位", "北门服务区"].map((zone) => {
               const active = zone === targetZone;
               const current = zone === currentUserZone;
