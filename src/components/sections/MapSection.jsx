@@ -23,6 +23,25 @@ const routeMap = {
   "北门服务区": ["A馆主舞台", "北门服务区"]
 };
 
+const zoneGlyphs = {
+  "A馆主舞台": "🎤",
+  "B馆摄影区": "📸",
+  "C馆同人摊位": "🛍️",
+  "北门服务区": "🧰"
+};
+
+const pointLegend = [
+  { key: "live", label: "主播点", icon: "📡" },
+  { key: "service", label: "服务点", icon: "🧰" },
+  { key: "queue", label: "排队点", icon: "⏳" }
+];
+
+function getSpotIcon(title) {
+  if (title.includes("摄影") || title.includes("主舞台")) return "📡";
+  if (title.includes("补妆") || title.includes("修复") || title.includes("补给")) return "🧰";
+  return "📍";
+}
+
 export function MapSection({
   activeZone,
   zoneOptions,
@@ -63,6 +82,11 @@ export function MapSection({
             <strong>自动寻路示意</strong>
             <span className="pill info">目标：{targetZone}</span>
           </div>
+          <div className="route-legend">
+            {pointLegend.map((item) => (
+              <span key={item.key} className="route-legend-item">{item.icon} {item.label}</span>
+            ))}
+          </div>
           <div className="route-board">
             {["A馆主舞台", "B馆摄影区", "C馆同人摊位", "北门服务区"].map((zone) => {
               const active = zone === targetZone;
@@ -70,6 +94,9 @@ export function MapSection({
               const inPath = routePath.includes(zone);
               return (
                 <div key={zone} className={`route-node ${active ? "target" : ""} ${current ? "current" : ""} ${inPath ? "path" : ""}`}>
+                  <b className="route-node-top" />
+                  <b className="route-node-side" />
+                  <em className="route-node-icon">{zoneGlyphs[zone]}</em>
                   <span>{zone}</span>
                   {current && <small>当前位置</small>}
                   {active && <small>目标点</small>}
@@ -78,8 +105,12 @@ export function MapSection({
             })}
             <div className="route-line route-line-a" />
             <div className="route-line route-line-b" />
+            <div className="route-arrow route-arrow-a">➜</div>
+            <div className="route-arrow route-arrow-b">➜</div>
             <div className="route-pulse route-pulse-a" />
             <div className="route-pulse route-pulse-b" />
+            <div className="route-target-ring route-target-ring-a" />
+            <div className="route-target-ring route-target-ring-b" />
           </div>
           <p className="muted route-copy">像游戏自动寻路一样：先锁定目标馆区，再沿高亮路径移动。后续可以继续升级成 2.5D 或真 3D 版本。</p>
         </div>
@@ -122,9 +153,10 @@ export function MapSection({
           {loading && <InfoCard><p>正在加载馆区点位...</p></InfoCard>}
           {currentZone.spots.map((spot) => (
             <InfoCard key={spot.title}>
-              <strong>{spot.title}</strong>
+              <strong>{getSpotIcon(spot.title)} {spot.title}</strong>
               <div className="tag-row">
                 <span className="tag">{spot.tag}</span>
+                <span className="tag">服务点</span>
               </div>
               <p className="muted">{spot.text}</p>
               <button className="btn ghost" onClick={() => onSetSpot(spot.title)}>
@@ -144,7 +176,7 @@ export function MapSection({
           ))}
           {queueCards.map((item) => (
             <InfoCard key={item.title}>
-              <strong>{item.title}</strong>
+              <strong>⏳ {item.title}</strong>
               <div className="tag-row">
                 <span className="tag">{item.tag}</span>
                 <span className="tag">排队预约</span>
@@ -157,7 +189,7 @@ export function MapSection({
           ))}
           {travelCards.map((item) => (
             <InfoCard key={item.title}>
-              <strong>{item.title}</strong>
+              <strong>🧭 {item.title}</strong>
               <div className="tag-row">
                 <span className="tag">{item.tag}</span>
                 <span className="tag">交通出行</span>
