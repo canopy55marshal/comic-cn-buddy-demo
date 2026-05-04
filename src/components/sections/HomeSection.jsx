@@ -202,7 +202,7 @@ export function HomeSection({ onNavigate, currentUser, overview, liveItineraryIt
         <div className="panel">
           <SectionHead
             title="主播行程"
-            desc="把你准备关注或准备转场去看的直播单独收进首页，方便你在逛展过程中快速决策。"
+            desc="把你关注的主播直播安排单独收进首页，方便你随时查看、决定要不要去看和怎么转场。"
             side={<span className="pill accent">已加入 {liveItineraryItems.length} 项</span>}
           />
           <div className="grid two">
