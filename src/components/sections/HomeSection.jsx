@@ -18,21 +18,21 @@ const todayTips = [
   "出正片前先看摄影区拥堵情况，再决定是否分流到侧馆。",
   "热门服务点先做预约，不要到现场才开始排队。",
   "散场前 30 分钟就开始准备返程，门口通常最堵。",
-  "如果要做活动感更强的返程选择，可以提前看痛车司机招募。"
+  "如果想体验痛车接驳，建议提前查看车主招募和接驳路线。"
 ];
 
 const extendedFeatures = [
   {
     title: "直播联动位",
-    text: "适合挂在 Coser 的直播主页、口播口令、结束页或二维码海报，把场外流量导回活动 H5。"
+    text: "用于承接直播观众，把直播间里的同好引导到活动页查看招募、报名和现场信息。"
   },
   {
     title: "主播招募中心",
-    text: "后续可扩展为主播 / Coser 报名、活动曝光位、专属邀请码和导流统计能力。"
+    text: "用于主播或 Coser 报名活动合作，后续可以扩展曝光安排、邀请码和合作信息管理。"
   },
   {
     title: "流量转化看板",
-    text: "把直播来源、活动报名、痛车招募和乘客登记串起来，形成活动运营闭环。"
+    text: "用于查看直播来源、活动报名和招募登记的基础数据，方便后续做活动复盘。"
   }
 ];
 
@@ -136,7 +136,7 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
       </div>
 
       <div className="panel">
-        <SectionHead title="扩展功能" desc="这些能力先不混进主业务页里，用来承接活动运营、主播联动和更大规模的流量转化。" />
+        <SectionHead title="扩展功能" desc="这些能力先独立放在扩展区，用来承接主播联动、活动报名和来源统计，不混进主业务流程。" />
         <div className="grid three">
           {extendedFeatures.map((item) => (
             <InfoCard key={item.title}>
