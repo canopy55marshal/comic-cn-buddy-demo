@@ -316,16 +316,16 @@ function App() {
     try {
       await api.createInvitation({
         buddyName: name,
-        message: "一起逛展吗？"
+        message: "一起去漫展吧，顺便解锁同行权益"
       });
-      notify(`已向 ${name} 发起同逛邀请`);
+      notify(`已生成 ${name} 的熟人同行邀约`);
     } catch (error) {
-      notify(`邀请失败：${error.message}`);
+      notify(`邀约生成失败：${error.message}`);
     }
   };
 
   const handlePlanRoute = (name) => {
-    notify(`已为你和 ${name} 生成路线建议`);
+    notify(`已为 ${name} 配置同行权益和路线建议`);
   };
 
   const handleBookService = async (name) => {

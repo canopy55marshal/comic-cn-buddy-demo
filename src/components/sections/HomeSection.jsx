@@ -73,9 +73,9 @@ const quickEntrances = [
   { key: "map", title: "场馆导航", text: "按馆区、楼层和服务点安排顺路动线，少走冤枉路。" },
   { key: "live", title: "直播链接", text: "查看现场正在直播的 Coser 和主播，快速找到对应平台账号。" },
   { key: "queue", title: "排队预约", text: "热门摄影区和服务点提前锁定时段，避开现场硬排。" },
-  { key: "buddy", title: "安全搭子", text: "快速找到安全可靠的同伴，降低一个人逛展的不安感。" },
+  { key: "buddy", title: "好友同行", text: "熟人邀约同行激励，用分享裂变扩大用户量，规避陌生社交风险。" },
   { key: "reminder", title: "智能提醒", text: "补妆、转场、返程这些关键节点提前提醒你。" },
-  { key: "travel", title: "痛车出行", text: "支持痛车接驳、同IP拼车和 COS 友好返程路线。" },
+  { key: "travel", title: "交通出行", text: "以返程便利为目的，拼车/地铁/打车优先，痛车作为仪式感补充。" },
   { key: "service", title: "化妆师补妆", text: "妆面花了能马上预约补妆，不耽误下一场拍摄。" },
   { key: "service", title: "毛娘修假发", text: "发包松动、碎发乱翘时，现场直接找人救场。" },
   { key: "service", title: "摄影预约分流", text: "摄影区太挤时，快速切到空档摄影师和替代点位。" }
@@ -187,7 +187,7 @@ export function HomeSection({
           </p>
           <div className="action-row hero-cta">
             <button className="btn primary" onClick={() => onNavigate("food")}>先看现场服务</button>
-            <button className="btn ghost" onClick={() => onNavigate("buddy")}>进入安全搭子</button>
+            <button className="btn ghost" onClick={() => onNavigate("buddy")}>发起好友同行</button>
             <button className="btn ghost" onClick={() => onNavigate("service")}>查看妆造服务</button>
           </div>
           <div className="hero-stats-strip">
@@ -197,7 +197,7 @@ export function HomeSection({
             </div>
             <div>
               <strong>{String(overview?.metrics?.buddies ?? 0)}</strong>
-              <span>安全搭子</span>
+              <span>同行邀约</span>
             </div>
             <div>
               <strong>{String(overview?.metrics?.services ?? 0)}</strong>

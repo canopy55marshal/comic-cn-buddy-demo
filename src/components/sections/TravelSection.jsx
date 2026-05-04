@@ -2,8 +2,8 @@ import { useState } from "react";
 import { InfoCard, SectionHead } from "../ui";
 
 const recruitmentNotes = [
-  "优先招募散场后可覆盖虹桥、徐泾和人民广场方向的车主。",
-  "默认按同馆区、同行人数和顺路程度做轻匹配，不做实时抢单。",
+  "优先把地铁、拼车、网约车这些高频返程方案放前面，先解决交通便利。",
+  "痛车接驳只作为特色补充，不应该盖过主流返程方案。",
   "正式版上线前会补司机审核、费用说明和安全须知。"
 ];
 
@@ -24,7 +24,7 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
       <div className="panel">
         <SectionHead
           title="交通出行"
-          desc="把散场返程做成可决策页面：拼车、地铁、打车、结伴同行一眼看清。"
+          desc="把散场返程做成可决策页面：先解决怎么更方便回去，再考虑痛车这类更有仪式感的补充方案。"
           side={<span className="pill info">{selectedOption ? "已选返程方案" : "待选择"}</span>}
         />
         <div className="grid two" style={{ marginBottom: 16 }}>
@@ -34,17 +34,17 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
           </InfoCard>
           <InfoCard>
             <strong>推荐判断</strong>
-            <p className="muted">{selectedOption?.mode === "地铁" ? "适合不赶时间且不想承受打车高峰溢价的路线。" : selectedOption?.mode === "拼车" ? "适合和搭子一起返程，效率和体感通常都更稳。" : "如果你还没决定，优先看等待时间更短的方案。"}</p>
+            <p className="muted">{selectedOption?.mode === "地铁" ? "适合不赶时间且不想承受打车高峰溢价的路线。" : selectedOption?.mode === "拼车" ? "适合优先解决返程效率，通常比临时打车更稳。" : "如果你还没决定，优先看等待时间更短、换乘更少的方案。"}</p>
           </InfoCard>
         </div>
         <div className="stack" style={{ marginBottom: 16 }}>
           <InfoCard>
             <div className="row between start">
               <div>
-                <strong>痛车司机招募</strong>
-                <p className="muted">把返程做成更有漫展氛围的接驳方式，先以活动招募和意向匹配为主。</p>
+                <strong>痛车接驳补充方案</strong>
+                <p className="muted">在主流返程方案之外，提供更有漫展仪式感的特色接驳，先以活动招募和意向匹配为主。</p>
               </div>
-              <span className="pill accent">活动招募中</span>
+              <span className="pill accent">特色补充</span>
             </div>
             <div className="tag-row">
               <span className="tag">已报名车主 {itashaCampaign?.driverCount ?? 0} 位</span>
@@ -52,7 +52,7 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
               <span className="tag">散场后 18:30 - 21:00</span>
               {itashaMetaTags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}
             </div>
-            <p className="muted">当前优先接驳路线：国家会展中心 ⇄ 虹桥枢纽 / 徐泾东 / 人民广场方向。适合散场后顺路结伴返程、拍车打卡或活动接驳。</p>
+            <p className="muted">当前优先接驳路线：国家会展中心 ⇄ 虹桥枢纽 / 徐泾东 / 人民广场方向。适合散场后顺路返程、拍车打卡或做活动型接驳补充。</p>
             <div className="action-row">
               <button className="btn primary" onClick={onJoinDriver} disabled={role === "driver" || role === "rider"}>
                 {role === "driver" ? "已报名车主" : role === "rider" ? "已锁定搭乘身份" : "我要报名车主"}
@@ -70,7 +70,7 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
               <div className="row between start">
                 <div>
                   <strong>痛车招募报名卡</strong>
-                  <p className="muted">先做成活动报名与意向匹配能力，聚焦车主招募、乘客登记和接驳规则说明。</p>
+                  <p className="muted">先做成特色接驳报名与意向匹配能力，核心仍然是补充交通便利，而不是替代主流交通。</p>
                 </div>
                 <span className="pill info">演示版可交互</span>
               </div>
@@ -81,7 +81,7 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
                 </InfoCard>
                 <InfoCard>
                   <strong>接驳规则</strong>
-                  <p className="muted">当前演示版默认按同馆区、顺路程度和同行人数做轻匹配，不做实时抢单，也不直接介入费用结算。</p>
+                  <p className="muted">当前演示版默认按顺路程度、同行人数和返程方向做轻匹配，不做实时抢单，也不直接介入费用结算。</p>
                 </InfoCard>
               </div>
               <div className="tag-row" style={{ marginTop: 12 }}>
@@ -118,20 +118,20 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
         </div>
       </div>
       <div className="panel">
-        <SectionHead title="返程建议" desc="散场时最怕临时慌乱，这里先帮你做取舍，也把活动型接驳能力提前放进来。" />
+        <SectionHead title="返程建议" desc="散场时最怕临时慌乱，这里先帮你做取舍；痛车属于加分项，不是唯一答案。" />
         <div className="grid two" style={{ marginBottom: 16 }}>
           <InfoCard>
-            <strong>车主权益</strong>
-            <p className="muted">演示版里先展示优先曝光、集中接驳推荐位和活动页展示资格，后续可以扩展停车指引和补贴说明。</p>
+            <strong>交通便利优先</strong>
+            <p className="muted">先比较等待时间、换乘复杂度和道具携带成本，再决定拼车、地铁还是打车。</p>
           </InfoCard>
           <InfoCard>
-            <strong>乘客体验</strong>
-            <p className="muted">以顺路结伴、散场拼车和同好接驳为主，减少高峰期打车焦虑，也让交通页更有二次元活动特色。</p>
+            <strong>仪式感加分</strong>
+            <p className="muted">如果返程便利已经满足，再看痛车接驳、同IP拼车和拍照打卡这些更有漫展氛围的补充体验。</p>
           </InfoCard>
         </div>
         <div className="stack">
           {[
-            "如果和搭子同行，优先拼车或结伴地铁，安全感和效率都会更高。",
+            "如果和熟人同行，优先拼车或一起走地铁，通常比临时各自打车更稳。",
             "高峰期打车等待时间会明显上升，别等到出馆才开始看车。",
             "如果还有大量周边和道具，优先选少换乘的路线。",
             "返程方案最好在散场前 30 分钟就确定，别让最后阶段最乱。"

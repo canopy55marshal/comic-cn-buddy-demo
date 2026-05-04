@@ -2,16 +2,16 @@ import { buddyFilterOptions } from "../../data/mockData";
 import { FilterBar, InfoCard, SectionHead } from "../ui";
 
 const iceBreakers = [
-  "先定集合点，优先选馆外显眼地标或服务台",
-  "先同步目标，是逛摊、拍照、看舞台还是吃谷",
-  "提前设散场预案，避免结束后打不到车",
-  "支持轻社交，只拼补给或摄影也成立"
+  "优先分享给微信好友、宿舍群或同IP小群，不做陌生人匹配",
+  "先同步目标，是一起进场、拼单补给、追主播还是散场返程",
+  "提前设同行激励，比如拼单减免、组队礼包或返程同行权益",
+  "把集合点和返程方案一起发出去，比临时社交更稳"
 ];
 
 const buddyNotes = [
-  { title: "同坑优先", text: "先按目标筛一轮，再看节奏和区域是否顺路。" },
-  { title: "约拍分流", text: "摄影区拥挤时，先去侧馆空景区等更容易出片。" },
-  { title: "散场预案", text: "搭子不是只管一起逛，返程能不能同步也很重要。" }
+  { title: "熟人优先", text: "优先分享给熟人或已有群关系，规避陌生社交风险。" },
+  { title: "同行激励", text: "重点不是匹配陌生人，而是通过邀约和奖励把熟人带进来。" },
+  { title: "返程同步", text: "同行不只管一起逛，返程和补给也要能一起安排。" }
 ];
 
 export function BuddySection({ buddyFilter, buddies, loading, onBuddyFilterChange, onInvite, onPlanRoute, userPool = [] }) {
@@ -19,9 +19,9 @@ export function BuddySection({ buddyFilter, buddies, loading, onBuddyFilterChang
     <div className="section-layout">
       <div className="panel">
         <SectionHead
-          title="搭子匹配"
-          desc="把路演里的搭子社交做成更像真实使用的匹配页：看目的、看节奏、看顺路程度。"
-          side={<span className="pill accent">候选 {buddies.length} 人</span>}
+          title="好友同行"
+          desc="把熟人漫展同行做成邀约激励页：先分享，再组队，再领取同行权益，不走陌生社交。"
+          side={<span className="pill accent">邀约模版 {buddies.length} 个</span>}
         />
         <FilterBar items={buddyFilterOptions} value={buddyFilter} onChange={onBuddyFilterChange} />
         <div className="grid three" style={{ marginBottom: 16 }}>
@@ -33,8 +33,8 @@ export function BuddySection({ buddyFilter, buddies, loading, onBuddyFilterChang
           ))}
         </div>
         <div className="stack">
-          {loading && <InfoCard><p>正在加载搭子数据...</p></InfoCard>}
-          {!loading && buddies.length === 0 && <InfoCard><p>当前筛选下暂无匹配搭子。</p></InfoCard>}
+          {loading && <InfoCard><p>正在加载好友同行邀约模版...</p></InfoCard>}
+          {!loading && buddies.length === 0 && <InfoCard><p>当前筛选下暂无同行邀约模版。</p></InfoCard>}
           {buddies.map((item) => (
             <InfoCard key={item.name}>
               <div className="row between start">
@@ -47,31 +47,32 @@ export function BuddySection({ buddyFilter, buddies, loading, onBuddyFilterChang
               <p className="muted">{item.intro}</p>
               <div className="tag-row">
                 {item.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}
-                <span className="tag">顺路度高</span>
+                <span className="tag">分享裂变</span>
               </div>
               <div className="action-row">
-                <button className="btn primary" onClick={() => onInvite(item.name)}>发起同逛邀请</button>
-                <button className="btn ghost" onClick={() => onPlanRoute(item.name)}>一起规划路线</button>
+                <button className="btn primary" onClick={() => onInvite(item.name)}>生成分享邀约</button>
+                <button className="btn ghost" onClick={() => onPlanRoute(item.name)}>配置同行权益</button>
               </div>
             </InfoCard>
           ))}
         </div>
       </div>
       <div className="panel">
-        <SectionHead title="在线同好" desc="除了搭子匹配，也把当前在线、可临时协作的人放到同一页里。" />
+        <SectionHead title="已邀请好友" desc="这里展示你已经拉进来的熟人同行池，而不是陌生人候选列表。" />
         <div className="stack">
           {userPool.slice(0, 4).map((user) => (
             <InfoCard key={user.id}>
               <strong>{user.name}</strong>
-              <p className="muted">{user.role} · {user.onlineStatus} · 位于 {user.currentZone}</p>
+              <p className="muted">{user.role} · {user.onlineStatus} · 当前位于 {user.currentZone}</p>
               <div className="tag-row">
                 {user.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}
+                <span className="tag">熟人同行</span>
               </div>
             </InfoCard>
           ))}
         </div>
         <div style={{ height: 16 }} />
-        <SectionHead title="轻社交建议" desc="适合漫展当天的关系强度，不强推重社交。" />
+        <SectionHead title="邀约建议" desc="把它做成熟人分享和同行激励，而不是陌生社交产品。" />
         <div className="stack">
           {iceBreakers.map((text) => (
             <InfoCard key={text}>

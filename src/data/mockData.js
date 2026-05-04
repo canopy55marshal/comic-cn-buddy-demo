@@ -2,7 +2,7 @@ export const navItems = [
   { key: "home", label: "首页", group: "main" },
   { key: "food", label: "吃谷补给", group: "main" },
   { key: "map", label: "场馆地图", group: "main" },
-  { key: "buddy", label: "搭子匹配", group: "main" },
+  { key: "buddy", label: "好友同行", group: "main" },
   { key: "service", label: "妆造服务", group: "main" },
   { key: "live", label: "直播链接", group: "extended" },
   { key: "queue", label: "排队预约", group: "extended" },
@@ -70,14 +70,14 @@ export const zones = [
   }
 ];
 
-export const buddyFilterOptions = ["全部", "逛摊+吃谷", "摄影互拍", "舞台活动", "补给搭伴", "逛摊+摄影"];
+export const buddyFilterOptions = ["全部", "门票同行", "补给拼单", "返程同行", "主播行程", "同IP邀约"];
 
 export const buddies = [
-  { name: "铃音", purpose: "逛摊+吃谷", role: "LOLITA", time: "全天", vibe: "社牛一点点", tags: ["同人本", "谷子", "奶茶控"], intro: "想找能一起冲热门摊位、顺便拍几张日常感照片的搭子。" },
-  { name: "阿澄", purpose: "摄影互拍", role: "COSER", time: "下午", vibe: "偏安静", tags: ["互拍", "返图快", "不赶场"], intro: "主要去 B 馆拍照，想找节奏合适、愿意互相看构图的搭子。" },
-  { name: "小羽", purpose: "舞台活动", role: "IP 粉", time: "上午", vibe: "超能聊", tags: ["舞台", "应援", "打卡"], intro: "会优先冲主舞台和签售，想找同 IP 同担结伴。" },
-  { name: "眠眠", purpose: "补给搭伴", role: "妆造党", time: "中午", vibe: "慢节奏", tags: ["补妆", "吃饭", "休息区"], intro: "中午想找人一起补妆、吃饭，别一个人狼狈找地方坐。" },
-  { name: "柚子", purpose: "逛摊+摄影", role: "COSER", time: "全天", vibe: "有规划", tags: ["路线控", "错峰", "效率派"], intro: "希望一起规划路线，先摊位后摄影，尽量少走回头路。" }
+  { name: "宿舍群同行邀约", purpose: "门票同行", role: "熟人分享", time: "已邀请 3 人", vibe: "分享裂变", tags: ["同宿舍", "一起进场", "组队奖励"], intro: "适合先拉熟人一起进场和打卡，人数越多越容易解锁同行礼包和现场权益。" },
+  { name: "同IP群拼单补给", purpose: "补给拼单", role: "熟人分享", time: "已邀请 2 人", vibe: "降低单人成本", tags: ["同IP", "奶茶拼单", "场内配送"], intro: "适合把熟悉的同IP朋友拉进来一起拼单补给，省配送费也更方便统一取餐。" },
+  { name: "散场返程邀约", purpose: "返程同行", role: "熟人分享", time: "已邀请 4 人", vibe: "返程优先", tags: ["返程", "拼车", "地铁"], intro: "先分享给熟人同行群，散场前就把返程路线和拼车关系锁好，减少最后阶段的混乱。" },
+  { name: "主播行程共看", purpose: "主播行程", role: "熟人分享", time: "已邀请 1 人", vibe: "共同追更", tags: ["主播行程", "直播提醒", "顺路转场"], intro: "适合把你关注的主播直播安排分享给熟人，一起决定要不要去看和怎么转场。" },
+  { name: "同IP打卡邀约", purpose: "同IP邀约", role: "熟人分享", time: "已邀请 5 人", vibe: "仪式感更强", tags: ["同IP", "拍照打卡", "组队成就"], intro: "适合同IP好友一起打卡、一起拍照，再配合同行激励做轻裂变传播。" }
 ];
 
 export const serviceCategories = ["全部", "化妆补妆", "修假发", "摄影预约", "摄影分流"];
@@ -97,10 +97,10 @@ export const reminderOptions = [
 ];
 
 export const travelOptions = [
-  { id: 1, title: "北门拼车", mode: "拼车", eta: "5 分钟内可发车", cost: "约 ￥18 / 人", desc: "适合和搭子一起返程，省时间也更稳。"},
-  { id: 2, title: "东侧地铁口", mode: "地铁", eta: "步行 9 分钟", cost: "常规票价", desc: "当前人流较低，适合不赶时间的返程路线。"},
-  { id: 3, title: "主门网约车区", mode: "打车", eta: "等待 18 分钟", cost: "动态计价", desc: "高峰期排队更久，建议提前 30 分钟开始准备。"},
-  { id: 4, title: "搭子同行返程", mode: "结伴", eta: "即时发起", cost: "AA", desc: "适合和同馆区搭子拼车或一起走地铁，提高安全感。"}
+  { id: 1, title: "北门拼车", mode: "拼车", eta: "5 分钟内可发车", cost: "约 ￥18 / 人", desc: "适合优先解决返程效率问题，省时间也更稳。"},
+  { id: 2, title: "东侧地铁口", mode: "地铁", eta: "步行 9 分钟", cost: "常规票价", desc: "当前人流较低，适合不赶时间且想稳定返程的路线。"},
+  { id: 3, title: "主门网约车区", mode: "打车", eta: "等待 18 分钟", cost: "动态计价", desc: "高峰期排队更久，适合大件道具或不方便换乘的情况。"},
+  { id: 4, title: "好友同行返程", mode: "同行", eta: "即时发起", cost: "AA", desc: "适合和熟人一起拼车或同行走地铁，优先提升返程便利。"}
 ];
 
 export const livePlatforms = ["全部", "抖音", "B站", "小红书", "快手"];
