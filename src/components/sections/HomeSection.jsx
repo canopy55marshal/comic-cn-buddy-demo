@@ -208,7 +208,7 @@ export function HomeSection({ onNavigate, currentUser, overview, liveItineraryIt
           <div className="grid two">
             <div className="home-live-itinerary">
               <div>
-                <strong>最近主播行程</strong>
+                <strong>最近一项</strong>
                 <p className="muted">
                   {liveItineraryItems[0].title}
                   {" "}· {liveItineraryItems[0].time}

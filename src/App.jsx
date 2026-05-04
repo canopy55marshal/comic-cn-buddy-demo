@@ -379,7 +379,7 @@ function App() {
     setLiveItineraryIds((prev) => {
       const exists = prev.includes(item.id);
       const next = exists ? prev.filter((id) => id !== item.id) : [...prev, item.id];
-      notify(exists ? `已将 ${item.name} 移出主播行程` : `已将 ${item.name} 加入主播行程`);
+      notify(exists ? `已从主播行程移除 ${item.name}` : `已将 ${item.name} 加入主播行程`);
       return next;
     });
   };

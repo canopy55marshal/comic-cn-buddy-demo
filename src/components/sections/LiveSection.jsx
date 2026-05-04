@@ -277,7 +277,7 @@ export function LiveSection({ onNotify, onNavigate, reminderIds = [], itineraryI
                     <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
                     <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
                     <button className="btn ghost" onClick={() => onToggleItinerary?.(item)}>
-                      {itineraryIds.includes(item.id) ? "已在主播行程" : "加入主播行程"}
+                      {itineraryIds.includes(item.id) ? "已加入主播行程" : "加入主播行程"}
                     </button>
                     <button className="btn ghost" onClick={() => onToggleReminder?.(item)} disabled={statusInfo.phase === "直播中" && !reminderIds.includes(item.id)}>
                       {reminderIds.includes(item.id) ? "已提醒" : "开播提醒"}
@@ -327,7 +327,7 @@ export function LiveSection({ onNotify, onNavigate, reminderIds = [], itineraryI
                 <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
                 <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
                 <button className="btn ghost" onClick={() => onToggleItinerary?.(item)}>
-                  {itineraryIds.includes(item.id) ? "已在主播行程" : "加入主播行程"}
+                  {itineraryIds.includes(item.id) ? "已加入主播行程" : "加入主播行程"}
                 </button>
                 <button className="btn ghost" onClick={() => onToggleReminder?.(item)} disabled={statusInfo.phase === "直播中" && !reminderIds.includes(item.id)}>
                   {reminderIds.includes(item.id) ? "已提醒" : "开播提醒"}
@@ -454,7 +454,7 @@ export function LiveSection({ onNotify, onNavigate, reminderIds = [], itineraryI
               <button className="btn ghost" onClick={() => navigateToSection("travel", selectedLive)}>去交通出行</button>
               <button className="btn ghost" onClick={() => navigateToSection("queue", selectedLive)}>去排队预约</button>
               <button className="btn ghost" onClick={() => onToggleItinerary?.(selectedLive)}>
-                {itineraryIds.includes(selectedLive.id) ? "已在主播行程" : "加入主播行程"}
+                {itineraryIds.includes(selectedLive.id) ? "已加入主播行程" : "加入主播行程"}
               </button>
               <button className="btn ghost" onClick={() => copyAccount(selectedLive.account, selectedLive.platform)}>复制账号</button>
               <button className="btn ghost" onClick={() => onToggleReminder?.(selectedLive)}>
