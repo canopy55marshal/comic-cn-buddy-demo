@@ -566,6 +566,9 @@ button {
 }
 
 .info-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   padding: 18px;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02)),
@@ -589,6 +592,11 @@ button {
 
 .info-card p {
   line-height: 1.7;
+}
+
+.info-card > .action-row:last-child {
+  margin-top: auto;
+  padding-top: 12px;
 }
 
 .row {
