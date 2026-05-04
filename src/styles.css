@@ -203,6 +203,31 @@ button {
   margin-bottom: 18px;
 }
 
+.campaign-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(183, 207, 255, 0.16);
+  background:
+    linear-gradient(135deg, rgba(111,168,255,0.14), rgba(156,140,255,0.12)),
+    rgba(18, 24, 52, 0.82);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.campaign-banner strong,
+.campaign-banner p {
+  margin: 0;
+}
+
+.campaign-banner p {
+  margin-top: 6px;
+}
+
 .hero-main,
 .hero-side,
 .panel,
@@ -690,6 +715,7 @@ button {
 }
 
 @media (max-width: 1080px) {
+  .campaign-banner,
   .hero,
   .section-layout,
   .grid.two,
@@ -729,6 +755,11 @@ button {
   .nav-group-title {
     min-width: 0;
     text-align: left;
+  }
+
+  .campaign-banner {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .hero-main,

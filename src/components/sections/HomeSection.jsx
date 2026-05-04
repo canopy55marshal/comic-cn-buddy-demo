@@ -24,6 +24,17 @@ const todayTips = [
 export function HomeSection({ onNavigate, currentUser, overview }) {
   return (
     <>
+      <div className="campaign-banner">
+        <div>
+          <strong>活动招募中：痛车司机接驳 + 直播联动位</strong>
+          <p className="muted">适合车主报名、乘客登记，也适合从 Coser 的抖音 / B站 / 小红书直播间把同好流量导回活动页。</p>
+        </div>
+        <div className="action-row">
+          <span className="pill accent">流量可沉淀</span>
+          <button className="btn primary" onClick={() => onNavigate("travel")}>查看招募</button>
+        </div>
+      </div>
+
       <div className="hero">
         <div className="hero-main hero-banner">
           <div className="hero-decor hero-decor-left" />
