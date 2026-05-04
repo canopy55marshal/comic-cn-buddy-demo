@@ -9,12 +9,25 @@ const liveTips = [
 ];
 
 const statusOptions = ["全部", "直播中", "即将开播"];
+const sortOptions = ["默认排序", "热度优先", "直播中优先"];
 const favoriteStorageKey = "comic-con-buddy-live-favorites";
+
+function parseHeat(value) {
+  const normalized = value.replace("预约 ", "").trim().toLowerCase();
+  if (normalized.endsWith("w")) {
+    return Number(normalized.replace("w", "")) * 10000;
+  }
+  if (normalized.endsWith("k")) {
+    return Number(normalized.replace("k", "")) * 1000;
+  }
+  return Number(normalized) || 0;
+}
 
 export function LiveSection({ onNotify }) {
   const [platform, setPlatform] = useState("全部");
   const [status, setStatus] = useState("全部");
   const [zone, setZone] = useState("全部");
+  const [sortMode, setSortMode] = useState("默认排序");
   const [favorites, setFavorites] = useState(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -40,15 +53,30 @@ export function LiveSection({ onNotify }) {
         );
       });
 
-      return statusMatched.sort((a, b) => {
+      return [...statusMatched].sort((a, b) => {
         const aFav = favorites.includes(a.id) ? 1 : 0;
         const bFav = favorites.includes(b.id) ? 1 : 0;
         const aLive = a.time === "直播中" ? 1 : 0;
         const bLive = b.time === "直播中" ? 1 : 0;
-        return bFav - aFav || bLive - aLive;
+        const heatDelta = parseHeat(b.viewers) - parseHeat(a.viewers);
+
+        if (sortMode === "热度优先") {
+          return bFav - aFav || heatDelta || bLive - aLive;
+        }
+
+        if (sortMode === "直播中优先") {
+          return bFav - aFav || bLive - aLive || heatDelta;
+        }
+
+        return bFav - aFav || bLive - aLive || heatDelta;
       });
     },
-    [favorites, platform, status, zone]
+    [favorites, platform, sortMode, status, zone]
+  );
+
+  const favoriteLinks = useMemo(
+    () => liveLinks.filter((item) => favorites.includes(item.id)),
+    [favorites]
   );
 
   useEffect(() => {
@@ -78,6 +106,10 @@ export function LiveSection({ onNotify }) {
     }
   };
 
+  const jumpToLive = (item) => {
+    onNotify?.(`演示版占位：后续可跳转到 ${item.platform} 的账号 ${item.account}`);
+  };
+
   return (
     <div className="section-layout">
       <div className="panel">
@@ -100,12 +132,46 @@ export function LiveSection({ onNotify }) {
             <p className="muted">已收藏账号</p>
           </InfoCard>
         </div>
+        {favoriteLinks.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <SectionHead
+              title="我关注的主播"
+              desc="你收藏过的直播账号会优先收在这里，方便你在逛展过程中随时回看。"
+              side={<span className="pill info">{favoriteLinks.length} 位</span>}
+            />
+            <div className="grid two">
+              {favoriteLinks.map((item) => (
+                <InfoCard key={`favorite-${item.id}`}>
+                  <div className="row between start">
+                    <div>
+                      <strong>{item.name}</strong>
+                      <p className="muted">{item.platform} · {item.account}</p>
+                    </div>
+                    <span className={`pill ${item.time === "直播中" ? "accent" : "info"}`}>{item.time}</span>
+                  </div>
+                  <div className="tag-row">
+                    <span className="tag">{item.zone}</span>
+                    <span className="tag">{item.viewers}</span>
+                  </div>
+                  <p className="muted">{item.liveTitle}</p>
+                  <div className="action-row">
+                    <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
+                    <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
+                  </div>
+                </InfoCard>
+              ))}
+            </div>
+          </div>
+        )}
         <FilterBar items={livePlatforms} value={platform} onChange={setPlatform} />
         <div style={{ marginTop: 10 }}>
           <FilterBar items={statusOptions} value={status} onChange={setStatus} />
         </div>
         <div style={{ marginTop: 10 }}>
           <FilterBar items={zoneOptions} value={zone} onChange={setZone} />
+        </div>
+        <div style={{ marginTop: 10 }}>
+          <FilterBar items={sortOptions} value={sortMode} onChange={setSortMode} />
         </div>
         <div className="stack" style={{ marginTop: 16 }}>
           {filteredLinks.map((item) => (
@@ -126,7 +192,8 @@ export function LiveSection({ onNotify }) {
               <p className="muted">{item.cosplay}</p>
               <p className="muted">当前直播：{item.liveTitle}</p>
               <div className="action-row">
-                <button className="btn primary" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
+                <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
+                <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
                 <button className="btn ghost" onClick={() => toggleFavorite(item.id, item.name)}>
                   {favorites.includes(item.id) ? "取消收藏" : "收藏账号"}
                 </button>
