@@ -69,7 +69,7 @@ const todayTips = [
   "如果想体验痛车接驳，建议提前查看车主招募和接驳路线。"
 ];
 
-export function HomeSection({ onNavigate, currentUser, overview, liveItineraryItems = [] }) {
+export function HomeSection({ onNavigate, currentUser, overview, liveItineraryItems = [], onToggleLiveItinerary }) {
   const favoriteIds = (() => {
     if (typeof window === "undefined") return [];
     try {
@@ -228,6 +228,11 @@ export function HomeSection({ onNavigate, currentUser, overview, liveItineraryIt
                     <span className="tag">{item.platform}</span>
                     <span className="tag">{item.zone}</span>
                     <span className="tag">{item.time}</span>
+                  </div>
+                  <div className="action-row">
+                    <button className="btn ghost" onClick={() => onNavigate("map")}>去地图</button>
+                    <button className="btn ghost" onClick={() => onNavigate("queue")}>去排队预约</button>
+                    <button className="btn ghost" onClick={() => onToggleLiveItinerary?.({ id: item.sourceId, name: item.name })}>移出主播行程</button>
                   </div>
                 </InfoCard>
               ))}

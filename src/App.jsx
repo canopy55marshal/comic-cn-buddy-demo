@@ -163,6 +163,7 @@ function App() {
       .map((item) => ({
         id: `itinerary-${item.id}`,
         sourceId: item.id,
+        name: item.name,
         title: `${item.name} · ${item.liveTitle}`,
         zone: item.zone,
         time: item.startsAt || "直播中",
@@ -515,6 +516,7 @@ function App() {
             currentUser={currentUser}
             overview={overview}
             liveItineraryItems={liveItineraryItems}
+            onToggleLiveItinerary={handleToggleLiveItinerary}
           />
         );
     }
