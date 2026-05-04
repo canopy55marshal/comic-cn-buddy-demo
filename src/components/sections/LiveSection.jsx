@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { liveLinks, livePlatforms } from "../../data/mockData";
 import { FilterBar, InfoCard, SectionHead } from "../ui";
 
@@ -8,13 +8,75 @@ const liveTips = [
   "直播账号页适合快速收藏，等你换馆区或返程时再回看。"
 ];
 
-export function LiveSection() {
+const statusOptions = ["全部", "直播中", "即将开播"];
+const favoriteStorageKey = "comic-con-buddy-live-favorites";
+
+export function LiveSection({ onNotify }) {
   const [platform, setPlatform] = useState("全部");
+  const [status, setStatus] = useState("全部");
+  const [zone, setZone] = useState("全部");
+  const [favorites, setFavorites] = useState(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return JSON.parse(window.localStorage.getItem(favoriteStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  });
+
+  const zoneOptions = useMemo(
+    () => ["全部", ...new Set(liveLinks.map((item) => item.zone))],
+    []
+  );
 
   const filteredLinks = useMemo(
-    () => liveLinks.filter((item) => platform === "全部" || item.platform === platform),
-    [platform]
+    () => {
+      const statusMatched = liveLinks.filter((item) => {
+        const currentStatus = item.time === "直播中" ? "直播中" : "即将开播";
+        return (
+          (platform === "全部" || item.platform === platform) &&
+          (status === "全部" || currentStatus === status) &&
+          (zone === "全部" || item.zone === zone)
+        );
+      });
+
+      return statusMatched.sort((a, b) => {
+        const aFav = favorites.includes(a.id) ? 1 : 0;
+        const bFav = favorites.includes(b.id) ? 1 : 0;
+        const aLive = a.time === "直播中" ? 1 : 0;
+        const bLive = b.time === "直播中" ? 1 : 0;
+        return bFav - aFav || bLive - aLive;
+      });
+    },
+    [favorites, platform, status, zone]
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(favoriteStorageKey, JSON.stringify(favorites));
+  }, [favorites]);
+
+  const liveNowCount = liveLinks.filter((item) => item.time === "直播中").length;
+  const upcomingCount = liveLinks.length - liveNowCount;
+  const favoriteCount = favorites.length;
+
+  const toggleFavorite = (id, name) => {
+    setFavorites((prev) => {
+      const exists = prev.includes(id);
+      const next = exists ? prev.filter((item) => item !== id) : [...prev, id];
+      onNotify?.(exists ? `已取消收藏 ${name}` : `已收藏 ${name}`);
+      return next;
+    });
+  };
+
+  const copyAccount = async (account, platformName) => {
+    try {
+      await navigator.clipboard.writeText(account);
+      onNotify?.(`已复制 ${platformName} 账号 ${account}`);
+    } catch {
+      onNotify?.("当前环境暂不支持直接复制，请手动记录账号");
+    }
+  };
 
   return (
     <div className="section-layout">
@@ -22,9 +84,29 @@ export function LiveSection() {
         <SectionHead
           title="直播链接"
           desc="集中查看现场正在直播的 Coser / 主播，按平台快速找到对应直播账号和当前馆区。"
-          side={<span className="pill accent">直播中 {liveLinks.filter((item) => item.time === "直播中").length} 场</span>}
+          side={<span className="pill accent">直播中 {liveNowCount} 场</span>}
         />
+        <div className="grid three" style={{ marginBottom: 16 }}>
+          <InfoCard>
+            <strong>{liveNowCount}</strong>
+            <p className="muted">当前直播中</p>
+          </InfoCard>
+          <InfoCard>
+            <strong>{upcomingCount}</strong>
+            <p className="muted">即将开播</p>
+          </InfoCard>
+          <InfoCard>
+            <strong>{favoriteCount}</strong>
+            <p className="muted">已收藏账号</p>
+          </InfoCard>
+        </div>
         <FilterBar items={livePlatforms} value={platform} onChange={setPlatform} />
+        <div style={{ marginTop: 10 }}>
+          <FilterBar items={statusOptions} value={status} onChange={setStatus} />
+        </div>
+        <div style={{ marginTop: 10 }}>
+          <FilterBar items={zoneOptions} value={zone} onChange={setZone} />
+        </div>
         <div className="stack" style={{ marginTop: 16 }}>
           {filteredLinks.map((item) => (
             <InfoCard key={item.id}>
@@ -33,15 +115,22 @@ export function LiveSection() {
                   <strong>{item.name}</strong>
                   <p className="muted">{item.platform} · {item.account}</p>
                 </div>
-                <span className="pill info">{item.time}</span>
+                <span className={`pill ${item.time === "直播中" ? "accent" : "info"}`}>{item.time}</span>
               </div>
               <div className="tag-row">
                 <span className="tag">{item.zone}</span>
                 <span className="tag">{item.viewers}</span>
                 <span className="tag">{item.platform}</span>
+                {favorites.includes(item.id) && <span className="tag">已收藏</span>}
               </div>
               <p className="muted">{item.cosplay}</p>
               <p className="muted">当前直播：{item.liveTitle}</p>
+              <div className="action-row">
+                <button className="btn primary" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
+                <button className="btn ghost" onClick={() => toggleFavorite(item.id, item.name)}>
+                  {favorites.includes(item.id) ? "取消收藏" : "收藏账号"}
+                </button>
+              </div>
             </InfoCard>
           ))}
           {filteredLinks.length === 0 && (

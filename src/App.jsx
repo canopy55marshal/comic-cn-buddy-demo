@@ -396,7 +396,7 @@ function App() {
           />
         );
       case "live":
-        return <LiveSection />;
+        return <LiveSection onNotify={notify} />;
       case "reminder":
         return (
           <ReminderSection

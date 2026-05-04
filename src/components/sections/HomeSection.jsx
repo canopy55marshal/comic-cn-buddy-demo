@@ -123,15 +123,22 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
       </div>
 
       <div className="panel">
-        <SectionHead title="直播链接" desc="集中展示现场正在直播的 Coser 和主播账号，方便你快速找到对应平台和当前馆区。 " />
+        <SectionHead
+          title="直播链接"
+          desc="集中展示现场正在直播的 Coser 和主播账号，方便你快速找到对应平台和当前馆区。 "
+          side={<span className="pill accent">直播中 {liveLinks.filter((item) => item.time === "直播中").length} 场</span>}
+        />
         <div className="grid three">
           {liveLinks.slice(0, 3).map((item) => (
             <InfoCard key={item.id}>
-              <strong>{item.name}</strong>
+              <div className="row between start">
+                <strong>{item.name}</strong>
+                <span className={`pill ${item.time === "直播中" ? "accent" : "info"}`}>{item.time}</span>
+              </div>
               <p className="muted">{item.platform} · {item.account}</p>
               <div className="tag-row">
                 <span className="tag">{item.zone}</span>
-                <span className="tag">{item.time}</span>
+                <span className="tag">{item.viewers}</span>
               </div>
               <p className="muted">{item.liveTitle}</p>
               <div className="action-row">
