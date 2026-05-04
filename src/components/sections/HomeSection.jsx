@@ -213,7 +213,10 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
                 {nextLiveReminder ? `，最近的是 ${nextLiveReminder.name} 的 ${getStatusInfo(nextLiveReminder).label}` : "。"}
               </p>
             </div>
-            <button className="btn ghost" onClick={() => onNavigate("reminder")}>查看提醒中心</button>
+            <div className="action-row">
+              <button className="btn primary" onClick={() => onNavigate("reminder")}>直播提醒</button>
+              <button className="btn ghost" onClick={() => onNavigate("live")}>去看主播</button>
+            </div>
           </div>
         )}
         <div className="row between start" style={{ marginBottom: 12 }}>

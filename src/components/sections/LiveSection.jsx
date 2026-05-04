@@ -92,7 +92,7 @@ function getWorthGoing(item) {
   return "更适合当作信息流参考，不一定需要立刻转场过去。";
 }
 
-export function LiveSection({ onNotify, reminderIds = [], onToggleReminder }) {
+export function LiveSection({ onNotify, onNavigate, reminderIds = [], onToggleReminder }) {
   const [platform, setPlatform] = useState("全部");
   const [status, setStatus] = useState("全部");
   const [zone, setZone] = useState("全部");
@@ -191,6 +191,17 @@ export function LiveSection({ onNotify, reminderIds = [], onToggleReminder }) {
 
   const jumpToLive = (item) => {
     onNotify?.(`演示版占位：后续可跳转到 ${item.platform} 的账号 ${item.account}`);
+  };
+
+  const navigateToSection = (target, item) => {
+    onNavigate?.(target);
+    setSelectedLive(null);
+    if (target === "map") {
+      onNotify?.(`已带你去场馆地图，可继续查看 ${item.zone} 附近路线`);
+    }
+    if (target === "travel") {
+      onNotify?.(`已带你去交通出行，可继续判断去 ${item.zone} 是否值得顺路安排`);
+    }
   };
 
   const summaryItems = [
@@ -430,6 +441,8 @@ export function LiveSection({ onNotify, reminderIds = [], onToggleReminder }) {
             </div>
             <div className="action-row" style={{ marginTop: 16 }}>
               <button className="btn primary" onClick={() => jumpToLive(selectedLive)}>一键跳转</button>
+              <button className="btn ghost" onClick={() => navigateToSection("map", selectedLive)}>去场馆地图</button>
+              <button className="btn ghost" onClick={() => navigateToSection("travel", selectedLive)}>去交通出行</button>
               <button className="btn ghost" onClick={() => copyAccount(selectedLive.account, selectedLive.platform)}>复制账号</button>
               <button className="btn ghost" onClick={() => onToggleReminder?.(selectedLive)}>
                 {reminderIds.includes(selectedLive.id) ? "已提醒" : "开播提醒"}

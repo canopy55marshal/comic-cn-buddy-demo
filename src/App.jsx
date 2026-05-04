@@ -444,6 +444,7 @@ function App() {
         return (
           <LiveSection
             onNotify={notify}
+            onNavigate={setSection}
             reminderIds={liveReminderIds}
             onToggleReminder={handleToggleLiveReminder}
           />
