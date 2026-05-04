@@ -4,6 +4,7 @@ export const navItems = [
   { key: "map", label: "场馆地图", group: "main" },
   { key: "buddy", label: "搭子匹配", group: "main" },
   { key: "service", label: "妆造服务", group: "main" },
+  { key: "live", label: "直播链接", group: "extended" },
   { key: "queue", label: "排队预约", group: "extended" },
   { key: "reminder", label: "智能提醒", group: "extended" },
   { key: "travel", label: "交通出行", group: "extended" }
@@ -100,6 +101,77 @@ export const travelOptions = [
   { id: 2, title: "东侧地铁口", mode: "地铁", eta: "步行 9 分钟", cost: "常规票价", desc: "当前人流较低，适合不赶时间的返程路线。"},
   { id: 3, title: "主门网约车区", mode: "打车", eta: "等待 18 分钟", cost: "动态计价", desc: "高峰期排队更久，建议提前 30 分钟开始准备。"},
   { id: 4, title: "搭子同行返程", mode: "结伴", eta: "即时发起", cost: "AA", desc: "适合和同馆区搭子拼车或一起走地铁，提高安全感。"}
+];
+
+export const livePlatforms = ["全部", "抖音", "B站", "小红书", "快手"];
+
+export const liveLinks = [
+  {
+    id: 1,
+    name: "阿澄",
+    cosplay: "镜华国风改 · 正在返图闲聊",
+    platform: "抖音",
+    account: "@achen_cos",
+    liveTitle: "B馆摄影区现场直播",
+    zone: "B馆摄影区",
+    time: "直播中",
+    viewers: "1.2w"
+  },
+  {
+    id: 2,
+    name: "铃音",
+    cosplay: "LOLITA 巡馆记录",
+    platform: "小红书",
+    account: "铃音今天也出片",
+    liveTitle: "同人摊位实时逛展",
+    zone: "C馆同人摊位",
+    time: "直播中",
+    viewers: "6.8k"
+  },
+  {
+    id: 3,
+    name: "柚子",
+    cosplay: "古风双人互拍",
+    platform: "B站",
+    account: "柚子YuzuLive",
+    liveTitle: "侧馆空景区实况",
+    zone: "B馆摄影区",
+    time: "直播中",
+    viewers: "8.5k"
+  },
+  {
+    id: 4,
+    name: "眠眠",
+    cosplay: "妆造补完日记",
+    platform: "抖音",
+    account: "@mianmian_makeup",
+    liveTitle: "北门补妆位现场直播",
+    zone: "北门服务区",
+    time: "19:00 开播",
+    viewers: "预约 2.1k"
+  },
+  {
+    id: 5,
+    name: "星野白祈",
+    cosplay: "舞台活动同步",
+    platform: "快手",
+    account: "星野白祈Live",
+    liveTitle: "主舞台应援实况",
+    zone: "A馆主舞台",
+    time: "直播中",
+    viewers: "9.3k"
+  },
+  {
+    id: 6,
+    name: "小羽",
+    cosplay: "逛摊 + 吃谷记录",
+    platform: "B站",
+    account: "小羽同好频道",
+    liveTitle: "热门摊位排队实况",
+    zone: "C馆同人摊位",
+    time: "20:00 开播",
+    viewers: "预约 1.6k"
+  }
 ];
 
 export const services = [

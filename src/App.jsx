@@ -3,6 +3,7 @@ import { AppHeader } from "./components/navigation";
 import { BuddySection } from "./components/sections/BuddySection";
 import { FoodSection } from "./components/sections/FoodSection";
 import { HomeSection } from "./components/sections/HomeSection";
+import { LiveSection } from "./components/sections/LiveSection";
 import { MapSection } from "./components/sections/MapSection";
 import { QueueSection } from "./components/sections/QueueSection";
 import { ReminderSection } from "./components/sections/ReminderSection";
@@ -394,6 +395,8 @@ function App() {
             onBook={handleBookQueue}
           />
         );
+      case "live":
+        return <LiveSection />;
       case "reminder":
         return (
           <ReminderSection

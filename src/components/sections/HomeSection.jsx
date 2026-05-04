@@ -1,8 +1,10 @@
+import { liveLinks } from "../../data/mockData";
 import { InfoCard, SectionHead, StatsCard } from "../ui";
 
 const quickEntrances = [
   { key: "food", title: "馆内补给", text: "奶茶、热食和应急用品一键下单，别等体力见底再找吃的。" },
   { key: "map", title: "场馆地图", text: "按馆区和服务点安排顺路动线，少走冤枉路。" },
+  { key: "live", title: "直播链接", text: "查看现场正在直播的 Coser 和主播，快速找到对应平台账号。" },
   { key: "queue", title: "排队预约", text: "热门摄影区和服务点提前锁定时段，避开现场硬排。" },
   { key: "buddy", title: "搭子匹配", text: "快速找到同坑同好、临时互拍或顺路一起逛展的人。" },
   { key: "reminder", title: "智能提醒", text: "补妆、转场、返程这些关键节点提前提醒你。" },
@@ -19,21 +21,6 @@ const todayTips = [
   "热门服务点先做预约，不要到现场才开始排队。",
   "散场前 30 分钟就开始准备返程，门口通常最堵。",
   "如果想体验痛车接驳，建议提前查看车主招募和接驳路线。"
-];
-
-const extendedFeatures = [
-  {
-    title: "直播联动位",
-    text: "用于承接直播观众，把直播间里的同好引导到活动页查看招募、报名和现场信息。"
-  },
-  {
-    title: "主播招募中心",
-    text: "用于主播或 Coser 报名活动合作，后续可以扩展曝光安排、邀请码和合作信息管理。"
-  },
-  {
-    title: "流量转化看板",
-    text: "用于查看直播来源、活动报名和招募登记的基础数据，方便后续做活动复盘。"
-  }
 ];
 
 export function HomeSection({ onNavigate, currentUser, overview }) {
@@ -100,7 +87,7 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
             <h3>把出片、补妆、找搭子<br />都收进同一幅手绘幻想里</h3>
             <p>现在这张主视觉已经改成更贴近你新图的方向，整体更像中式美学二次元游戏KV。</p>
             <div className="poster-stats">
-              <StatsCard title="9" text="核心模块" />
+              <StatsCard title="10" text="核心模块" />
               <StatsCard title={currentUser?.creditScore ? String(currentUser.creditScore) : "99"} text="当前状态" />
             </div>
           </div>
@@ -109,7 +96,7 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
 
       <div className="section-layout">
         <div className="panel">
-          <SectionHead title="九大能力" desc="把你路演里定义的核心能力，同步成用户当天能直接用的入口。" />
+          <SectionHead title="十大能力" desc="把你路演里定义的核心能力，同步成用户当天能直接用的入口。" />
           <div className="grid three">
             {quickEntrances.map((item) => (
               <InfoCard key={item.title}>
@@ -136,12 +123,20 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
       </div>
 
       <div className="panel">
-        <SectionHead title="扩展功能" desc="这些能力先独立放在扩展区，用来承接主播联动、活动报名和来源统计，不混进主业务流程。" />
+        <SectionHead title="直播链接" desc="集中展示现场正在直播的 Coser 和主播账号，方便你快速找到对应平台和当前馆区。 " />
         <div className="grid three">
-          {extendedFeatures.map((item) => (
-            <InfoCard key={item.title}>
-              <strong>{item.title}</strong>
-              <p className="muted">{item.text}</p>
+          {liveLinks.slice(0, 3).map((item) => (
+            <InfoCard key={item.id}>
+              <strong>{item.name}</strong>
+              <p className="muted">{item.platform} · {item.account}</p>
+              <div className="tag-row">
+                <span className="tag">{item.zone}</span>
+                <span className="tag">{item.time}</span>
+              </div>
+              <p className="muted">{item.liveTitle}</p>
+              <div className="action-row">
+                <button className="btn ghost" onClick={() => onNavigate("live")}>查看直播链接</button>
+              </div>
             </InfoCard>
           ))}
         </div>
