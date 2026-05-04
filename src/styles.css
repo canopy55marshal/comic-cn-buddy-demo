@@ -915,6 +915,59 @@ button {
   transform: skewY(-3deg) rotateX(10deg) scale(0.96);
 }
 
+.route-board.floor-l2 .route-line-to-d,
+.route-board.floor-l2 .route-arrow-to-d {
+  opacity: 0.08;
+}
+
+.route-board.floor-outdoor .route-line-to-b,
+.route-board.floor-outdoor .route-line-to-c,
+.route-board.floor-outdoor .route-arrow-to-b,
+.route-board.floor-outdoor .route-arrow-to-c {
+  opacity: 0.08;
+}
+
+.route-board.floor-l2 .route-line-to-b {
+  top: 104px;
+  left: 208px;
+  width: 108px;
+  transform: rotate(160deg);
+}
+
+.route-board.floor-l2 .route-line-to-c {
+  top: 104px;
+  right: 208px;
+  width: 108px;
+  transform: rotate(20deg);
+}
+
+.route-board.floor-l2 .route-arrow-to-b {
+  top: 130px;
+  left: 242px;
+}
+
+.route-board.floor-l2 .route-arrow-to-c {
+  top: 130px;
+  right: 242px;
+}
+
+.route-board.floor-l2 .route-pulse-b {
+  top: 150px;
+}
+
+.route-board.floor-outdoor .route-line-to-d {
+  top: 206px;
+  width: 136px;
+}
+
+.route-board.floor-outdoor .route-arrow-to-d {
+  top: 236px;
+}
+
+.route-board.floor-outdoor .route-pulse-b {
+  top: 214px;
+}
+
 .route-node {
   position: relative;
   z-index: 2;
@@ -1192,6 +1245,27 @@ button {
   right: 126px;
 }
 
+.map-marker.marker-live-l2 {
+  top: 122px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.map-marker.marker-connector-l2 {
+  top: 78px;
+  right: 112px;
+}
+
+.map-marker.marker-service-outdoor {
+  bottom: 100px;
+  left: 108px;
+}
+
+.map-marker.marker-queue-outdoor {
+  bottom: 72px;
+  right: 110px;
+}
+
 .map-detail-modal {
   width: min(640px, 100%);
 }
@@ -1315,6 +1389,25 @@ button {
     width: 86px;
   }
 
+  .route-board.floor-l2 .route-line-to-b {
+    top: 168px;
+    left: 188px;
+    width: 90px;
+  }
+
+  .route-board.floor-l2 .route-line-to-c {
+    top: 306px;
+    left: 210px;
+    right: auto;
+    width: 108px;
+    transform: rotate(52deg);
+  }
+
+  .route-board.floor-outdoor .route-line-to-d {
+    top: 394px;
+    width: 94px;
+  }
+
   .route-arrow-to-b {
     top: 160px;
     left: 216px;
@@ -1330,6 +1423,21 @@ button {
     top: 420px;
   }
 
+  .route-board.floor-l2 .route-arrow-to-b {
+    top: 194px;
+    left: 214px;
+  }
+
+  .route-board.floor-l2 .route-arrow-to-c {
+    top: 330px;
+    left: 232px;
+    right: auto;
+  }
+
+  .route-board.floor-outdoor .route-arrow-to-d {
+    top: 420px;
+  }
+
   .route-pulse-a {
     top: 206px;
     left: 230px;
@@ -1337,6 +1445,14 @@ button {
 
   .route-pulse-b {
     top: 400px;
+  }
+
+  .route-board.floor-l2 .route-pulse-b {
+    top: 246px;
+  }
+
+  .route-board.floor-outdoor .route-pulse-b {
+    top: 396px;
   }
 
   .route-target-ring.ring-c {
@@ -1349,14 +1465,34 @@ button {
     right: 64px;
   }
 
+  .map-marker.marker-live-l2 {
+    top: 246px;
+    left: 50%;
+  }
+
+  .map-marker.marker-connector-l2 {
+    top: 126px;
+    right: 52px;
+  }
+
   .map-marker.marker-service {
     top: 386px;
     left: 52px;
   }
 
+  .map-marker.marker-service-outdoor {
+    bottom: 144px;
+    left: 46px;
+  }
+
   .map-marker.marker-queue {
     bottom: 72px;
     right: 54px;
+  }
+
+  .map-marker.marker-queue-outdoor {
+    bottom: 74px;
+    right: 56px;
   }
 
   .home-live-summary {
