@@ -102,6 +102,7 @@ export function MapSection({
   currentZone,
   currentUserZone = "",
   loading,
+  onNavigate,
   onZoneChange,
   onSetSpot,
   mapResults = [],
@@ -114,6 +115,7 @@ export function MapSection({
     [activeZone, currentZone, liveMapContext]
   );
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [selectedZoneDetail, setSelectedZoneDetail] = useState(null);
 
   return (
     <div className="section-layout">
@@ -155,6 +157,7 @@ export function MapSection({
                 <div
                   key={zone}
                   className={`route-node ${zonePositions[zone]} ${active ? "target" : ""} ${current ? "current" : ""} ${inPath ? "path" : ""}`}
+                  onClick={() => setSelectedZoneDetail(zoneOptions.find((item) => item.name === zone) || { name: zone, note: "当前馆区暂无更多说明。", spots: [] })}
                 >
                   <b className="route-node-top" />
                   <b className="route-node-side" />
@@ -312,8 +315,45 @@ export function MapSection({
             </div>
             <div className="action-row" style={{ marginTop: 16 }}>
               <button className="btn primary" onClick={() => onSetSpot(selectedMarker.title)}>设为途经点</button>
-              {selectedMarker.kind === "queue" && <button className="btn ghost" onClick={() => onSetSpot("预约推荐项目")}>查看预约建议</button>}
+              <button className="btn ghost" onClick={() => onNavigate?.("live")}>去主播行程</button>
+              <button className="btn ghost" onClick={() => onNavigate?.("queue")}>去排队预约</button>
+              <button className="btn ghost" onClick={() => onNavigate?.("service")}>去服务预约</button>
               {selectedMarker.kind === "live" && <button className="btn ghost" onClick={() => onZoneChange(targetZone)}>定位到目标馆区</button>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedZoneDetail && (
+        <div className="overlay-backdrop" onClick={() => setSelectedZoneDetail(null)}>
+          <div className="detail-modal map-detail-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="row between start">
+              <div>
+                <strong style={{ fontSize: 20 }}>{zoneGlyphs[selectedZoneDetail.name] || "📍"} {selectedZoneDetail.name}</strong>
+                <p className="muted" style={{ marginTop: 8 }}>馆区详情</p>
+              </div>
+              <button className="btn ghost" onClick={() => setSelectedZoneDetail(null)}>关闭</button>
+            </div>
+            <div className="tag-row" style={{ marginTop: 12 }}>
+              <span className="tag">馆区块</span>
+              {selectedZoneDetail.name === activeZone && <span className="tag">当前查看</span>}
+            </div>
+            <div className="stack" style={{ marginTop: 16 }}>
+              <InfoCard>
+                <strong>馆区说明</strong>
+                <p className="muted">{selectedZoneDetail.note}</p>
+              </InfoCard>
+              {selectedZoneDetail.spots?.slice(0, 3).map((spot) => (
+                <InfoCard key={spot.title}>
+                  <strong>{getSpotIcon(spot.title)} {spot.title}</strong>
+                  <p className="muted">{spot.text}</p>
+                </InfoCard>
+              ))}
+            </div>
+            <div className="action-row" style={{ marginTop: 16 }}>
+              <button className="btn primary" onClick={() => onZoneChange(selectedZoneDetail.name)}>切换到该馆区</button>
+              <button className="btn ghost" onClick={() => onNavigate?.("queue")}>去排队预约</button>
+              <button className="btn ghost" onClick={() => onNavigate?.("service")}>去服务预约</button>
             </div>
           </div>
         </div>

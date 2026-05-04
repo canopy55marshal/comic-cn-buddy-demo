@@ -472,6 +472,7 @@ function App() {
             currentUserZone={currentUser?.currentZone}
             loading={loading.zones}
             mapResults={mapResults}
+            onNavigate={setSection}
             onZoneChange={setActiveZone}
             onSetSpot={handleSetSpot}
             liveMapContext={liveMapContext}
