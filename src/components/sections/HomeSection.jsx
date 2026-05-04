@@ -69,13 +69,13 @@ function getLiveStatusLabel(time) {
 }
 
 const quickEntrances = [
-  { key: "food", title: "馆内补给", text: "奶茶、热食和应急用品一键下单，别等体力见底再找吃的。" },
-  { key: "map", title: "场馆地图", text: "按馆区和服务点安排顺路动线，少走冤枉路。" },
+  { key: "food", title: "餐饮配送", text: "提前订餐，场内配送，别等体力见底再找吃的。" },
+  { key: "map", title: "场馆导航", text: "按馆区、楼层和服务点安排顺路动线，少走冤枉路。" },
   { key: "live", title: "直播链接", text: "查看现场正在直播的 Coser 和主播，快速找到对应平台账号。" },
   { key: "queue", title: "排队预约", text: "热门摄影区和服务点提前锁定时段，避开现场硬排。" },
-  { key: "buddy", title: "搭子匹配", text: "快速找到同坑同好、临时互拍或顺路一起逛展的人。" },
+  { key: "buddy", title: "安全搭子", text: "快速找到安全可靠的同伴，降低一个人逛展的不安感。" },
   { key: "reminder", title: "智能提醒", text: "补妆、转场、返程这些关键节点提前提醒你。" },
-  { key: "travel", title: "交通出行", text: "散场前提前看拼车点、地铁口、返程建议和痛车接驳招募。" },
+  { key: "travel", title: "痛车出行", text: "支持痛车接驳、同IP拼车和 COS 友好返程路线。" },
   { key: "service", title: "化妆师补妆", text: "妆面花了能马上预约补妆，不耽误下一场拍摄。" },
   { key: "service", title: "毛娘修假发", text: "发包松动、碎发乱翘时，现场直接找人救场。" },
   { key: "service", title: "摄影预约分流", text: "摄影区太挤时，快速切到空档摄影师和替代点位。" }
@@ -88,6 +88,29 @@ const todayTips = [
   "热门服务点先做预约，不要到现场才开始排队。",
   "散场前 30 分钟就开始准备返程，门口通常最堵。",
   "如果想体验痛车接驳，建议提前查看车主招募和接驳路线。"
+];
+
+const upworkCards = [
+  {
+    title: "AI智能撮合",
+    tag: "6维匹配",
+    text: "不只推头部 COSER，而是按风格、地域、档期、潜力、性价比和公平轮换做推荐。"
+  },
+  {
+    title: "托管付款",
+    tag: "成交才收费",
+    text: "品牌商单支持分阶段托管，成交前钱在平台，COSER 和品牌两边都更放心。"
+  },
+  {
+    title: "保证金机制",
+    tag: "过滤假需求",
+    text: "发布需求先交保证金，成交后退还，取消扣减，优先过滤掉低质量或试探型需求。"
+  },
+  {
+    title: "三种需求来源",
+    tag: "平台化",
+    text: "品牌商单、漫展招募、COS委托统一进入平台，形成更稳定的需求池。"
+  }
 ];
 
 export function HomeSection({
@@ -133,12 +156,12 @@ export function HomeSection({
     <>
       <div className="campaign-banner">
         <div>
-          <strong>活动招募中：痛车司机接驳</strong>
-          <p className="muted">聚焦散场接驳、车主报名和乘客登记，让返程这件事更像漫展活动能力，而不是单纯打车页。</p>
+          <strong>双主线升级：漫展现场服务 + COSER商业平台</strong>
+          <p className="muted">这版首页开始对齐宣讲网页，把现场体验和 COSER 成交平台放进同一条产品叙事里。</p>
         </div>
         <div className="action-row">
-          <span className="pill accent">活动招募中</span>
-          <button className="btn primary" onClick={() => onNavigate("travel")}>查看招募</button>
+          <span className="pill accent">定位已升级</span>
+          <button className="btn primary" onClick={() => onNavigate("live")}>查看直播生态</button>
         </div>
       </div>
 
@@ -150,35 +173,35 @@ export function HomeSection({
           <div className="hero-foxfire hero-foxfire-b" />
           <div className="hero-flower hero-flower-a">✦</div>
           <div className="hero-flower hero-flower-b">✦</div>
-          <span className="hero-badge">山海异兽幻想</span>
+          <span className="hero-badge">漫展现场服务 + COSER商业平台</span>
           <div className="hero-chips">
-            <span className="chip">中式神秘气韵</span>
-            <span className="chip">手绘游戏KV感</span>
-            <span className="chip">异兽拟人灵感</span>
+            <span className="chip">AI撮合</span>
+            <span className="chip">托管交易</span>
+            <span className="chip">成交才收费</span>
           </div>
-          <h2>让这场漫展，<br />像你自己的山海异想主场</h2>
+          <h2>漫展有搭子，玩展不累。<br />让 COSER 的每一分热爱都值得。</h2>
           <p className="hero-copy">
             {currentUser
-              ? `${currentUser.name}，你现在在 ${currentUser.currentZone}。从补给、互拍、馆区路线到妆造救场，这里都能顺着当前这套国风二次元氛围一口气完成。`
-              : "从补给、互拍、馆区路线到妆造救场，这里都能顺着当前这套国风二次元氛围一口气完成。"}
+              ? `${currentUser.name}，你现在在 ${currentUser.currentZone}。前台帮你解决补给、导航、搭子、妆造和返程；后台再把 COSER 的商单撮合、托管交易和安全成交串起来。`
+              : "前台解决补给、导航、搭子、妆造和返程，后台再把 COSER 的商单撮合、托管交易和安全成交串起来。"}
           </p>
           <div className="action-row hero-cta">
-            <button className="btn primary" onClick={() => onNavigate("food")}>先点补给</button>
-            <button className="btn ghost" onClick={() => onNavigate("buddy")}>找同好搭子</button>
-            <button className="btn ghost" onClick={() => onNavigate("service")}>约妆造救场</button>
+            <button className="btn primary" onClick={() => onNavigate("food")}>先看现场服务</button>
+            <button className="btn ghost" onClick={() => onNavigate("buddy")}>进入安全搭子</button>
+            <button className="btn ghost" onClick={() => onNavigate("service")}>查看妆造服务</button>
           </div>
           <div className="hero-stats-strip">
             <div>
               <strong>{String(overview?.metrics?.merchants ?? 0)}</strong>
-              <span>补给商家</span>
+              <span>现场补给</span>
             </div>
             <div>
               <strong>{String(overview?.metrics?.buddies ?? 0)}</strong>
-              <span>搭子候选</span>
+              <span>安全搭子</span>
             </div>
             <div>
               <strong>{String(overview?.metrics?.services ?? 0)}</strong>
-              <span>救场服务</span>
+              <span>COS服务</span>
             </div>
           </div>
         </div>
@@ -188,12 +211,12 @@ export function HomeSection({
             <div className="poster-mist" />
             <div className="poster-ring poster-ring-a" />
             <div className="poster-ring poster-ring-b" />
-            <span className="poster-kicker">山海经角色KV</span>
-            <h3>把出片、补妆、找搭子<br />都收进同一幅手绘幻想里</h3>
-            <p>现在这张主视觉已经改成更贴近你新图的方向，整体更像中式美学二次元游戏KV。</p>
+            <span className="poster-kicker">COSER 的 Upwork</span>
+            <h3>AI撮合 + 托管交易<br />成交才收费</h3>
+            <p>品牌商单、漫展招募和 COS 委托统一进平台，先匹配，再托管，再成交。</p>
             <div className="poster-stats">
-              <StatsCard title="10" text="核心模块" />
-              <StatsCard title={currentUser?.creditScore ? String(currentUser.creditScore) : "99"} text="当前状态" />
+              <StatsCard title="3" text="需求来源" />
+              <StatsCard title="15%" text="平台抽佣" />
             </div>
           </div>
         </div>
@@ -201,7 +224,7 @@ export function HomeSection({
 
       <div className="section-layout">
         <div className="panel">
-          <SectionHead title="十大能力" desc="把你路演里定义的核心能力，同步成用户当天能直接用的入口。" />
+          <SectionHead title="九大核心模块" desc="把宣讲网页里的关键能力，同步成用户当天能直接用、能看懂的入口。" />
           <div className="grid three">
             {quickEntrances.map((item) => (
               <InfoCard key={item.title}>
@@ -221,6 +244,40 @@ export function HomeSection({
             {todayTips.map((item) => (
               <InfoCard key={item}>
                 <p>{item}</p>
+              </InfoCard>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="panel">
+        <SectionHead
+          title="COSER的Upwork"
+          desc="把 AI撮合、托管交易和成交收费模型提前放到首页，避免 Demo 和宣讲网页的商业叙事脱节。"
+          side={<span className="pill accent">成交才收费</span>}
+        />
+        <div className="grid two">
+          <div className="home-upwork-hero">
+            <strong>平台模式</strong>
+            <p className="muted">COSER商业平台的核心不是单纯展示人，而是把需求、撮合、托管和交付流程收进同一个平台。</p>
+            <div className="tag-row">
+              <span className="tag">品牌商单</span>
+              <span className="tag">漫展招募</span>
+              <span className="tag">COS委托</span>
+            </div>
+            <div className="action-row">
+              <button className="btn primary" onClick={() => onNavigate("buddy")}>先看撮合入口</button>
+              <button className="btn ghost" onClick={() => onNavigate("service")}>查看服务供给</button>
+            </div>
+          </div>
+          <div className="grid two">
+            {upworkCards.map((item) => (
+              <InfoCard key={item.title}>
+                <div className="row between start">
+                  <strong>{item.title}</strong>
+                  <span className="pill info">{item.tag}</span>
+                </div>
+                <p className="muted">{item.text}</p>
               </InfoCard>
             ))}
           </div>
