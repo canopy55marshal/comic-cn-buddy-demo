@@ -11,6 +11,7 @@ const liveTips = [
 const statusOptions = ["全部", "直播中", "即将开播"];
 const sortOptions = ["默认排序", "热度优先", "直播中优先"];
 const favoriteStorageKey = "comic-con-buddy-live-favorites";
+const reminderStorageKey = "comic-con-buddy-live-reminders";
 const platformIcons = {
   抖音: "🎵",
   B站: "📺",
@@ -78,10 +79,19 @@ export function LiveSection({ onNotify }) {
   const [status, setStatus] = useState("全部");
   const [zone, setZone] = useState("全部");
   const [sortMode, setSortMode] = useState("默认排序");
+  const [selectedLive, setSelectedLive] = useState(null);
   const [favorites, setFavorites] = useState(() => {
     if (typeof window === "undefined") return [];
     try {
       return JSON.parse(window.localStorage.getItem(favoriteStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [reminders, setReminders] = useState(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return JSON.parse(window.localStorage.getItem(reminderStorageKey) || "[]");
     } catch {
       return [];
     }
@@ -136,6 +146,11 @@ export function LiveSection({ onNotify }) {
     window.localStorage.setItem(favoriteStorageKey, JSON.stringify(favorites));
   }, [favorites]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(reminderStorageKey, JSON.stringify(reminders));
+  }, [reminders]);
+
   const liveNowCount = liveLinks.filter((item) => getStatusInfo(item).phase === "直播中").length;
   const upcomingCount = liveLinks.length - liveNowCount;
   const favoriteCount = favorites.length;
@@ -162,6 +177,27 @@ export function LiveSection({ onNotify }) {
     onNotify?.(`演示版占位：后续可跳转到 ${item.platform} 的账号 ${item.account}`);
   };
 
+  const toggleReminder = (item) => {
+    if (getStatusInfo(item).phase === "直播中") {
+      onNotify?.(`${item.name} 已经在直播中了，不需要额外提醒`);
+      return;
+    }
+
+    setReminders((prev) => {
+      const exists = prev.includes(item.id);
+      const next = exists ? prev.filter((id) => id !== item.id) : [...prev, item.id];
+      onNotify?.(exists ? `已取消 ${item.name} 的开播提醒` : `已为 ${item.name} 添加开播提醒`);
+      return next;
+    });
+  };
+
+  const summaryItems = [
+    { label: "当前平台", value: platform },
+    { label: "当前馆区", value: zone },
+    { label: "当前状态", value: status },
+    { label: "匹配结果", value: `${filteredLinks.length} 个账号` }
+  ];
+
   return (
     <div className="section-layout">
       <div className="panel">
@@ -183,6 +219,14 @@ export function LiveSection({ onNotify }) {
             <strong>{favoriteCount}</strong>
             <p className="muted">已收藏账号</p>
           </InfoCard>
+        </div>
+        <div className="summary-bar">
+          {summaryItems.map((item) => (
+            <div className="summary-chip" key={item.label}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+            </div>
+          ))}
         </div>
         {favoriteLinks.length > 0 && (
           <div style={{ marginBottom: 16 }}>
@@ -213,8 +257,12 @@ export function LiveSection({ onNotify }) {
                   </div>
                   <p className="muted">{item.liveTitle}</p>
                   <div className="action-row">
+                    <button className="btn ghost" onClick={() => setSelectedLive(item)}>查看详情</button>
                     <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
                     <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
+                    <button className="btn ghost" onClick={() => toggleReminder(item)} disabled={statusInfo.phase === "直播中" && !reminders.includes(item.id)}>
+                      {reminders.includes(item.id) ? "已提醒" : "开播提醒"}
+                    </button>
                   </div>
                 </InfoCard>
                 );
@@ -256,8 +304,12 @@ export function LiveSection({ onNotify }) {
               <p className="muted">{item.cosplay}</p>
               <p className="muted">当前直播：{item.liveTitle}</p>
               <div className="action-row">
+                <button className="btn ghost" onClick={() => setSelectedLive(item)}>查看详情</button>
                 <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
                 <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
+                <button className="btn ghost" onClick={() => toggleReminder(item)} disabled={statusInfo.phase === "直播中" && !reminders.includes(item.id)}>
+                  {reminders.includes(item.id) ? "已提醒" : "开播提醒"}
+                </button>
                 <button className="btn ghost" onClick={() => toggleFavorite(item.id, item.name)}>
                   {favorites.includes(item.id) ? "取消收藏" : "收藏账号"}
                 </button>
@@ -299,6 +351,53 @@ export function LiveSection({ onNotify }) {
           ))}
         </div>
       </div>
+
+      {selectedLive && (
+        <div className="overlay-backdrop" onClick={() => setSelectedLive(null)}>
+          <div className="detail-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="row between start">
+              <div>
+                <strong style={{ fontSize: 20 }}>{selectedLive.name}</strong>
+                <p className="muted" style={{ marginTop: 8 }}>
+                  <span className={`platform-badge ${getPlatformBadgeClass(selectedLive.platform)}`}>
+                    {platformIcons[selectedLive.platform]} {selectedLive.platform}
+                  </span>
+                  {" "}· {selectedLive.account}
+                </p>
+              </div>
+              <button className="btn ghost" onClick={() => setSelectedLive(null)}>关闭</button>
+            </div>
+            <div className="tag-row" style={{ marginTop: 12 }}>
+              <span className="tag">{selectedLive.zone}</span>
+              <span className="tag">{selectedLive.viewers}</span>
+              <span className={`pill ${getStatusInfo(selectedLive).phase === "直播中" ? "accent" : "info"}`}>
+                {getStatusInfo(selectedLive).label}
+              </span>
+            </div>
+            <div className="stack" style={{ marginTop: 16 }}>
+              <InfoCard>
+                <strong>当前内容</strong>
+                <p className="muted">{selectedLive.liveTitle}</p>
+              </InfoCard>
+              <InfoCard>
+                <strong>角色 / 风格</strong>
+                <p className="muted">{selectedLive.cosplay}</p>
+              </InfoCard>
+              <InfoCard>
+                <strong>推荐用途</strong>
+                <p className="muted">适合用来判断当前馆区热度、队伍长度、舞台活动氛围，以及是否值得临时转场去看。</p>
+              </InfoCard>
+            </div>
+            <div className="action-row" style={{ marginTop: 16 }}>
+              <button className="btn primary" onClick={() => jumpToLive(selectedLive)}>一键跳转</button>
+              <button className="btn ghost" onClick={() => copyAccount(selectedLive.account, selectedLive.platform)}>复制账号</button>
+              <button className="btn ghost" onClick={() => toggleReminder(selectedLive)}>
+                {reminders.includes(selectedLive.id) ? "已提醒" : "开播提醒"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
