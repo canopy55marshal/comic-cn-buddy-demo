@@ -865,11 +865,8 @@ button {
 
 .route-board {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  min-height: 260px;
-  padding: 12px;
+  min-height: 360px;
+  padding: 20px;
   border-radius: 18px;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
@@ -881,6 +878,7 @@ button {
 .route-node {
   position: relative;
   z-index: 2;
+  width: 180px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -947,24 +945,67 @@ button {
   box-shadow: 0 0 24px rgba(127,156,255,0.12);
 }
 
+.route-node.zone-a {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) skewY(-4deg) rotateX(12deg);
+}
+
+.route-node.zone-b {
+  position: absolute;
+  top: 134px;
+  left: 34px;
+}
+
+.route-node.zone-c {
+  position: absolute;
+  top: 134px;
+  right: 34px;
+}
+
+.route-node.zone-d {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%) skewY(-4deg) rotateX(12deg);
+}
+
 .route-line {
   position: absolute;
   z-index: 1;
   height: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(121,215,234,0.14), rgba(170,145,255,0.46), rgba(121,215,234,0.14));
+  opacity: 0.18;
+  background: linear-gradient(90deg, rgba(121,215,234,0.08), rgba(170,145,255,0.16), rgba(121,215,234,0.08));
 }
 
-.route-line-a {
-  top: 33%;
-  left: 20%;
-  width: 60%;
+.route-line.active {
+  opacity: 1;
+  background: linear-gradient(90deg, rgba(121,215,234,0.3), rgba(170,145,255,0.76), rgba(121,215,234,0.3));
 }
 
-.route-line-b {
-  top: 66%;
-  left: 20%;
-  width: 60%;
+.route-line-to-b {
+  top: 117px;
+  left: 188px;
+  width: 120px;
+  transform: rotate(148deg);
+  transform-origin: left center;
+}
+
+.route-line-to-c {
+  top: 117px;
+  right: 188px;
+  width: 120px;
+  transform: rotate(32deg);
+  transform-origin: right center;
+}
+
+.route-line-to-d {
+  top: 222px;
+  left: 50%;
+  width: 108px;
+  transform: translateX(-50%) rotate(90deg);
 }
 
 .route-arrow {
@@ -973,17 +1014,30 @@ button {
   color: #d8e5ff;
   font-size: 18px;
   text-shadow: 0 0 12px rgba(170,145,255,0.4);
+  opacity: 0;
   animation: routeArrowMove 2s ease-in-out infinite;
 }
 
-.route-arrow-a {
-  top: calc(33% - 12px);
-  left: 46%;
+.route-arrow.active {
+  opacity: 1;
 }
 
-.route-arrow-b {
-  top: calc(66% - 12px);
-  left: 46%;
+.route-arrow-to-b {
+  top: 140px;
+  left: 230px;
+  transform: rotate(148deg);
+}
+
+.route-arrow-to-c {
+  top: 140px;
+  right: 230px;
+  transform: rotate(32deg);
+}
+
+.route-arrow-to-d {
+  top: 252px;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
   animation-delay: 0.8s;
 }
 
@@ -999,13 +1053,14 @@ button {
 }
 
 .route-pulse-a {
-  top: calc(33% - 4px);
-  left: 22%;
+  top: 156px;
+  left: 270px;
 }
 
 .route-pulse-b {
-  top: calc(66% - 4px);
-  right: 22%;
+  top: 226px;
+  left: 50%;
+  transform: translateX(-50%);
   animation-delay: 1s;
 }
 
@@ -1024,15 +1079,76 @@ button {
   animation: routeRing 2.6s ease-out infinite;
 }
 
-.route-target-ring-a {
-  top: 16%;
-  right: 12%;
+.route-target-ring.ring-a {
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.route-target-ring-b {
-  bottom: 10%;
-  right: 12%;
-  animation-delay: 1.2s;
+.route-target-ring.ring-b {
+  top: 146px;
+  left: 88px;
+}
+
+.route-target-ring.ring-c {
+  top: 146px;
+  right: 88px;
+}
+
+.route-target-ring.ring-d {
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.map-marker {
+  position: absolute;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(183,207,255,0.16);
+  background: rgba(17,24,56,0.88);
+  box-shadow: 0 10px 22px rgba(6, 10, 28, 0.34);
+}
+
+.map-marker span {
+  font-size: 18px;
+}
+
+.map-marker.active {
+  box-shadow: 0 0 0 4px rgba(127,156,255,0.12), 0 10px 22px rgba(6, 10, 28, 0.34);
+  transform: scale(1.06);
+}
+
+.map-marker.live {
+  border-color: rgba(120, 186, 255, 0.26);
+}
+
+.map-marker.service {
+  border-color: rgba(255, 191, 114, 0.28);
+}
+
+.map-marker.queue {
+  border-color: rgba(255, 140, 170, 0.28);
+}
+
+.map-marker.marker-live {
+  top: 112px;
+  right: 126px;
+}
+
+.map-marker.marker-service {
+  top: 228px;
+  left: 96px;
+}
+
+.map-marker.marker-queue {
+  bottom: 56px;
+  right: 126px;
 }
 
 @keyframes routePulse {
@@ -1113,7 +1229,89 @@ button {
   }
 
   .route-board {
-    grid-template-columns: 1fr;
+    min-height: 540px;
+  }
+
+  .route-node.zone-a {
+    top: 16px;
+  }
+
+  .route-node.zone-b {
+    top: 146px;
+    left: 18px;
+  }
+
+  .route-node.zone-c {
+    top: 286px;
+    right: 18px;
+  }
+
+  .route-node.zone-d {
+    bottom: 18px;
+  }
+
+  .route-line-to-b {
+    top: 132px;
+    left: 190px;
+    width: 94px;
+    transform: rotate(126deg);
+  }
+
+  .route-line-to-c {
+    top: 272px;
+    left: 208px;
+    width: 118px;
+    transform: rotate(52deg);
+  }
+
+  .route-line-to-d {
+    top: 390px;
+    left: 50%;
+    width: 86px;
+  }
+
+  .route-arrow-to-b {
+    top: 160px;
+    left: 216px;
+  }
+
+  .route-arrow-to-c {
+    top: 300px;
+    left: 230px;
+    right: auto;
+  }
+
+  .route-arrow-to-d {
+    top: 420px;
+  }
+
+  .route-pulse-a {
+    top: 206px;
+    left: 230px;
+  }
+
+  .route-pulse-b {
+    top: 400px;
+  }
+
+  .route-target-ring.ring-c {
+    top: 298px;
+    right: 64px;
+  }
+
+  .map-marker.marker-live {
+    top: 256px;
+    right: 64px;
+  }
+
+  .map-marker.marker-service {
+    top: 386px;
+    left: 52px;
+  }
+
+  .map-marker.marker-queue {
+    bottom: 72px;
+    right: 54px;
   }
 
   .home-live-summary {

@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { FilterBar, InfoCard, SectionHead } from "../ui";
 
 const queueCards = [
@@ -36,6 +37,59 @@ const pointLegend = [
   { key: "queue", label: "排队点", icon: "⏳" }
 ];
 
+const zonePositions = {
+  "A馆主舞台": "zone-a",
+  "B馆摄影区": "zone-b",
+  "C馆同人摊位": "zone-c",
+  "北门服务区": "zone-d"
+};
+
+function getRecommendedQueueCard(zoneName) {
+  if (zoneName.includes("摄影")) return queueCards[0];
+  if (zoneName.includes("服务")) return queueCards[1];
+  return queueCards[0];
+}
+
+function getMarkerList({ activeZone, currentZone, liveMapContext }) {
+  const markers = [];
+
+  if (liveMapContext) {
+    markers.push({
+      id: "live-marker",
+      kind: "live",
+      icon: "📡",
+      title: `${liveMapContext.name} 开播点`,
+      text: `${liveMapContext.name} 当前在 ${liveMapContext.zone} 附近活动，可作为你的目标落点。`,
+      positionClass: "marker-live"
+    });
+  }
+
+  if (currentZone.spots?.[0]) {
+    markers.push({
+      id: "service-marker",
+      kind: "service",
+      icon: "🧰",
+      title: currentZone.spots[0].title,
+      text: currentZone.spots[0].text,
+      positionClass: "marker-service"
+    });
+  }
+
+  const queueCard = getRecommendedQueueCard(activeZone);
+  if (queueCard) {
+    markers.push({
+      id: "queue-marker",
+      kind: "queue",
+      icon: "⏳",
+      title: queueCard.title,
+      text: queueCard.text,
+      positionClass: "marker-queue"
+    });
+  }
+
+  return markers;
+}
+
 function getSpotIcon(title) {
   if (title.includes("摄影") || title.includes("主舞台")) return "📡";
   if (title.includes("补妆") || title.includes("修复") || title.includes("补给")) return "🧰";
@@ -55,6 +109,15 @@ export function MapSection({
 }) {
   const routePath = routeMap[activeZone] || [activeZone];
   const targetZone = liveMapContext?.targetZone || activeZone;
+  const markers = useMemo(
+    () => getMarkerList({ activeZone, currentZone, liveMapContext }),
+    [activeZone, currentZone, liveMapContext]
+  );
+  const [selectedMarker, setSelectedMarker] = useState(null);
+
+  useEffect(() => {
+    setSelectedMarker(markers[0] || null);
+  }, [markers]);
 
   return (
     <div className="section-layout">
@@ -93,7 +156,10 @@ export function MapSection({
               const current = zone === currentUserZone;
               const inPath = routePath.includes(zone);
               return (
-                <div key={zone} className={`route-node ${active ? "target" : ""} ${current ? "current" : ""} ${inPath ? "path" : ""}`}>
+                <div
+                  key={zone}
+                  className={`route-node ${zonePositions[zone]} ${active ? "target" : ""} ${current ? "current" : ""} ${inPath ? "path" : ""}`}
+                >
                   <b className="route-node-top" />
                   <b className="route-node-side" />
                   <em className="route-node-icon">{zoneGlyphs[zone]}</em>
@@ -103,16 +169,37 @@ export function MapSection({
                 </div>
               );
             })}
-            <div className="route-line route-line-a" />
-            <div className="route-line route-line-b" />
-            <div className="route-arrow route-arrow-a">➜</div>
-            <div className="route-arrow route-arrow-b">➜</div>
+            <div className={`route-line route-line-to-b ${targetZone === "B馆摄影区" ? "active" : ""}`} />
+            <div className={`route-line route-line-to-c ${targetZone === "C馆同人摊位" ? "active" : ""}`} />
+            <div className={`route-line route-line-to-d ${targetZone === "北门服务区" ? "active" : ""}`} />
+            <div className={`route-arrow route-arrow-to-b ${targetZone === "B馆摄影区" ? "active" : ""}`}>➜</div>
+            <div className={`route-arrow route-arrow-to-c ${targetZone === "C馆同人摊位" ? "active" : ""}`}>➜</div>
+            <div className={`route-arrow route-arrow-to-d ${targetZone === "北门服务区" ? "active" : ""}`}>➜</div>
             <div className="route-pulse route-pulse-a" />
             <div className="route-pulse route-pulse-b" />
-            <div className="route-target-ring route-target-ring-a" />
-            <div className="route-target-ring route-target-ring-b" />
+            <div className={`route-target-ring ${targetZone === "B馆摄影区" ? "ring-b" : targetZone === "C馆同人摊位" ? "ring-c" : targetZone === "北门服务区" ? "ring-d" : "ring-a"}`} />
+            {markers.map((marker) => (
+              <button
+                key={marker.id}
+                className={`map-marker ${marker.kind} ${marker.positionClass} ${selectedMarker?.id === marker.id ? "active" : ""}`}
+                onClick={() => setSelectedMarker(marker)}
+              >
+                <span>{marker.icon}</span>
+              </button>
+            ))}
           </div>
           <p className="muted route-copy">像游戏自动寻路一样：先锁定目标馆区，再沿高亮路径移动。后续可以继续升级成 2.5D 或真 3D 版本。</p>
+          {selectedMarker && (
+            <InfoCard>
+              <div className="row between start">
+                <strong>{selectedMarker.icon} {selectedMarker.title}</strong>
+                <span className="pill info">
+                  {selectedMarker.kind === "live" ? "主播点" : selectedMarker.kind === "service" ? "服务点" : "排队点"}
+                </span>
+              </div>
+              <p className="muted">{selectedMarker.text}</p>
+            </InfoCard>
+          )}
         </div>
         <div className="mini-grid">
           {zoneOptions.map((zone) => (
