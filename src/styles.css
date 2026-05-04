@@ -735,6 +735,16 @@ button {
   box-shadow: 0 24px 64px rgba(5, 10, 28, 0.48);
 }
 
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(183, 207, 255, 0.1);
+}
+
 .btn {
   padding: 10px 15px;
   border-radius: 13px;
@@ -818,6 +828,11 @@ button {
   .grid.two,
   .grid.three {
     grid-template-columns: 1fr;
+  }
+
+  .pagination-bar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

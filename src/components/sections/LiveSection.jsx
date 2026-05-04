@@ -11,7 +11,6 @@ const liveTips = [
 const statusOptions = ["全部", "直播中", "即将开播"];
 const sortOptions = ["默认排序", "热度优先", "直播中优先"];
 const favoriteStorageKey = "comic-con-buddy-live-favorites";
-const reminderStorageKey = "comic-con-buddy-live-reminders";
 const platformIcons = {
   抖音: "🎵",
   B站: "📺",
@@ -74,24 +73,17 @@ function getStatusInfo(item) {
   };
 }
 
-export function LiveSection({ onNotify }) {
+export function LiveSection({ onNotify, reminderIds = [], onToggleReminder }) {
   const [platform, setPlatform] = useState("全部");
   const [status, setStatus] = useState("全部");
   const [zone, setZone] = useState("全部");
   const [sortMode, setSortMode] = useState("默认排序");
+  const [page, setPage] = useState(1);
   const [selectedLive, setSelectedLive] = useState(null);
   const [favorites, setFavorites] = useState(() => {
     if (typeof window === "undefined") return [];
     try {
       return JSON.parse(window.localStorage.getItem(favoriteStorageKey) || "[]");
-    } catch {
-      return [];
-    }
-  });
-  const [reminders, setReminders] = useState(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      return JSON.parse(window.localStorage.getItem(reminderStorageKey) || "[]");
     } catch {
       return [];
     }
@@ -140,6 +132,12 @@ export function LiveSection({ onNotify }) {
   );
 
   const previewTopLinks = useMemo(() => filteredLinks.slice(0, 3), [filteredLinks]);
+  const pageSize = 4;
+  const totalPages = Math.max(1, Math.ceil(filteredLinks.length / pageSize));
+  const pagedLinks = useMemo(
+    () => filteredLinks.slice((page - 1) * pageSize, page * pageSize),
+    [filteredLinks, page]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -147,9 +145,8 @@ export function LiveSection({ onNotify }) {
   }, [favorites]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(reminderStorageKey, JSON.stringify(reminders));
-  }, [reminders]);
+    setPage(1);
+  }, [platform, status, zone, sortMode]);
 
   const liveNowCount = liveLinks.filter((item) => getStatusInfo(item).phase === "直播中").length;
   const upcomingCount = liveLinks.length - liveNowCount;
@@ -175,20 +172,6 @@ export function LiveSection({ onNotify }) {
 
   const jumpToLive = (item) => {
     onNotify?.(`演示版占位：后续可跳转到 ${item.platform} 的账号 ${item.account}`);
-  };
-
-  const toggleReminder = (item) => {
-    if (getStatusInfo(item).phase === "直播中") {
-      onNotify?.(`${item.name} 已经在直播中了，不需要额外提醒`);
-      return;
-    }
-
-    setReminders((prev) => {
-      const exists = prev.includes(item.id);
-      const next = exists ? prev.filter((id) => id !== item.id) : [...prev, item.id];
-      onNotify?.(exists ? `已取消 ${item.name} 的开播提醒` : `已为 ${item.name} 添加开播提醒`);
-      return next;
-    });
   };
 
   const summaryItems = [
@@ -260,8 +243,8 @@ export function LiveSection({ onNotify }) {
                     <button className="btn ghost" onClick={() => setSelectedLive(item)}>查看详情</button>
                     <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
                     <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
-                    <button className="btn ghost" onClick={() => toggleReminder(item)} disabled={statusInfo.phase === "直播中" && !reminders.includes(item.id)}>
-                      {reminders.includes(item.id) ? "已提醒" : "开播提醒"}
+                    <button className="btn ghost" onClick={() => onToggleReminder?.(item)} disabled={statusInfo.phase === "直播中" && !reminderIds.includes(item.id)}>
+                      {reminderIds.includes(item.id) ? "已提醒" : "开播提醒"}
                     </button>
                   </div>
                 </InfoCard>
@@ -281,7 +264,7 @@ export function LiveSection({ onNotify }) {
           <FilterBar items={sortOptions} value={sortMode} onChange={setSortMode} />
         </div>
         <div className="stack" style={{ marginTop: 16 }}>
-          {filteredLinks.map((item) => {
+          {pagedLinks.map((item) => {
             const statusInfo = getStatusInfo(item);
             return (
             <InfoCard key={item.id}>
@@ -307,8 +290,8 @@ export function LiveSection({ onNotify }) {
                 <button className="btn ghost" onClick={() => setSelectedLive(item)}>查看详情</button>
                 <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
                 <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
-                <button className="btn ghost" onClick={() => toggleReminder(item)} disabled={statusInfo.phase === "直播中" && !reminders.includes(item.id)}>
-                  {reminders.includes(item.id) ? "已提醒" : "开播提醒"}
+                <button className="btn ghost" onClick={() => onToggleReminder?.(item)} disabled={statusInfo.phase === "直播中" && !reminderIds.includes(item.id)}>
+                  {reminderIds.includes(item.id) ? "已提醒" : "开播提醒"}
                 </button>
                 <button className="btn ghost" onClick={() => toggleFavorite(item.id, item.name)}>
                   {favorites.includes(item.id) ? "取消收藏" : "收藏账号"}
@@ -323,6 +306,15 @@ export function LiveSection({ onNotify }) {
             </InfoCard>
           )}
         </div>
+        {filteredLinks.length > 0 && (
+          <div className="pagination-bar">
+            <span className="muted">第 {page} / {totalPages} 页，共 {filteredLinks.length} 位主播</span>
+            <div className="action-row">
+              <button className="btn ghost" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1}>上一页</button>
+              <button className="btn ghost" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={page === totalPages}>下一页</button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="panel">
@@ -387,12 +379,24 @@ export function LiveSection({ onNotify }) {
                 <strong>推荐用途</strong>
                 <p className="muted">适合用来判断当前馆区热度、队伍长度、舞台活动氛围，以及是否值得临时转场去看。</p>
               </InfoCard>
+              <InfoCard>
+                <strong>馆区热度</strong>
+                <p className="muted">{selectedLive.heat}</p>
+              </InfoCard>
+              <InfoCard>
+                <strong>排队提示</strong>
+                <p className="muted">{selectedLive.queueTip}</p>
+              </InfoCard>
+              <InfoCard>
+                <strong>适合谁看</strong>
+                <p className="muted">{selectedLive.bestFor}</p>
+              </InfoCard>
             </div>
             <div className="action-row" style={{ marginTop: 16 }}>
               <button className="btn primary" onClick={() => jumpToLive(selectedLive)}>一键跳转</button>
               <button className="btn ghost" onClick={() => copyAccount(selectedLive.account, selectedLive.platform)}>复制账号</button>
-              <button className="btn ghost" onClick={() => toggleReminder(selectedLive)}>
-                {reminders.includes(selectedLive.id) ? "已提醒" : "开播提醒"}
+              <button className="btn ghost" onClick={() => onToggleReminder?.(selectedLive)}>
+                {reminderIds.includes(selectedLive.id) ? "已提醒" : "开播提醒"}
               </button>
             </div>
           </div>

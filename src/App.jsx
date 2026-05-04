@@ -9,8 +9,10 @@ import { QueueSection } from "./components/sections/QueueSection";
 import { ReminderSection } from "./components/sections/ReminderSection";
 import { ServiceSection } from "./components/sections/ServiceSection";
 import { TravelSection } from "./components/sections/TravelSection";
-import { navItems } from "./data/mockData";
+import { liveLinks, navItems } from "./data/mockData";
 import { api } from "./services/api";
+
+const liveReminderStorageKey = "comic-con-buddy-live-reminders";
 
 function App() {
   const storage = typeof window === "undefined" ? null : window.localStorage;
@@ -37,6 +39,14 @@ function App() {
   const [queueOptions, setQueueOptions] = useState([]);
   const [reminderOptions, setReminderOptions] = useState([]);
   const [travelOptions, setTravelOptions] = useState([]);
+  const [liveReminderIds, setLiveReminderIds] = useState(() => {
+    if (!storage) return [];
+    try {
+      return JSON.parse(storage.getItem(liveReminderStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  });
   const [itashaCampaign, setItashaCampaign] = useState(() => {
     if (!storage) {
       return {
@@ -111,6 +121,27 @@ function App() {
     if (!storage) return;
     storage.setItem("comic-con-buddy-itasha-campaign", JSON.stringify(itashaCampaign));
   }, [itashaCampaign, storage]);
+
+  useEffect(() => {
+    if (!storage) return;
+    storage.setItem(liveReminderStorageKey, JSON.stringify(liveReminderIds));
+  }, [liveReminderIds, storage]);
+
+  const liveReminderItems = useMemo(
+    () => liveLinks
+      .filter((item) => liveReminderIds.includes(item.id))
+      .map((item) => ({
+        id: `live-${item.id}`,
+        sourceId: item.id,
+        title: `${item.name} 开播提醒`,
+        time: item.startsAt || "直播中",
+        rawTime: item.startsAt || "99:99",
+        tag: "直播",
+        desc: `${item.platform} · ${item.zone} · ${item.liveTitle}`,
+        enabled: true
+      })),
+    [liveReminderIds]
+  );
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -302,6 +333,20 @@ function App() {
       .catch((error) => notify(`设置返程方案失败：${error.message}`));
   };
 
+  const handleToggleLiveReminder = (item) => {
+    if (!item.startsAt) {
+      notify(`${item.name} 已经在直播中了，不需要额外提醒`);
+      return;
+    }
+
+    setLiveReminderIds((prev) => {
+      const exists = prev.includes(item.id);
+      const next = exists ? prev.filter((id) => id !== item.id) : [...prev, item.id];
+      notify(exists ? `已取消 ${item.name} 的开播提醒` : `已为 ${item.name} 添加开播提醒`);
+      return next;
+    });
+  };
+
   const handleJoinItashaDriver = () => {
     if (itashaCampaign.role === "driver") {
       notify("你已经报名过痛车车主招募");
@@ -396,12 +441,20 @@ function App() {
           />
         );
       case "live":
-        return <LiveSection onNotify={notify} />;
+        return (
+          <LiveSection
+            onNotify={notify}
+            reminderIds={liveReminderIds}
+            onToggleReminder={handleToggleLiveReminder}
+          />
+        );
       case "reminder":
         return (
           <ReminderSection
             reminderOptions={reminderOptions}
+            liveReminderItems={liveReminderItems}
             onToggle={handleToggleReminder}
+            onToggleLiveReminder={handleToggleLiveReminder}
           />
         );
       case "travel":

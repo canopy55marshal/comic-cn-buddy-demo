@@ -116,7 +116,10 @@ export const liveLinks = [
     zone: "B馆摄影区",
     time: "直播中",
     viewers: "1.2w",
-    startsAt: null
+    startsAt: null,
+    heat: "高热区",
+    queueTip: "主摄影棚排队约 25 分钟，建议先看侧馆空景区。",
+    bestFor: "适合想看摄影区实时拥堵和出片节奏的人。"
   },
   {
     id: 2,
@@ -128,7 +131,10 @@ export const liveLinks = [
     zone: "C馆同人摊位",
     time: "直播中",
     viewers: "6.8k",
-    startsAt: null
+    startsAt: null,
+    heat: "持续升温",
+    queueTip: "热门摊位目前排队 12 到 18 分钟，适合错峰插空逛。",
+    bestFor: "适合判断摊位热度和吃谷路线。"
   },
   {
     id: 3,
@@ -140,7 +146,10 @@ export const liveLinks = [
     zone: "B馆摄影区",
     time: "直播中",
     viewers: "8.5k",
-    startsAt: null
+    startsAt: null,
+    heat: "高热区",
+    queueTip: "空景机位等待约 8 分钟，当前比主棚更适合临时转场。",
+    bestFor: "适合准备互拍和临时补位的用户。"
   },
   {
     id: 4,
@@ -152,7 +161,10 @@ export const liveLinks = [
     zone: "北门服务区",
     time: "19:00 开播",
     viewers: "预约 2.1k",
-    startsAt: "19:00"
+    startsAt: "19:00",
+    heat: "中热区",
+    queueTip: "补妆位排队约 6 分钟，开播前适合先做妆面整理。",
+    bestFor: "适合妆造党和准备返场拍摄的人。"
   },
   {
     id: 5,
@@ -164,7 +176,10 @@ export const liveLinks = [
     zone: "A馆主舞台",
     time: "直播中",
     viewers: "9.3k",
-    startsAt: null
+    startsAt: null,
+    heat: "爆满",
+    queueTip: "舞台前排候场较满，建议从侧通道绕行。",
+    bestFor: "适合看主舞台热度和应援节奏。"
   },
   {
     id: 6,
@@ -176,7 +191,100 @@ export const liveLinks = [
     zone: "C馆同人摊位",
     time: "20:00 开播",
     viewers: "预约 1.6k",
-    startsAt: "20:00"
+    startsAt: "20:00",
+    heat: "持续升温",
+    queueTip: "热门摊位队列在拉长，建议先锁定目标摊位再进场。",
+    bestFor: "适合吃谷党和想看实时摊位状态的人。"
+  },
+  {
+    id: 7,
+    name: "洛七",
+    cosplay: "舞台返场速报",
+    platform: "抖音",
+    account: "@luoqi_stage",
+    liveTitle: "A馆主舞台返场排队实况",
+    zone: "A馆主舞台",
+    time: "19:30 开播",
+    viewers: "预约 3.2k",
+    startsAt: "19:30",
+    heat: "爆满",
+    queueTip: "返场队列正在形成，建议提前 20 分钟去侧排队口。",
+    bestFor: "适合准备冲舞台活动和签售的人。"
+  },
+  {
+    id: 8,
+    name: "白露",
+    cosplay: "妆造修复实时播报",
+    platform: "小红书",
+    account: "白露今天补妆了吗",
+    liveTitle: "北门服务区补妆位实时状态",
+    zone: "北门服务区",
+    time: "直播中",
+    viewers: "4.4k",
+    startsAt: null,
+    heat: "平稳",
+    queueTip: "补妆区等待 5 到 8 分钟，适合中途补救。",
+    bestFor: "适合妆面修复和服务区避堵参考。"
+  },
+  {
+    id: 9,
+    name: "初空",
+    cosplay: "场外返程观察",
+    platform: "快手",
+    account: "初空返程频道",
+    liveTitle: "东侧地铁口和打车点实时情况",
+    zone: "东侧地铁口",
+    time: "直播中",
+    viewers: "5.1k",
+    startsAt: null,
+    heat: "快速升温",
+    queueTip: "地铁口排队加长中，建议提前决定拼车还是地铁。",
+    bestFor: "适合返程前做交通决策。"
+  },
+  {
+    id: 10,
+    name: "南枝",
+    cosplay: "谷店扫街直播",
+    platform: "B站",
+    account: "南枝吃谷中",
+    liveTitle: "C馆谷店补货和排队状态",
+    zone: "C馆同人摊位",
+    time: "直播中",
+    viewers: "7.2k",
+    startsAt: null,
+    heat: "高热区",
+    queueTip: "头部谷店排队约 15 分钟，补货节奏快。",
+    bestFor: "适合想追补货和高热摊位的人。"
+  },
+  {
+    id: 11,
+    name: "青禾",
+    cosplay: "摄影区候场视角",
+    platform: "抖音",
+    account: "@qinghe_photo",
+    liveTitle: "摄影区候场 + 空景位切换",
+    zone: "B馆摄影区",
+    time: "18:50 开播",
+    viewers: "预约 2.8k",
+    startsAt: "18:50",
+    heat: "高热区",
+    queueTip: "主摄影位仍然偏挤，建议优先看空景替代机位。",
+    bestFor: "适合准备拍正片和临时抢档的人。"
+  },
+  {
+    id: 12,
+    name: "弥音",
+    cosplay: "场馆巡游记录",
+    platform: "小红书",
+    account: "弥音巡馆中",
+    liveTitle: "A馆到C馆巡游热度速看",
+    zone: "连廊区域",
+    time: "直播中",
+    viewers: "3.9k",
+    startsAt: null,
+    heat: "流动高峰",
+    queueTip: "连廊人流明显增加，跨馆建议预留更多步行时间。",
+    bestFor: "适合看跨馆路线和实时人流。"
   }
 ];
 
