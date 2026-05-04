@@ -92,7 +92,7 @@ function getWorthGoing(item) {
   return "更适合当作信息流参考，不一定需要立刻转场过去。";
 }
 
-export function LiveSection({ onNotify, onNavigate, reminderIds = [], onToggleReminder }) {
+export function LiveSection({ onNotify, onNavigate, reminderIds = [], itineraryIds = [], onToggleReminder, onToggleItinerary }) {
   const [platform, setPlatform] = useState("全部");
   const [status, setStatus] = useState("全部");
   const [zone, setZone] = useState("全部");
@@ -202,6 +202,9 @@ export function LiveSection({ onNotify, onNavigate, reminderIds = [], onToggleRe
     if (target === "travel") {
       onNotify?.(`已带你去交通出行，可继续判断去 ${item.zone} 是否值得顺路安排`);
     }
+    if (target === "queue") {
+      onNotify?.(`已带你去排队预约，可结合 ${item.zone} 的队列情况判断现在去是否来得及`);
+    }
   };
 
   const summaryItems = [
@@ -273,6 +276,9 @@ export function LiveSection({ onNotify, onNavigate, reminderIds = [], onToggleRe
                     <button className="btn ghost" onClick={() => setSelectedLive(item)}>查看详情</button>
                     <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
                     <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
+                    <button className="btn ghost" onClick={() => onToggleItinerary?.(item)}>
+                      {itineraryIds.includes(item.id) ? "已在行程" : "加入行程"}
+                    </button>
                     <button className="btn ghost" onClick={() => onToggleReminder?.(item)} disabled={statusInfo.phase === "直播中" && !reminderIds.includes(item.id)}>
                       {reminderIds.includes(item.id) ? "已提醒" : "开播提醒"}
                     </button>
@@ -320,6 +326,9 @@ export function LiveSection({ onNotify, onNavigate, reminderIds = [], onToggleRe
                 <button className="btn ghost" onClick={() => setSelectedLive(item)}>查看详情</button>
                 <button className="btn primary" onClick={() => jumpToLive(item)}>一键跳转</button>
                 <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
+                <button className="btn ghost" onClick={() => onToggleItinerary?.(item)}>
+                  {itineraryIds.includes(item.id) ? "已在行程" : "加入行程"}
+                </button>
                 <button className="btn ghost" onClick={() => onToggleReminder?.(item)} disabled={statusInfo.phase === "直播中" && !reminderIds.includes(item.id)}>
                   {reminderIds.includes(item.id) ? "已提醒" : "开播提醒"}
                 </button>
@@ -443,6 +452,10 @@ export function LiveSection({ onNotify, onNavigate, reminderIds = [], onToggleRe
               <button className="btn primary" onClick={() => jumpToLive(selectedLive)}>一键跳转</button>
               <button className="btn ghost" onClick={() => navigateToSection("map", selectedLive)}>去场馆地图</button>
               <button className="btn ghost" onClick={() => navigateToSection("travel", selectedLive)}>去交通出行</button>
+              <button className="btn ghost" onClick={() => navigateToSection("queue", selectedLive)}>去排队预约</button>
+              <button className="btn ghost" onClick={() => onToggleItinerary?.(selectedLive)}>
+                {itineraryIds.includes(selectedLive.id) ? "已在行程" : "加入行程"}
+              </button>
               <button className="btn ghost" onClick={() => copyAccount(selectedLive.account, selectedLive.platform)}>复制账号</button>
               <button className="btn ghost" onClick={() => onToggleReminder?.(selectedLive)}>
                 {reminderIds.includes(selectedLive.id) ? "已提醒" : "开播提醒"}

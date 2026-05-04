@@ -13,6 +13,7 @@ import { liveLinks, navItems } from "./data/mockData";
 import { api } from "./services/api";
 
 const liveReminderStorageKey = "comic-con-buddy-live-reminders";
+const liveItineraryStorageKey = "comic-con-buddy-live-itinerary";
 
 function App() {
   const storage = typeof window === "undefined" ? null : window.localStorage;
@@ -43,6 +44,14 @@ function App() {
     if (!storage) return [];
     try {
       return JSON.parse(storage.getItem(liveReminderStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [liveItineraryIds, setLiveItineraryIds] = useState(() => {
+    if (!storage) return [];
+    try {
+      return JSON.parse(storage.getItem(liveItineraryStorageKey) || "[]");
     } catch {
       return [];
     }
@@ -127,6 +136,11 @@ function App() {
     storage.setItem(liveReminderStorageKey, JSON.stringify(liveReminderIds));
   }, [liveReminderIds, storage]);
 
+  useEffect(() => {
+    if (!storage) return;
+    storage.setItem(liveItineraryStorageKey, JSON.stringify(liveItineraryIds));
+  }, [liveItineraryIds, storage]);
+
   const liveReminderItems = useMemo(
     () => liveLinks
       .filter((item) => liveReminderIds.includes(item.id))
@@ -141,6 +155,20 @@ function App() {
         enabled: true
       })),
     [liveReminderIds]
+  );
+
+  const liveItineraryItems = useMemo(
+    () => liveLinks
+      .filter((item) => liveItineraryIds.includes(item.id))
+      .map((item) => ({
+        id: `itinerary-${item.id}`,
+        sourceId: item.id,
+        title: `${item.name} · ${item.liveTitle}`,
+        zone: item.zone,
+        time: item.startsAt || "直播中",
+        platform: item.platform
+      })),
+    [liveItineraryIds]
   );
 
   useEffect(() => {
@@ -347,6 +375,15 @@ function App() {
     });
   };
 
+  const handleToggleLiveItinerary = (item) => {
+    setLiveItineraryIds((prev) => {
+      const exists = prev.includes(item.id);
+      const next = exists ? prev.filter((id) => id !== item.id) : [...prev, item.id];
+      notify(exists ? `已将 ${item.name} 移出行程` : `已将 ${item.name} 加入行程`);
+      return next;
+    });
+  };
+
   const handleJoinItashaDriver = () => {
     if (itashaCampaign.role === "driver") {
       notify("你已经报名过痛车车主招募");
@@ -446,7 +483,9 @@ function App() {
             onNotify={notify}
             onNavigate={setSection}
             reminderIds={liveReminderIds}
+            itineraryIds={liveItineraryIds}
             onToggleReminder={handleToggleLiveReminder}
+            onToggleItinerary={handleToggleLiveItinerary}
           />
         );
       case "reminder":
@@ -470,7 +509,14 @@ function App() {
         );
       case "home":
       default:
-        return <HomeSection onNavigate={setSection} currentUser={currentUser} overview={overview} />;
+        return (
+          <HomeSection
+            onNavigate={setSection}
+            currentUser={currentUser}
+            overview={overview}
+            liveItineraryItems={liveItineraryItems}
+          />
+        );
     }
   };
 

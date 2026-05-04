@@ -69,7 +69,7 @@ const todayTips = [
   "如果想体验痛车接驳，建议提前查看车主招募和接驳路线。"
 ];
 
-export function HomeSection({ onNavigate, currentUser, overview }) {
+export function HomeSection({ onNavigate, currentUser, overview, liveItineraryItems = [] }) {
   const favoriteIds = (() => {
     if (typeof window === "undefined") return [];
     try {
@@ -210,12 +210,26 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
               <strong>直播提醒摘要</strong>
               <p className="muted">
                 当前已关注 {liveReminderIds.length} 个开播提醒
-                {nextLiveReminder ? `，最近的是 ${nextLiveReminder.name} 的 ${getStatusInfo(nextLiveReminder).label}` : "。"}
+                {nextLiveReminder ? `，最近提醒倒计时：${nextLiveReminder.name} ${getStatusInfo(nextLiveReminder).label}` : "。"}
               </p>
             </div>
             <div className="action-row">
               <button className="btn primary" onClick={() => onNavigate("reminder")}>直播提醒</button>
               <button className="btn ghost" onClick={() => onNavigate("live")}>去看主播</button>
+            </div>
+          </div>
+        )}
+        {liveItineraryItems.length > 0 && (
+          <div className="home-live-summary">
+            <div>
+              <strong>直播行程摘要</strong>
+              <p className="muted">
+                当前已加入 {liveItineraryItems.length} 个直播行程，最近一个是 {liveItineraryItems[0].title}。
+              </p>
+            </div>
+            <div className="action-row">
+              <button className="btn primary" onClick={() => onNavigate("live")}>查看行程</button>
+              <button className="btn ghost" onClick={() => onNavigate("queue")}>去排队预约</button>
             </div>
           </div>
         )}
