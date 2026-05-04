@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { FilterBar, InfoCard, SectionHead } from "../ui";
 
 const queueCards = [
@@ -115,10 +115,6 @@ export function MapSection({
   );
   const [selectedMarker, setSelectedMarker] = useState(null);
 
-  useEffect(() => {
-    setSelectedMarker(markers[0] || null);
-  }, [markers]);
-
   return (
     <div className="section-layout">
       <div className="panel">
@@ -189,17 +185,6 @@ export function MapSection({
             ))}
           </div>
           <p className="muted route-copy">像游戏自动寻路一样：先锁定目标馆区，再沿高亮路径移动。后续可以继续升级成 2.5D 或真 3D 版本。</p>
-          {selectedMarker && (
-            <InfoCard>
-              <div className="row between start">
-                <strong>{selectedMarker.icon} {selectedMarker.title}</strong>
-                <span className="pill info">
-                  {selectedMarker.kind === "live" ? "主播点" : selectedMarker.kind === "service" ? "服务点" : "排队点"}
-                </span>
-              </div>
-              <p className="muted">{selectedMarker.text}</p>
-            </InfoCard>
-          )}
         </div>
         <div className="mini-grid">
           {zoneOptions.map((zone) => (
@@ -289,6 +274,50 @@ export function MapSection({
           ))}
         </div>
       </div>
+
+      {selectedMarker && (
+        <div className="overlay-backdrop" onClick={() => setSelectedMarker(null)}>
+          <div className="detail-modal map-detail-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="row between start">
+              <div>
+                <strong style={{ fontSize: 20 }}>{selectedMarker.icon} {selectedMarker.title}</strong>
+                <p className="muted" style={{ marginTop: 8 }}>
+                  {selectedMarker.kind === "live" ? "主播点位详情" : selectedMarker.kind === "service" ? "服务点位详情" : "排队点位详情"}
+                </p>
+              </div>
+              <button className="btn ghost" onClick={() => setSelectedMarker(null)}>关闭</button>
+            </div>
+            <div className="tag-row" style={{ marginTop: 12 }}>
+              <span className="tag">{activeZone}</span>
+              <span className="tag">
+                {selectedMarker.kind === "live" ? "主播点" : selectedMarker.kind === "service" ? "服务点" : "排队点"}
+              </span>
+              {liveMapContext && selectedMarker.kind === "live" && <span className="tag">来自主播行程</span>}
+            </div>
+            <div className="stack" style={{ marginTop: 16 }}>
+              <InfoCard>
+                <strong>点位说明</strong>
+                <p className="muted">{selectedMarker.text}</p>
+              </InfoCard>
+              <InfoCard>
+                <strong>推荐动作</strong>
+                <p className="muted">
+                  {selectedMarker.kind === "live"
+                    ? "先看目标馆区动线，再决定是否立刻转场去追直播。"
+                    : selectedMarker.kind === "service"
+                      ? "如果你当前正准备拍摄或补妆，可以优先把这里设为途经点。"
+                      : "如果当前等待时间可接受，建议直接锁一个预约或排队时段。"}
+                </p>
+              </InfoCard>
+            </div>
+            <div className="action-row" style={{ marginTop: 16 }}>
+              <button className="btn primary" onClick={() => onSetSpot(selectedMarker.title)}>设为途经点</button>
+              {selectedMarker.kind === "queue" && <button className="btn ghost" onClick={() => onSetSpot("预约推荐项目")}>查看预约建议</button>}
+              {selectedMarker.kind === "live" && <button className="btn ghost" onClick={() => onZoneChange(targetZone)}>定位到目标馆区</button>}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

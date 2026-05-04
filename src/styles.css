@@ -1151,6 +1151,10 @@ button {
   right: 126px;
 }
 
+.map-detail-modal {
+  width: min(640px, 100%);
+}
+
 @keyframes routePulse {
   0% { transform: translateX(0) scale(0.9); opacity: 0.4; }
   50% { transform: translateX(22px) scale(1.15); opacity: 1; }
