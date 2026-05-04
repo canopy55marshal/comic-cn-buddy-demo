@@ -11,7 +11,7 @@ const itashaMetaTags = [
   "车型：轿车 / SUV",
   "可载：3-4 人",
   "路线：虹桥 / 徐泾 / 市区",
-  "平台：抖音 / B站 / 小红书"
+  "接驳：散场后定点出发"
 ];
 
 export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, onJoinDriver, onJoinRide }) {
@@ -52,7 +52,7 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
               <span className="tag">散场后 18:30 - 21:00</span>
               {itashaMetaTags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}
             </div>
-            <p className="muted">当前优先接驳路线：国家会展中心 ⇄ 虹桥枢纽 / 徐泾东 / 人民广场方向。适合散场后顺路结伴返程、拍车打卡或活动接驳，也适合作为 Coser 直播结束后的同好导流入口。</p>
+            <p className="muted">当前优先接驳路线：国家会展中心 ⇄ 虹桥枢纽 / 徐泾东 / 人民广场方向。适合散场后顺路结伴返程、拍车打卡或活动接驳。</p>
             <div className="action-row">
               <button className="btn primary" onClick={onJoinDriver} disabled={role === "driver" || role === "rider"}>
                 {role === "driver" ? "已报名车主" : role === "rider" ? "已锁定搭乘身份" : "我要报名车主"}
@@ -70,7 +70,7 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
               <div className="row between start">
                 <div>
                   <strong>痛车招募报名卡</strong>
-                  <p className="muted">先做成活动报名与意向匹配能力，兼容车主招募、乘客登记和直播流量承接。</p>
+                  <p className="muted">先做成活动报名与意向匹配能力，聚焦车主招募、乘客登记和接驳规则说明。</p>
                 </div>
                 <span className="pill info">演示版可交互</span>
               </div>
@@ -80,15 +80,15 @@ export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, on
                   <p className="muted">提交车型、可载人数、接驳时段、覆盖路线和是否接受拼车。后续可扩展证件审核和停车指引。</p>
                 </InfoCard>
                 <InfoCard>
-                  <strong>直播联动位</strong>
-                  <p className="muted">适合挂在 Coser 直播间主页、口播口令、二维码海报或直播结束页，把同好流量引到活动 H5 再沉淀到招募模块。</p>
+                  <strong>接驳规则</strong>
+                  <p className="muted">当前演示版默认按同馆区、顺路程度和同行人数做轻匹配，不做实时抢单，也不直接介入费用结算。</p>
                 </InfoCard>
               </div>
               <div className="tag-row" style={{ marginTop: 12 }}>
-                <span className="tag">导流方式：直播口令</span>
-                <span className="tag">导流方式：主页链接</span>
-                <span className="tag">导流方式：海报二维码</span>
-                <span className="tag">转化目标：报名 / 搭乘 / 关注活动</span>
+                <span className="tag">报名信息：车型</span>
+                <span className="tag">报名信息：可载人数</span>
+                <span className="tag">报名信息：覆盖路线</span>
+                <span className="tag">规则：顺路优先匹配</span>
               </div>
             </InfoCard>
           )}

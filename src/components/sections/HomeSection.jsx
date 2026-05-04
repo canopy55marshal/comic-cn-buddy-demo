@@ -21,16 +21,31 @@ const todayTips = [
   "如果要做活动感更强的返程选择，可以提前看痛车司机招募。"
 ];
 
+const extendedFeatures = [
+  {
+    title: "直播联动位",
+    text: "适合挂在 Coser 的直播主页、口播口令、结束页或二维码海报，把场外流量导回活动 H5。"
+  },
+  {
+    title: "主播招募中心",
+    text: "后续可扩展为主播 / Coser 报名、活动曝光位、专属邀请码和导流统计能力。"
+  },
+  {
+    title: "流量转化看板",
+    text: "把直播来源、活动报名、痛车招募和乘客登记串起来，形成活动运营闭环。"
+  }
+];
+
 export function HomeSection({ onNavigate, currentUser, overview }) {
   return (
     <>
       <div className="campaign-banner">
         <div>
-          <strong>活动招募中：痛车司机接驳 + 直播联动位</strong>
-          <p className="muted">适合车主报名、乘客登记，也适合从 Coser 的抖音 / B站 / 小红书直播间把同好流量导回活动页。</p>
+          <strong>活动招募中：痛车司机接驳</strong>
+          <p className="muted">聚焦散场接驳、车主报名和乘客登记，让返程这件事更像漫展活动能力，而不是单纯打车页。</p>
         </div>
         <div className="action-row">
-          <span className="pill accent">流量可沉淀</span>
+          <span className="pill accent">活动招募中</span>
           <button className="btn primary" onClick={() => onNavigate("travel")}>查看招募</button>
         </div>
       </div>
@@ -117,6 +132,18 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
               </InfoCard>
             ))}
           </div>
+        </div>
+      </div>
+
+      <div className="panel">
+        <SectionHead title="扩展功能" desc="这些能力先不混进主业务页里，用来承接活动运营、主播联动和更大规模的流量转化。" />
+        <div className="grid three">
+          {extendedFeatures.map((item) => (
+            <InfoCard key={item.title}>
+              <strong>{item.title}</strong>
+              <p className="muted">{item.text}</p>
+            </InfoCard>
+          ))}
         </div>
       </div>
     </>
