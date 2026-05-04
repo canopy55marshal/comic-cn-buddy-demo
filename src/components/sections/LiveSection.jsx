@@ -73,6 +73,25 @@ function getStatusInfo(item) {
   };
 }
 
+function getRouteAdvice(item) {
+  if (item.zone.includes("摄影区")) return "建议从 B馆摄影区侧入口进入，优先看空景位，再决定是否转主棚。";
+  if (item.zone.includes("主舞台")) return "建议走 A馆侧通道接近舞台区，避开正面主队列。";
+  if (item.zone.includes("同人摊位")) return "建议先锁定目标摊位，再顺着 C馆主通道一路逛过去。";
+  if (item.zone.includes("服务区")) return "建议先经过北门服务区处理补妆或补给，再决定是否继续转场。";
+  if (item.zone.includes("地铁口")) return "建议先看返程拥堵情况，再决定是地铁还是改走拼车点。";
+  return "建议先看当前馆区热度，再决定是否临时转场。";
+}
+
+function getWorthGoing(item) {
+  if (item.heat === "爆满" || item.heat === "高热区") {
+    return "值得去，但最好提前规划路线，不然大概率会被队伍和人流拖慢。";
+  }
+  if (item.heat === "持续升温" || item.heat === "快速升温") {
+    return "值得关注，适合先看直播判断，再决定要不要立刻过去。";
+  }
+  return "更适合当作信息流参考，不一定需要立刻转场过去。";
+}
+
 export function LiveSection({ onNotify, reminderIds = [], onToggleReminder }) {
   const [platform, setPlatform] = useState("全部");
   const [status, setStatus] = useState("全部");
@@ -310,6 +329,15 @@ export function LiveSection({ onNotify, reminderIds = [], onToggleReminder }) {
           <div className="pagination-bar">
             <span className="muted">第 {page} / {totalPages} 页，共 {filteredLinks.length} 位主播</span>
             <div className="action-row">
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+                <button
+                  key={pageNumber}
+                  className={`btn ${page === pageNumber ? "primary" : "ghost"}`}
+                  onClick={() => setPage(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              ))}
               <button className="btn ghost" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1}>上一页</button>
               <button className="btn ghost" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={page === totalPages}>下一页</button>
             </div>
@@ -390,6 +418,14 @@ export function LiveSection({ onNotify, reminderIds = [], onToggleReminder }) {
               <InfoCard>
                 <strong>适合谁看</strong>
                 <p className="muted">{selectedLive.bestFor}</p>
+              </InfoCard>
+              <InfoCard>
+                <strong>推荐路线</strong>
+                <p className="muted">{getRouteAdvice(selectedLive)}</p>
+              </InfoCard>
+              <InfoCard>
+                <strong>去不去值得</strong>
+                <p className="muted">{getWorthGoing(selectedLive)}</p>
               </InfoCard>
             </div>
             <div className="action-row" style={{ marginTop: 16 }}>

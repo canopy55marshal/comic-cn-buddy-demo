@@ -2,6 +2,7 @@ import { liveLinks } from "../../data/mockData";
 import { InfoCard, SectionHead, StatsCard } from "../ui";
 
 const favoriteStorageKey = "comic-con-buddy-live-favorites";
+const reminderStorageKey = "comic-con-buddy-live-reminders";
 const platformIcons = {
   抖音: "🎵",
   B站: "📺",
@@ -77,6 +78,14 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
       return [];
     }
   })();
+  const liveReminderIds = (() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return JSON.parse(window.localStorage.getItem(reminderStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  })();
   const sortedPreviewLinks = [...liveLinks].sort((a, b) => {
     const aFav = favoriteIds.includes(a.id) ? 1 : 0;
     const bFav = favoriteIds.includes(b.id) ? 1 : 0;
@@ -84,6 +93,12 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
     const bLive = getStatusInfo(b).phase === "直播中" ? 1 : 0;
     return bFav - aFav || bLive - aLive;
   });
+  const remindedLives = liveLinks.filter((item) => liveReminderIds.includes(item.id));
+  const nextLiveReminder = [...remindedLives].sort((a, b) => {
+    const aTime = a.startsAt || "99:99";
+    const bTime = b.startsAt || "99:99";
+    return aTime.localeCompare(bTime);
+  })[0];
 
   return (
     <>
@@ -189,6 +204,18 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
           desc="集中展示现场正在直播的 Coser 和主播账号，方便你快速找到对应平台和当前馆区。 "
           side={<span className="pill accent">直播中 {liveLinks.filter((item) => getStatusInfo(item).phase === "直播中").length} 场</span>}
         />
+        {liveReminderIds.length > 0 && (
+          <div className="home-live-summary">
+            <div>
+              <strong>直播提醒摘要</strong>
+              <p className="muted">
+                当前已关注 {liveReminderIds.length} 个开播提醒
+                {nextLiveReminder ? `，最近的是 ${nextLiveReminder.name} 的 ${getStatusInfo(nextLiveReminder).label}` : "。"}
+              </p>
+            </div>
+            <button className="btn ghost" onClick={() => onNavigate("reminder")}>查看提醒中心</button>
+          </div>
+        )}
         <div className="row between start" style={{ marginBottom: 12 }}>
           <p className="muted">首页优先展示你已关注的主播，想看更多平台和馆区筛选可进入详情页。</p>
           <button className="btn ghost" onClick={() => onNavigate("live")}>查看更多</button>
