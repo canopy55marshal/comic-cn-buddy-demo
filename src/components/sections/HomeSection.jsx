@@ -6,7 +6,7 @@ const quickEntrances = [
   { key: "queue", title: "排队预约", text: "热门摄影区和服务点提前锁定时段，避开现场硬排。" },
   { key: "buddy", title: "搭子匹配", text: "快速找到同坑同好、临时互拍或顺路一起逛展的人。" },
   { key: "reminder", title: "智能提醒", text: "补妆、转场、返程这些关键节点提前提醒你。" },
-  { key: "travel", title: "交通出行", text: "散场前提前看拼车点、地铁口和返程建议。" },
+  { key: "travel", title: "交通出行", text: "散场前提前看拼车点、地铁口、返程建议和痛车接驳招募。" },
   { key: "service", title: "化妆师补妆", text: "妆面花了能马上预约补妆，不耽误下一场拍摄。" },
   { key: "service", title: "毛娘修假发", text: "发包松动、碎发乱翘时，现场直接找人救场。" },
   { key: "service", title: "摄影预约分流", text: "摄影区太挤时，快速切到空档摄影师和替代点位。" }
@@ -17,7 +17,8 @@ const todayTips = [
   "中午前先下补给单，能省掉排队和找座位的时间。",
   "出正片前先看摄影区拥堵情况，再决定是否分流到侧馆。",
   "热门服务点先做预约，不要到现场才开始排队。",
-  "散场前 30 分钟就开始准备返程，门口通常最堵。"
+  "散场前 30 分钟就开始准备返程，门口通常最堵。",
+  "如果要做活动感更强的返程选择，可以提前看痛车司机招募。"
 ];
 
 export function HomeSection({ onNavigate, currentUser, overview }) {

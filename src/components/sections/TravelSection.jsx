@@ -1,7 +1,14 @@
 import { InfoCard, SectionHead } from "../ui";
 
-export function TravelSection({ travelOptions = [], onChoose }) {
+const recruitmentNotes = [
+  "优先招募散场后可覆盖虹桥、徐泾和人民广场方向的车主。",
+  "默认按同馆区、同行人数和顺路程度做轻匹配，不做实时抢单。",
+  "正式版上线前会补司机审核、费用说明和安全须知。"
+];
+
+export function TravelSection({ travelOptions = [], onChoose, itashaCampaign, onJoinDriver, onJoinRide }) {
   const selectedOption = travelOptions.find((item) => item.selected);
+  const role = itashaCampaign?.role;
 
   return (
     <div className="section-layout">
@@ -19,6 +26,31 @@ export function TravelSection({ travelOptions = [], onChoose }) {
           <InfoCard>
             <strong>推荐判断</strong>
             <p className="muted">{selectedOption?.mode === "地铁" ? "适合不赶时间且不想承受打车高峰溢价的路线。" : selectedOption?.mode === "拼车" ? "适合和搭子一起返程，效率和体感通常都更稳。" : "如果你还没决定，优先看等待时间更短的方案。"}</p>
+          </InfoCard>
+        </div>
+        <div className="stack" style={{ marginBottom: 16 }}>
+          <InfoCard>
+            <div className="row between start">
+              <div>
+                <strong>痛车司机招募</strong>
+                <p className="muted">把返程做成更有漫展氛围的接驳方式，先以活动招募和意向匹配为主。</p>
+              </div>
+              <span className="pill accent">活动招募中</span>
+            </div>
+            <div className="tag-row">
+              <span className="tag">已报名车主 {itashaCampaign?.driverCount ?? 0} 位</span>
+              <span className="tag">搭乘意向 {itashaCampaign?.riderCount ?? 0} 人</span>
+              <span className="tag">散场后 18:30 - 21:00</span>
+            </div>
+            <p className="muted">当前优先接驳路线：国家会展中心 ⇄ 虹桥枢纽 / 徐泾东 / 人民广场方向。适合散场后顺路结伴返程、拍车打卡或活动接驳。</p>
+            <div className="action-row">
+              <button className="btn primary" onClick={onJoinDriver} disabled={role === "driver" || role === "rider"}>
+                {role === "driver" ? "已报名车主" : role === "rider" ? "已锁定搭乘身份" : "我要报名车主"}
+              </button>
+              <button className="btn ghost" onClick={onJoinRide} disabled={role === "rider" || role === "driver"}>
+                {role === "rider" ? "已登记搭乘" : role === "driver" ? "已锁定车主身份" : "我想搭痛车"}
+              </button>
+            </div>
           </InfoCard>
         </div>
         <div className="stack">
@@ -46,14 +78,24 @@ export function TravelSection({ travelOptions = [], onChoose }) {
         </div>
       </div>
       <div className="panel">
-        <SectionHead title="返程建议" desc="散场时最怕临时慌乱，这里先帮你做取舍。" />
+        <SectionHead title="返程建议" desc="散场时最怕临时慌乱，这里先帮你做取舍，也把活动型接驳能力提前放进来。" />
+        <div className="grid two" style={{ marginBottom: 16 }}>
+          <InfoCard>
+            <strong>车主权益</strong>
+            <p className="muted">演示版里先展示优先曝光、集中接驳推荐位和活动页展示资格，后续可以扩展停车指引和补贴说明。</p>
+          </InfoCard>
+          <InfoCard>
+            <strong>乘客体验</strong>
+            <p className="muted">以顺路结伴、散场拼车和同好接驳为主，减少高峰期打车焦虑，也让交通页更有二次元活动特色。</p>
+          </InfoCard>
+        </div>
         <div className="stack">
           {[
             "如果和搭子同行，优先拼车或结伴地铁，安全感和效率都会更高。",
             "高峰期打车等待时间会明显上升，别等到出馆才开始看车。",
             "如果还有大量周边和道具，优先选少换乘的路线。",
             "返程方案最好在散场前 30 分钟就确定，别让最后阶段最乱。"
-          ].map((text) => (
+          ].concat(recruitmentNotes).map((text) => (
             <InfoCard key={text}>
               <p>{text}</p>
             </InfoCard>

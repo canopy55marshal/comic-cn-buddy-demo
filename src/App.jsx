@@ -36,6 +36,29 @@ function App() {
   const [queueOptions, setQueueOptions] = useState([]);
   const [reminderOptions, setReminderOptions] = useState([]);
   const [travelOptions, setTravelOptions] = useState([]);
+  const [itashaCampaign, setItashaCampaign] = useState(() => {
+    if (!storage) {
+      return {
+        role: null,
+        driverCount: 6,
+        riderCount: 18
+      };
+    }
+
+    try {
+      return JSON.parse(storage.getItem("comic-con-buddy-itasha-campaign")) || {
+        role: null,
+        driverCount: 6,
+        riderCount: 18
+      };
+    } catch {
+      return {
+        role: null,
+        driverCount: 6,
+        riderCount: 18
+      };
+    }
+  });
   const [loading, setLoading] = useState({
     merchants: false,
     buddies: false,
@@ -82,6 +105,11 @@ function App() {
     if (!storage) return;
     storage.setItem("comic-con-buddy-cart-count", String(cartCount));
   }, [cartCount, storage]);
+
+  useEffect(() => {
+    if (!storage) return;
+    storage.setItem("comic-con-buddy-itasha-campaign", JSON.stringify(itashaCampaign));
+  }, [itashaCampaign, storage]);
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -273,6 +301,42 @@ function App() {
       .catch((error) => notify(`设置返程方案失败：${error.message}`));
   };
 
+  const handleJoinItashaDriver = () => {
+    if (itashaCampaign.role === "driver") {
+      notify("你已经报名过痛车车主招募");
+      return;
+    }
+    if (itashaCampaign.role === "rider") {
+      notify("你已经提交了搭乘意向，当前演示版先锁定一种身份");
+      return;
+    }
+
+    setItashaCampaign((prev) => ({
+      ...prev,
+      role: "driver",
+      driverCount: prev.driverCount + 1
+    }));
+    notify("已提交痛车车主招募意向");
+  };
+
+  const handleJoinItashaRide = () => {
+    if (itashaCampaign.role === "rider") {
+      notify("你已经提交过痛车搭乘意向");
+      return;
+    }
+    if (itashaCampaign.role === "driver") {
+      notify("你已经报名为痛车车主，当前演示版先锁定一种身份");
+      return;
+    }
+
+    setItashaCampaign((prev) => ({
+      ...prev,
+      role: "rider",
+      riderCount: prev.riderCount + 1
+    }));
+    notify("已登记痛车搭乘意向");
+  };
+
   const renderSection = () => {
     switch (section) {
       case "food":
@@ -342,6 +406,9 @@ function App() {
           <TravelSection
             travelOptions={travelOptions}
             onChoose={handleChooseTravel}
+            itashaCampaign={itashaCampaign}
+            onJoinDriver={handleJoinItashaDriver}
+            onJoinRide={handleJoinItashaRide}
           />
         );
       case "home":
