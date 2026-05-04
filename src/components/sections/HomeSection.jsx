@@ -1,6 +1,42 @@
 import { liveLinks } from "../../data/mockData";
 import { InfoCard, SectionHead, StatsCard } from "../ui";
 
+const favoriteStorageKey = "comic-con-buddy-live-favorites";
+const platformIcons = {
+  抖音: "🎵",
+  B站: "📺",
+  小红书: "📕",
+  快手: "🎬"
+};
+
+function getStatusInfo(item) {
+  if (!item.startsAt) {
+    return {
+      phase: "直播中",
+      label: "直播中"
+    };
+  }
+
+  const [hours, minutes] = item.startsAt.split(":").map(Number);
+  const now = new Date();
+  const start = new Date();
+  start.setHours(hours, minutes, 0, 0);
+
+  let diff = start.getTime() - now.getTime();
+  if (diff <= 0) {
+    diff += 24 * 60 * 60 * 1000;
+  }
+
+  const totalMinutes = Math.round(diff / 60000);
+  const hourPart = Math.floor(totalMinutes / 60);
+  const minutePart = totalMinutes % 60;
+
+  return {
+    phase: "即将开播",
+    label: hourPart > 0 ? `${hourPart}小时${minutePart > 0 ? `${minutePart}分` : ""}后开播` : `${minutePart} 分钟后开播`
+  };
+}
+
 const quickEntrances = [
   { key: "food", title: "馆内补给", text: "奶茶、热食和应急用品一键下单，别等体力见底再找吃的。" },
   { key: "map", title: "场馆地图", text: "按馆区和服务点安排顺路动线，少走冤枉路。" },
@@ -24,6 +60,17 @@ const todayTips = [
 ];
 
 export function HomeSection({ onNavigate, currentUser, overview }) {
+  const favoriteIds = typeof window === "undefined"
+    ? []
+    : JSON.parse(window.localStorage.getItem(favoriteStorageKey) || "[]");
+  const sortedPreviewLinks = [...liveLinks].sort((a, b) => {
+    const aFav = favoriteIds.includes(a.id) ? 1 : 0;
+    const bFav = favoriteIds.includes(b.id) ? 1 : 0;
+    const aLive = getStatusInfo(a).phase === "直播中" ? 1 : 0;
+    const bLive = getStatusInfo(b).phase === "直播中" ? 1 : 0;
+    return bFav - aFav || bLive - aLive;
+  });
+
   return (
     <>
       <div className="campaign-banner">
@@ -126,26 +173,30 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
         <SectionHead
           title="直播链接"
           desc="集中展示现场正在直播的 Coser 和主播账号，方便你快速找到对应平台和当前馆区。 "
-          side={<span className="pill accent">直播中 {liveLinks.filter((item) => item.time === "直播中").length} 场</span>}
+          side={<span className="pill accent">直播中 {liveLinks.filter((item) => getStatusInfo(item).phase === "直播中").length} 场</span>}
         />
         <div className="grid three">
-          {liveLinks.slice(0, 3).map((item) => (
+          {sortedPreviewLinks.slice(0, 3).map((item) => {
+            const statusInfo = getStatusInfo(item);
+            return (
             <InfoCard key={item.id}>
               <div className="row between start">
                 <strong>{item.name}</strong>
-                <span className={`pill ${item.time === "直播中" ? "accent" : "info"}`}>{item.time}</span>
+                <span className={`pill ${statusInfo.phase === "直播中" ? "accent" : "info"}`}>{statusInfo.label}</span>
               </div>
-              <p className="muted">{item.platform} · {item.account}</p>
+              <p className="muted">{platformIcons[item.platform]} {item.platform} · {item.account}</p>
               <div className="tag-row">
                 <span className="tag">{item.zone}</span>
                 <span className="tag">{item.viewers}</span>
+                {favoriteIds.includes(item.id) && <span className="tag">已关注</span>}
               </div>
               <p className="muted">{item.liveTitle}</p>
               <div className="action-row">
                 <button className="btn ghost" onClick={() => onNavigate("live")}>查看直播链接</button>
               </div>
             </InfoCard>
-          ))}
+            );
+          })}
         </div>
       </div>
     </>

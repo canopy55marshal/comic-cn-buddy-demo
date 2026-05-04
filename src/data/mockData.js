@@ -115,7 +115,8 @@ export const liveLinks = [
     liveTitle: "B馆摄影区现场直播",
     zone: "B馆摄影区",
     time: "直播中",
-    viewers: "1.2w"
+    viewers: "1.2w",
+    startsAt: null
   },
   {
     id: 2,
@@ -126,7 +127,8 @@ export const liveLinks = [
     liveTitle: "同人摊位实时逛展",
     zone: "C馆同人摊位",
     time: "直播中",
-    viewers: "6.8k"
+    viewers: "6.8k",
+    startsAt: null
   },
   {
     id: 3,
@@ -137,7 +139,8 @@ export const liveLinks = [
     liveTitle: "侧馆空景区实况",
     zone: "B馆摄影区",
     time: "直播中",
-    viewers: "8.5k"
+    viewers: "8.5k",
+    startsAt: null
   },
   {
     id: 4,
@@ -148,7 +151,8 @@ export const liveLinks = [
     liveTitle: "北门补妆位现场直播",
     zone: "北门服务区",
     time: "19:00 开播",
-    viewers: "预约 2.1k"
+    viewers: "预约 2.1k",
+    startsAt: "19:00"
   },
   {
     id: 5,
@@ -159,7 +163,8 @@ export const liveLinks = [
     liveTitle: "主舞台应援实况",
     zone: "A馆主舞台",
     time: "直播中",
-    viewers: "9.3k"
+    viewers: "9.3k",
+    startsAt: null
   },
   {
     id: 6,
@@ -170,7 +175,8 @@ export const liveLinks = [
     liveTitle: "热门摊位排队实况",
     zone: "C馆同人摊位",
     time: "20:00 开播",
-    viewers: "预约 1.6k"
+    viewers: "预约 1.6k",
+    startsAt: "20:00"
   }
 ];
 

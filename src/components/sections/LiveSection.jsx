@@ -11,6 +11,12 @@ const liveTips = [
 const statusOptions = ["全部", "直播中", "即将开播"];
 const sortOptions = ["默认排序", "热度优先", "直播中优先"];
 const favoriteStorageKey = "comic-con-buddy-live-favorites";
+const platformIcons = {
+  抖音: "🎵",
+  B站: "📺",
+  小红书: "📕",
+  快手: "🎬"
+};
 
 function parseHeat(value) {
   const normalized = value.replace("预约 ", "").trim().toLowerCase();
@@ -21,6 +27,41 @@ function parseHeat(value) {
     return Number(normalized.replace("k", "")) * 1000;
   }
   return Number(normalized) || 0;
+}
+
+function getStatusInfo(item) {
+  if (!item.startsAt) {
+    return {
+      phase: "直播中",
+      label: "直播中"
+    };
+  }
+
+  const [hours, minutes] = item.startsAt.split(":").map(Number);
+  const now = new Date();
+  const start = new Date();
+  start.setHours(hours, minutes, 0, 0);
+
+  let diff = start.getTime() - now.getTime();
+  if (diff <= 0) {
+    diff += 24 * 60 * 60 * 1000;
+  }
+
+  const totalMinutes = Math.round(diff / 60000);
+  const hourPart = Math.floor(totalMinutes / 60);
+  const minutePart = totalMinutes % 60;
+
+  if (hourPart > 0) {
+    return {
+      phase: "即将开播",
+      label: `${hourPart}小时${minutePart > 0 ? `${minutePart}分` : ""}后开播`
+    };
+  }
+
+  return {
+    phase: "即将开播",
+    label: `${minutePart} 分钟后开播`
+  };
 }
 
 export function LiveSection({ onNotify }) {
@@ -45,7 +86,7 @@ export function LiveSection({ onNotify }) {
   const filteredLinks = useMemo(
     () => {
       const statusMatched = liveLinks.filter((item) => {
-        const currentStatus = item.time === "直播中" ? "直播中" : "即将开播";
+        const currentStatus = getStatusInfo(item).phase;
         return (
           (platform === "全部" || item.platform === platform) &&
           (status === "全部" || currentStatus === status) &&
@@ -56,8 +97,8 @@ export function LiveSection({ onNotify }) {
       return [...statusMatched].sort((a, b) => {
         const aFav = favorites.includes(a.id) ? 1 : 0;
         const bFav = favorites.includes(b.id) ? 1 : 0;
-        const aLive = a.time === "直播中" ? 1 : 0;
-        const bLive = b.time === "直播中" ? 1 : 0;
+        const aLive = getStatusInfo(a).phase === "直播中" ? 1 : 0;
+        const bLive = getStatusInfo(b).phase === "直播中" ? 1 : 0;
         const heatDelta = parseHeat(b.viewers) - parseHeat(a.viewers);
 
         if (sortMode === "热度优先") {
@@ -79,12 +120,14 @@ export function LiveSection({ onNotify }) {
     [favorites]
   );
 
+  const previewTopLinks = useMemo(() => filteredLinks.slice(0, 3), [filteredLinks]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(favoriteStorageKey, JSON.stringify(favorites));
   }, [favorites]);
 
-  const liveNowCount = liveLinks.filter((item) => item.time === "直播中").length;
+  const liveNowCount = liveLinks.filter((item) => getStatusInfo(item).phase === "直播中").length;
   const upcomingCount = liveLinks.length - liveNowCount;
   const favoriteCount = favorites.length;
 
@@ -140,18 +183,21 @@ export function LiveSection({ onNotify }) {
               side={<span className="pill info">{favoriteLinks.length} 位</span>}
             />
             <div className="grid two">
-              {favoriteLinks.map((item) => (
+              {favoriteLinks.map((item) => {
+                const statusInfo = getStatusInfo(item);
+                return (
                 <InfoCard key={`favorite-${item.id}`}>
                   <div className="row between start">
                     <div>
                       <strong>{item.name}</strong>
-                      <p className="muted">{item.platform} · {item.account}</p>
+                      <p className="muted">{platformIcons[item.platform]} {item.platform} · {item.account}</p>
                     </div>
-                    <span className={`pill ${item.time === "直播中" ? "accent" : "info"}`}>{item.time}</span>
+                    <span className={`pill ${statusInfo.phase === "直播中" ? "accent" : "info"}`}>{statusInfo.label}</span>
                   </div>
                   <div className="tag-row">
                     <span className="tag">{item.zone}</span>
                     <span className="tag">{item.viewers}</span>
+                    <span className="tag">{platformIcons[item.platform]} {item.platform}</span>
                   </div>
                   <p className="muted">{item.liveTitle}</p>
                   <div className="action-row">
@@ -159,7 +205,8 @@ export function LiveSection({ onNotify }) {
                     <button className="btn ghost" onClick={() => copyAccount(item.account, item.platform)}>复制账号</button>
                   </div>
                 </InfoCard>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -174,19 +221,21 @@ export function LiveSection({ onNotify }) {
           <FilterBar items={sortOptions} value={sortMode} onChange={setSortMode} />
         </div>
         <div className="stack" style={{ marginTop: 16 }}>
-          {filteredLinks.map((item) => (
+          {filteredLinks.map((item) => {
+            const statusInfo = getStatusInfo(item);
+            return (
             <InfoCard key={item.id}>
               <div className="row between start">
                 <div>
                   <strong>{item.name}</strong>
-                  <p className="muted">{item.platform} · {item.account}</p>
+                  <p className="muted">{platformIcons[item.platform]} {item.platform} · {item.account}</p>
                 </div>
-                <span className={`pill ${item.time === "直播中" ? "accent" : "info"}`}>{item.time}</span>
+                <span className={`pill ${statusInfo.phase === "直播中" ? "accent" : "info"}`}>{statusInfo.label}</span>
               </div>
               <div className="tag-row">
                 <span className="tag">{item.zone}</span>
                 <span className="tag">{item.viewers}</span>
-                <span className="tag">{item.platform}</span>
+                <span className="tag">{platformIcons[item.platform]} {item.platform}</span>
                 {favorites.includes(item.id) && <span className="tag">已收藏</span>}
               </div>
               <p className="muted">{item.cosplay}</p>
@@ -199,7 +248,8 @@ export function LiveSection({ onNotify }) {
                 </button>
               </div>
             </InfoCard>
-          ))}
+            );
+          })}
           {filteredLinks.length === 0 && (
             <InfoCard>
               <p>当前筛选下还没有直播账号，换个平台看看。</p>
@@ -221,6 +271,12 @@ export function LiveSection({ onNotify }) {
           </InfoCard>
         </div>
         <div className="stack">
+          {previewTopLinks.length > 0 && (
+            <InfoCard>
+              <strong>当前热度最高</strong>
+              <p className="muted">{previewTopLinks[0].name} · {previewTopLinks[0].platform} · {previewTopLinks[0].viewers}</p>
+            </InfoCard>
+          )}
           {liveTips.map((text) => (
             <InfoCard key={text}>
               <p>{text}</p>
