@@ -16,7 +16,27 @@ const routeSuggestions = [
   "散场前先到北门服务区集合，再统一去拼车点或地铁口。"
 ];
 
-export function MapSection({ activeZone, zoneOptions, currentZone, loading, onZoneChange, onSetSpot, mapResults = [], liveMapContext = null }) {
+const routeMap = {
+  "A馆主舞台": ["B馆摄影区", "A馆主舞台"],
+  "B馆摄影区": ["A馆主舞台", "B馆摄影区"],
+  "C馆同人摊位": ["A馆主舞台", "C馆同人摊位"],
+  "北门服务区": ["A馆主舞台", "北门服务区"]
+};
+
+export function MapSection({
+  activeZone,
+  zoneOptions,
+  currentZone,
+  currentUserZone = "",
+  loading,
+  onZoneChange,
+  onSetSpot,
+  mapResults = [],
+  liveMapContext = null
+}) {
+  const routePath = routeMap[activeZone] || [activeZone];
+  const targetZone = liveMapContext?.targetZone || activeZone;
+
   return (
     <div className="section-layout">
       <div className="panel">
@@ -38,6 +58,31 @@ export function MapSection({ activeZone, zoneOptions, currentZone, loading, onZo
             </InfoCard>
           </div>
         )}
+        <div className="route-visual">
+          <div className="route-visual-head">
+            <strong>自动寻路示意</strong>
+            <span className="pill info">目标：{targetZone}</span>
+          </div>
+          <div className="route-board">
+            {["A馆主舞台", "B馆摄影区", "C馆同人摊位", "北门服务区"].map((zone) => {
+              const active = zone === targetZone;
+              const current = zone === currentUserZone;
+              const inPath = routePath.includes(zone);
+              return (
+                <div key={zone} className={`route-node ${active ? "target" : ""} ${current ? "current" : ""} ${inPath ? "path" : ""}`}>
+                  <span>{zone}</span>
+                  {current && <small>当前位置</small>}
+                  {active && <small>目标点</small>}
+                </div>
+              );
+            })}
+            <div className="route-line route-line-a" />
+            <div className="route-line route-line-b" />
+            <div className="route-pulse route-pulse-a" />
+            <div className="route-pulse route-pulse-b" />
+          </div>
+          <p className="muted route-copy">像游戏自动寻路一样：先锁定目标馆区，再沿高亮路径移动。后续可以继续升级成 2.5D 或真 3D 版本。</p>
+        </div>
         <div className="mini-grid">
           {zoneOptions.map((zone) => (
             <button

@@ -15,6 +15,17 @@ import { api } from "./services/api";
 const liveReminderStorageKey = "comic-con-buddy-live-reminders";
 const liveItineraryStorageKey = "comic-con-buddy-live-itinerary";
 
+function resolveZoneTarget(zoneName) {
+  if (!zoneName) return "";
+  if (zoneName.includes("A馆") || zoneName.includes("主舞台")) return "A馆主舞台";
+  if (zoneName.includes("B馆") || zoneName.includes("摄影")) return "B馆摄影区";
+  if (zoneName.includes("C馆") || zoneName.includes("同人")) return "C馆同人摊位";
+  if (zoneName.includes("服务区") || zoneName.includes("北门")) return "北门服务区";
+  if (zoneName.includes("地铁口")) return "北门服务区";
+  if (zoneName.includes("连廊")) return "C馆同人摊位";
+  return zoneName;
+}
+
 function App() {
   const storage = typeof window === "undefined" ? null : window.localStorage;
   const [section, setSection] = useState("home");
@@ -388,14 +399,15 @@ function App() {
   };
 
   const handleOpenLiveMap = (item) => {
-    setLiveMapContext({ name: item.name, zone: item.zone });
+    const targetZone = resolveZoneTarget(item.zone);
+    setLiveMapContext({ name: item.name, zone: item.zone, targetZone });
     setSection("map");
-    setActiveZone(item.zone);
-    notify(`已带你去场馆地图，当前定位到 ${item.zone}`);
+    setActiveZone(targetZone);
+    notify(`已带你去场馆地图，当前定位到 ${targetZone}`);
   };
 
   const handleOpenLiveQueue = (item) => {
-    setLiveQueueContext({ name: item.name, zone: item.zone });
+    setLiveQueueContext({ name: item.name, zone: item.zone, targetZone: resolveZoneTarget(item.zone) });
     setSection("queue");
     notify(`已带你去排队预约，正在按 ${item.zone} 推荐更合适的预约项`);
   };
@@ -457,6 +469,7 @@ function App() {
             activeZone={activeZone}
             zoneOptions={zoneOptions}
             currentZone={currentZone}
+            currentUserZone={currentUser?.currentZone}
             loading={loading.zones}
             mapResults={mapResults}
             onZoneChange={setActiveZone}
