@@ -198,6 +198,44 @@ export function HomeSection({ onNavigate, currentUser, overview, liveItineraryIt
         </div>
       </div>
 
+      {liveItineraryItems.length > 0 && (
+        <div className="panel">
+          <SectionHead
+            title="直播行程"
+            desc="把你准备关注或准备转场去看的直播单独收进首页，方便你在逛展过程中快速决策。"
+            side={<span className="pill accent">已加入 {liveItineraryItems.length} 项</span>}
+          />
+          <div className="grid two">
+            <div className="home-live-itinerary">
+              <div>
+                <strong>最近行程</strong>
+                <p className="muted">
+                  {liveItineraryItems[0].title}
+                  {" "}· {liveItineraryItems[0].time}
+                  {" "}· {liveItineraryItems[0].zone}
+                </p>
+              </div>
+              <div className="action-row">
+                <button className="btn primary" onClick={() => onNavigate("live")}>查看直播行程</button>
+                <button className="btn ghost" onClick={() => onNavigate("queue")}>去排队预约</button>
+              </div>
+            </div>
+            <div className="stack">
+              {liveItineraryItems.slice(0, 3).map((item) => (
+                <InfoCard key={item.id}>
+                  <strong>{item.title}</strong>
+                  <div className="tag-row">
+                    <span className="tag">{item.platform}</span>
+                    <span className="tag">{item.zone}</span>
+                    <span className="tag">{item.time}</span>
+                  </div>
+                </InfoCard>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="panel">
         <SectionHead
           title="直播链接"
@@ -216,20 +254,6 @@ export function HomeSection({ onNavigate, currentUser, overview, liveItineraryIt
             <div className="action-row">
               <button className="btn primary" onClick={() => onNavigate("reminder")}>直播提醒</button>
               <button className="btn ghost" onClick={() => onNavigate("live")}>去看主播</button>
-            </div>
-          </div>
-        )}
-        {liveItineraryItems.length > 0 && (
-          <div className="home-live-summary">
-            <div>
-              <strong>直播行程摘要</strong>
-              <p className="muted">
-                当前已加入 {liveItineraryItems.length} 个直播行程，最近一个是 {liveItineraryItems[0].title}。
-              </p>
-            </div>
-            <div className="action-row">
-              <button className="btn primary" onClick={() => onNavigate("live")}>查看行程</button>
-              <button className="btn ghost" onClick={() => onNavigate("queue")}>去排队预约</button>
             </div>
           </div>
         )}
