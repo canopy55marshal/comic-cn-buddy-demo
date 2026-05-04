@@ -18,6 +18,15 @@ const platformIcons = {
   快手: "🎬"
 };
 
+function getPlatformBadgeClass(platform) {
+  return {
+    抖音: "douyin",
+    B站: "bilibili",
+    小红书: "xiaohongshu",
+    快手: "kuaishou"
+  }[platform] || "default";
+}
+
 function parseHeat(value) {
   const normalized = value.replace("预约 ", "").trim().toLowerCase();
   if (normalized.endsWith("w")) {
@@ -179,7 +188,7 @@ export function LiveSection({ onNotify }) {
           <div style={{ marginBottom: 16 }}>
             <SectionHead
               title="我关注的主播"
-              desc="你收藏过的直播账号会优先收在这里，方便你在逛展过程中随时回看。"
+              desc="你收藏过的直播账号会优先收在这里，默认置顶在列表前面，方便你在逛展过程中随时回看。"
               side={<span className="pill info">{favoriteLinks.length} 位</span>}
             />
             <div className="grid two">
@@ -190,14 +199,17 @@ export function LiveSection({ onNotify }) {
                   <div className="row between start">
                     <div>
                       <strong>{item.name}</strong>
-                      <p className="muted">{platformIcons[item.platform]} {item.platform} · {item.account}</p>
+                      <p className="muted">
+                        <span className={`platform-badge ${getPlatformBadgeClass(item.platform)}`}>{platformIcons[item.platform]} {item.platform}</span>
+                        {" "}· {item.account}
+                      </p>
                     </div>
                     <span className={`pill ${statusInfo.phase === "直播中" ? "accent" : "info"}`}>{statusInfo.label}</span>
                   </div>
                   <div className="tag-row">
                     <span className="tag">{item.zone}</span>
                     <span className="tag">{item.viewers}</span>
-                    <span className="tag">{platformIcons[item.platform]} {item.platform}</span>
+                    <span className={`platform-badge ${getPlatformBadgeClass(item.platform)}`}>{platformIcons[item.platform]} {item.platform}</span>
                   </div>
                   <p className="muted">{item.liveTitle}</p>
                   <div className="action-row">
@@ -228,14 +240,17 @@ export function LiveSection({ onNotify }) {
               <div className="row between start">
                 <div>
                   <strong>{item.name}</strong>
-                  <p className="muted">{platformIcons[item.platform]} {item.platform} · {item.account}</p>
+                  <p className="muted">
+                    <span className={`platform-badge ${getPlatformBadgeClass(item.platform)}`}>{platformIcons[item.platform]} {item.platform}</span>
+                    {" "}· {item.account}
+                  </p>
                 </div>
                 <span className={`pill ${statusInfo.phase === "直播中" ? "accent" : "info"}`}>{statusInfo.label}</span>
               </div>
               <div className="tag-row">
                 <span className="tag">{item.zone}</span>
                 <span className="tag">{item.viewers}</span>
-                <span className="tag">{platformIcons[item.platform]} {item.platform}</span>
+                <span className={`platform-badge ${getPlatformBadgeClass(item.platform)}`}>{platformIcons[item.platform]} {item.platform}</span>
                 {favorites.includes(item.id) && <span className="tag">已收藏</span>}
               </div>
               <p className="muted">{item.cosplay}</p>

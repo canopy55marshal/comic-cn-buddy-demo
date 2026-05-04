@@ -648,6 +648,42 @@ button {
   background: rgba(142, 162, 228, 0.14);
 }
 
+.platform-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.platform-badge.douyin {
+  color: #ffd8f4;
+  background: rgba(255, 71, 163, 0.16);
+}
+
+.platform-badge.bilibili {
+  color: #d8f1ff;
+  background: rgba(76, 183, 255, 0.16);
+}
+
+.platform-badge.xiaohongshu {
+  color: #ffe1e1;
+  background: rgba(255, 89, 89, 0.16);
+}
+
+.platform-badge.kuaishou {
+  color: #ffe7d5;
+  background: rgba(255, 147, 58, 0.16);
+}
+
+.platform-badge.default {
+  color: #eef4ff;
+  background: rgba(142, 162, 228, 0.14);
+}
+
 .btn {
   padding: 10px 15px;
   border-radius: 13px;

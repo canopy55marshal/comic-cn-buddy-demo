@@ -9,6 +9,15 @@ const platformIcons = {
   快手: "🎬"
 };
 
+function getPlatformBadgeClass(platform) {
+  return {
+    抖音: "douyin",
+    B站: "bilibili",
+    小红书: "xiaohongshu",
+    快手: "kuaishou"
+  }[platform] || "default";
+}
+
 function getStatusInfo(item) {
   if (!item.startsAt) {
     return {
@@ -60,9 +69,14 @@ const todayTips = [
 ];
 
 export function HomeSection({ onNavigate, currentUser, overview }) {
-  const favoriteIds = typeof window === "undefined"
-    ? []
-    : JSON.parse(window.localStorage.getItem(favoriteStorageKey) || "[]");
+  const favoriteIds = (() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return JSON.parse(window.localStorage.getItem(favoriteStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  })();
   const sortedPreviewLinks = [...liveLinks].sort((a, b) => {
     const aFav = favoriteIds.includes(a.id) ? 1 : 0;
     const bFav = favoriteIds.includes(b.id) ? 1 : 0;
@@ -175,6 +189,10 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
           desc="集中展示现场正在直播的 Coser 和主播账号，方便你快速找到对应平台和当前馆区。 "
           side={<span className="pill accent">直播中 {liveLinks.filter((item) => getStatusInfo(item).phase === "直播中").length} 场</span>}
         />
+        <div className="row between start" style={{ marginBottom: 12 }}>
+          <p className="muted">首页优先展示你已关注的主播，想看更多平台和馆区筛选可进入详情页。</p>
+          <button className="btn ghost" onClick={() => onNavigate("live")}>查看更多</button>
+        </div>
         <div className="grid three">
           {sortedPreviewLinks.slice(0, 3).map((item) => {
             const statusInfo = getStatusInfo(item);
@@ -184,7 +202,10 @@ export function HomeSection({ onNavigate, currentUser, overview }) {
                 <strong>{item.name}</strong>
                 <span className={`pill ${statusInfo.phase === "直播中" ? "accent" : "info"}`}>{statusInfo.label}</span>
               </div>
-              <p className="muted">{platformIcons[item.platform]} {item.platform} · {item.account}</p>
+              <p className="muted">
+                <span className={`platform-badge ${getPlatformBadgeClass(item.platform)}`}>{platformIcons[item.platform]} {item.platform}</span>
+                {" "}· {item.account}
+              </p>
               <div className="tag-row">
                 <span className="tag">{item.zone}</span>
                 <span className="tag">{item.viewers}</span>
