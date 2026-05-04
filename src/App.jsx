@@ -40,6 +40,8 @@ function App() {
   const [queueOptions, setQueueOptions] = useState([]);
   const [reminderOptions, setReminderOptions] = useState([]);
   const [travelOptions, setTravelOptions] = useState([]);
+  const [liveMapContext, setLiveMapContext] = useState(null);
+  const [liveQueueContext, setLiveQueueContext] = useState(null);
   const [liveReminderIds, setLiveReminderIds] = useState(() => {
     if (!storage) return [];
     try {
@@ -385,6 +387,19 @@ function App() {
     });
   };
 
+  const handleOpenLiveMap = (item) => {
+    setLiveMapContext({ name: item.name, zone: item.zone });
+    setSection("map");
+    setActiveZone(item.zone);
+    notify(`已带你去场馆地图，当前定位到 ${item.zone}`);
+  };
+
+  const handleOpenLiveQueue = (item) => {
+    setLiveQueueContext({ name: item.name, zone: item.zone });
+    setSection("queue");
+    notify(`已带你去排队预约，正在按 ${item.zone} 推荐更合适的预约项`);
+  };
+
   const handleJoinItashaDriver = () => {
     if (itashaCampaign.role === "driver") {
       notify("你已经报名过痛车车主招募");
@@ -446,6 +461,7 @@ function App() {
             mapResults={mapResults}
             onZoneChange={setActiveZone}
             onSetSpot={handleSetSpot}
+            liveMapContext={liveMapContext}
           />
         );
       case "buddy":
@@ -476,6 +492,7 @@ function App() {
           <QueueSection
             queueOptions={queueOptions}
             onBook={handleBookQueue}
+            liveQueueContext={liveQueueContext}
           />
         );
       case "live":
@@ -517,6 +534,8 @@ function App() {
             overview={overview}
             liveItineraryItems={liveItineraryItems}
             onToggleLiveItinerary={handleToggleLiveItinerary}
+            onOpenLiveMap={handleOpenLiveMap}
+            onOpenLiveQueue={handleOpenLiveQueue}
           />
         );
     }

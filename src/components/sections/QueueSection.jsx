@@ -1,8 +1,16 @@
 import { InfoCard, SectionHead } from "../ui";
 
-export function QueueSection({ queueOptions = [], onBook }) {
+function getRecommendedQueueItem(liveQueueContext, queueOptions) {
+  if (!liveQueueContext) return null;
+  if (liveQueueContext.zone.includes("摄影区")) return queueOptions.find((item) => item.name.includes("摄影"));
+  if (liveQueueContext.zone.includes("服务区")) return queueOptions.find((item) => item.name.includes("补妆"));
+  return queueOptions[0];
+}
+
+export function QueueSection({ queueOptions = [], onBook, liveQueueContext = null }) {
   const bookedItems = queueOptions.filter((item) => item.booked);
   const nextRecommended = queueOptions.find((item) => !item.booked);
+  const liveRecommended = getRecommendedQueueItem(liveQueueContext, queueOptions);
 
   return (
     <div className="section-layout">
@@ -22,6 +30,17 @@ export function QueueSection({ queueOptions = [], onBook }) {
             <p className="muted">{nextRecommended ? `优先看 ${nextRecommended.name}，当前显示 ${nextRecommended.wait}。` : "当前可用项目都已处理完，可以回首页继续安排补给或返程。"}</p>
           </InfoCard>
         </div>
+        {liveQueueContext && liveRecommended && (
+          <InfoCard style={{ marginBottom: 16 }}>
+            <div className="row between start">
+              <div>
+                <strong>来自主播行程的推荐预约</strong>
+                <p className="muted">{liveQueueContext.name} 当前关联馆区是 {liveQueueContext.zone}，建议优先看 {liveRecommended.name}。</p>
+              </div>
+              <span className="pill accent">{liveRecommended.wait}</span>
+            </div>
+          </InfoCard>
+        )}
         <div className="stack">
           {queueOptions.length === 0 && <InfoCard><p>当前没有可预约项目，稍后再试。</p></InfoCard>}
           {queueOptions.map((item) => {

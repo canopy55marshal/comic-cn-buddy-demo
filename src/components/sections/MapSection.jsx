@@ -16,7 +16,7 @@ const routeSuggestions = [
   "散场前先到北门服务区集合，再统一去拼车点或地铁口。"
 ];
 
-export function MapSection({ activeZone, zoneOptions, currentZone, loading, onZoneChange, onSetSpot, mapResults = [] }) {
+export function MapSection({ activeZone, zoneOptions, currentZone, loading, onZoneChange, onSetSpot, mapResults = [], liveMapContext = null }) {
   return (
     <div className="section-layout">
       <div className="panel">
@@ -26,6 +26,18 @@ export function MapSection({ activeZone, zoneOptions, currentZone, loading, onZo
           side={<span className="pill success">当前：{currentZone.name}</span>}
         />
         <FilterBar items={zoneOptions.map((item) => item.name)} value={activeZone} onChange={onZoneChange} />
+        {liveMapContext && (
+          <div className="stack" style={{ marginTop: 16 }}>
+            <InfoCard>
+              <div className="row between start">
+                <strong>来自主播行程</strong>
+                <span className="pill accent">{liveMapContext.zone}</span>
+              </div>
+              <p className="muted">{liveMapContext.name} 当前在这个区域附近开播，建议先看推荐动线再决定是否转场过去。</p>
+              <p className="muted">可以把它理解成游戏里的自动寻路落点提示：先锁定目标馆区，再沿推荐动线移动过去。</p>
+            </InfoCard>
+          </div>
+        )}
         <div className="mini-grid">
           {zoneOptions.map((zone) => (
             <button
