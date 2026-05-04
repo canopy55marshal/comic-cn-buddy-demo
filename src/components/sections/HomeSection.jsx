@@ -201,14 +201,14 @@ export function HomeSection({ onNavigate, currentUser, overview, liveItineraryIt
       {liveItineraryItems.length > 0 && (
         <div className="panel">
           <SectionHead
-            title="直播行程"
+            title="主播行程"
             desc="把你准备关注或准备转场去看的直播单独收进首页，方便你在逛展过程中快速决策。"
             side={<span className="pill accent">已加入 {liveItineraryItems.length} 项</span>}
           />
           <div className="grid two">
             <div className="home-live-itinerary">
               <div>
-                <strong>最近行程</strong>
+                <strong>最近主播行程</strong>
                 <p className="muted">
                   {liveItineraryItems[0].title}
                   {" "}· {liveItineraryItems[0].time}
@@ -216,7 +216,7 @@ export function HomeSection({ onNavigate, currentUser, overview, liveItineraryIt
                 </p>
               </div>
               <div className="action-row">
-                <button className="btn primary" onClick={() => onNavigate("live")}>查看直播行程</button>
+                <button className="btn primary" onClick={() => onNavigate("live")}>查看主播行程</button>
                 <button className="btn ghost" onClick={() => onNavigate("queue")}>去排队预约</button>
               </div>
             </div>
