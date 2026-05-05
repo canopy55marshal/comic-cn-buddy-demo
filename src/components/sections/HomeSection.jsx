@@ -71,23 +71,23 @@ function getLiveStatusLabel(time) {
 const quickEntrances = [
   { key: "food", title: "餐饮配送", text: "提前订餐，场内配送，别等体力见底再找吃的。" },
   { key: "map", title: "场馆导航", text: "按馆区、楼层和服务点安排顺路动线，少走冤枉路。" },
-  { key: "live", title: "直播链接", text: "查看现场正在直播的 Coser 和主播，快速找到对应平台账号。" },
   { key: "queue", title: "排队预约", text: "热门摄影区和服务点提前锁定时段，避开现场硬排。" },
-  { key: "buddy", title: "好友同行", text: "熟人邀约同行激励，用分享裂变扩大用户量，规避陌生社交风险。" },
-  { key: "reminder", title: "智能提醒", text: "补妆、转场、返程这些关键节点提前提醒你。" },
-  { key: "travel", title: "交通出行", text: "以返程便利为目的，拼车/地铁/打车优先，痛车作为仪式感补充。" },
-  { key: "service", title: "化妆师补妆", text: "妆面花了能马上预约补妆，不耽误下一场拍摄。" },
-  { key: "service", title: "毛娘修假发", text: "发包松动、碎发乱翘时，现场直接找人救场。" },
-  { key: "service", title: "摄影预约分流", text: "摄影区太挤时，快速切到空档摄影师和替代点位。" }
+  { key: "buddy", title: "好友同行", text: "熟人邀约同行激励，用分享裂变扩大用户量，规避陌生社交风险。" }
+];
+
+const secondaryEntrances = [
+  { key: "business", title: "商业平台" },
+  { key: "live", title: "直播链接" },
+  { key: "reminder", title: "智能提醒" },
+  { key: "travel", title: "交通出行" },
+  { key: "service", title: "妆造服务" }
 ];
 
 const todayTips = [
   "上午优先冲热门摊位和主舞台，避免中午人流堆积。",
   "中午前先下补给单，能省掉排队和找座位的时间。",
-  "出正片前先看摄影区拥堵情况，再决定是否分流到侧馆。",
   "热门服务点先做预约，不要到现场才开始排队。",
-  "散场前 30 分钟就开始准备返程，门口通常最堵。",
-  "如果想体验痛车接驳，建议提前查看车主招募和接驳路线。"
+  "散场前 30 分钟就开始准备返程，门口通常最堵。"
 ];
 
 const upworkCards = [
@@ -154,17 +154,6 @@ export function HomeSection({
 
   return (
     <>
-      <div className="campaign-banner">
-        <div>
-          <strong>双主线升级：漫展现场服务 + COSER商业平台</strong>
-          <p className="muted">这版首页开始对齐宣讲网页，把现场体验和 COSER 成交平台放进同一条产品叙事里。</p>
-        </div>
-        <div className="action-row">
-          <span className="pill accent">定位已升级</span>
-          <button className="btn primary" onClick={() => onNavigate("live")}>查看直播生态</button>
-        </div>
-      </div>
-
       <div className="hero">
         <div className="hero-main hero-banner">
           <div className="hero-decor hero-decor-left" />
@@ -182,13 +171,13 @@ export function HomeSection({
           <h2>漫展有搭子，玩展不累。<br />让 COSER 的每一分热爱都值得。</h2>
           <p className="hero-copy">
             {currentUser
-              ? `${currentUser.name}，你现在在 ${currentUser.currentZone}。前台帮你解决补给、导航、搭子、妆造和返程；后台再把 COSER 的商单撮合、托管交易和安全成交串起来。`
-              : "前台解决补给、导航、搭子、妆造和返程，后台再把 COSER 的商单撮合、托管交易和安全成交串起来。"}
+              ? `${currentUser.name}，你现在在 ${currentUser.currentZone}。建议先从补给、导航、预约或好友同行里选一个主动作开始，商业平台能力放到下方继续看。`
+              : "先从补给、导航、预约或好友同行里选一个主动作开始；商业平台能力放到下方继续看。"}
           </p>
           <div className="action-row hero-cta">
             <button className="btn primary" onClick={() => onNavigate("food")}>先看现场服务</button>
-            <button className="btn ghost" onClick={() => onNavigate("buddy")}>发起好友同行</button>
-            <button className="btn ghost" onClick={() => onNavigate("service")}>查看妆造服务</button>
+            <button className="btn ghost" onClick={() => onNavigate("map")}>打开场馆地图</button>
+            <button className="btn ghost" onClick={() => onNavigate("business")}>进入商业平台</button>
           </div>
           <div className="hero-stats-strip">
             <div>
@@ -224,10 +213,10 @@ export function HomeSection({
 
       <div className="section-layout">
         <div className="panel">
-          <SectionHead title="九大核心模块" desc="把宣讲网页里的关键能力，同步成用户当天能直接用、能看懂的入口。" />
-          <div className="grid three">
+          <SectionHead title="现在先做什么" desc="首页先只保留最关键的 4 个动作，避免信息太满导致不知道先点哪里。" />
+          <div className="grid two">
             {quickEntrances.map((item) => (
-              <InfoCard key={item.title}>
+              <InfoCard key={item.title} className="home-focus-card">
                 <strong>{item.title}</strong>
                 <p className="muted">{item.text}</p>
                 <div className="action-row">
@@ -239,8 +228,13 @@ export function HomeSection({
         </div>
 
         <div className="panel">
-          <SectionHead title="今日建议" desc="按漫展真实节奏安排，少走弯路，也少在现场临时手忙脚乱。 " />
-          <div className="stack">
+          <SectionHead title="更多入口" desc="剩下的能力放成次级入口，用户先完成主动作，再按需要进入。" />
+          <div className="home-secondary-actions">
+            {secondaryEntrances.map((item) => (
+              <button key={item.title} className="btn ghost" onClick={() => onNavigate(item.key)}>{item.title}</button>
+            ))}
+          </div>
+          <div className="stack" style={{ marginTop: 16 }}>
             {todayTips.map((item) => (
               <InfoCard key={item}>
                 <p>{item}</p>
@@ -252,26 +246,26 @@ export function HomeSection({
 
       <div className="panel">
         <SectionHead
-          title="COSER的Upwork"
-          desc="把 AI撮合、托管交易和成交收费模型提前放到首页，避免 Demo 和宣讲网页的商业叙事脱节。"
+          title="商业平台摘要"
+          desc="首页只保留最核心的商业模式摘要，详细规则进入商业平台页查看。"
           side={<span className="pill accent">成交才收费</span>}
         />
         <div className="grid two">
           <div className="home-upwork-hero">
             <strong>平台模式</strong>
-            <p className="muted">COSER商业平台的核心不是单纯展示人，而是把需求、撮合、托管和交付流程收进同一个平台。</p>
+            <p className="muted">品牌商单、漫展招募和 COS委托统一进入平台，首页只保留一句话摘要，避免再次把信息堆满。</p>
             <div className="tag-row">
               <span className="tag">品牌商单</span>
               <span className="tag">漫展招募</span>
               <span className="tag">COS委托</span>
             </div>
             <div className="action-row">
-              <button className="btn primary" onClick={() => onNavigate("buddy")}>先看撮合入口</button>
+              <button className="btn primary" onClick={() => onNavigate("business")}>进入商业平台</button>
               <button className="btn ghost" onClick={() => onNavigate("service")}>查看服务供给</button>
             </div>
           </div>
           <div className="grid two">
-            {upworkCards.map((item) => (
+            {upworkCards.slice(0, 3).map((item) => (
               <InfoCard key={item.title}>
                 <div className="row between start">
                   <strong>{item.title}</strong>
@@ -353,7 +347,7 @@ export function HomeSection({
           <button className="btn ghost" onClick={() => onNavigate("live")}>查看更多</button>
         </div>
         <div className="grid three">
-          {sortedPreviewLinks.slice(0, 3).map((item) => {
+          {sortedPreviewLinks.slice(0, 2).map((item) => {
             const statusInfo = getStatusInfo(item);
             return (
             <InfoCard key={item.id}>

@@ -35,6 +35,6 @@ export function StatsCard({ title, text }) {
   );
 }
 
-export function InfoCard({ children }) {
-  return <article className="info-card">{children}</article>;
+export function InfoCard({ children, className = "" }) {
+  return <article className={`info-card ${className}`.trim()}>{children}</article>;
 }

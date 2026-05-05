@@ -63,10 +63,14 @@ const demandPool = [
     id: "brand-1",
     type: "品牌商单",
     title: "国风新游角色联动拍摄",
+    createdAt: "今天 09:20",
     budget: "¥18,000",
     deposit: "¥2,000",
     status: "匹配中",
     phase: "30% 已托管",
+    requester: "品牌方 · 星绘互动",
+    delivery: "平面图 12 张 + 短视频 3 条",
+    matches: ["青岚 · 国风女角色", "白露 · 视频表现强", "凛夜 · 商单履约高"],
     desc: "品牌方需要 2 位擅长国风角色演绎的 COSER，支持平面图和短视频双交付。",
     milestone: ["已发布需求", "AI匹配中", "确认人选后托管 30%"],
     stages: [
@@ -81,10 +85,14 @@ const demandPool = [
     id: "expo-1",
     type: "漫展招募",
     title: "主舞台驻场互动 COSER 招募",
+    createdAt: "今天 10:40",
     budget: "¥9,500",
     deposit: "¥1,000",
     status: "待确认",
     phase: "保证金已冻结",
+    requester: "主办方 · 星河漫展组委会",
+    delivery: "驻场互动 4 小时 + 舞台环节 2 场",
+    matches: ["阿澄 · 舞台互动经验", "雪饼 · 现场控场稳", "木子 · 合影反馈高"],
     desc: "主办方需要 3 位现场驻场 COSER，负责舞台互动、巡场和用户合影环节。",
     milestone: ["已发布需求", "保证金冻结", "等待确认排期"],
     stages: [
@@ -99,10 +107,14 @@ const demandPool = [
     id: "commission-1",
     type: "COS委托",
     title: "漫展现场约拍委托",
+    createdAt: "昨天 21:15",
     budget: "¥1,200",
     deposit: "¥500",
     status: "执行中",
     phase: "50% 已托管",
+    requester: "个人委托方 · 同IP粉丝用户",
+    delivery: "漫展现场约拍 1 组 + 精修 9 张",
+    matches: ["柚子 · 同IP出片强", "眠眠 · 现场沟通稳"],
     desc: "个人委托方希望在漫展当天完成 1 组角色约拍，要求现场公共场所执行。",
     milestone: ["方向已确认", "50% 托管中", "等待终稿交付"],
     stages: [
@@ -124,11 +136,19 @@ const escrowNodes = [
 
 export function BusinessSection({ onNavigate }) {
   const [demandFilter, setDemandFilter] = useState("全部");
+  const [sortMode, setSortMode] = useState("最新");
   const [selectedDemand, setSelectedDemand] = useState(demandPool[0]);
-  const filteredDemandPool = useMemo(
-    () => demandPool.filter((item) => demandFilter === "全部" || item.type === demandFilter),
-    [demandFilter]
-  );
+  const filteredDemandPool = useMemo(() => {
+    const next = demandPool.filter((item) => demandFilter === "全部" || item.type === demandFilter);
+    if (sortMode === "预算优先") {
+      return [...next].sort((a, b) => Number(b.budget.replace(/[^\d]/g, "")) - Number(a.budget.replace(/[^\d]/g, "")));
+    }
+    if (sortMode === "执行中") {
+      const order = { 执行中: 0, 匹配中: 1, 待确认: 2 };
+      return [...next].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
+    }
+    return [...next].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }, [demandFilter, sortMode]);
   const currentStageIndex = selectedDemand?.stages?.findIndex((item) => item.status === "current") ?? -1;
 
   return (
@@ -196,8 +216,11 @@ export function BusinessSection({ onNavigate }) {
 
       <div className="panel">
         <SectionHead title="需求池" desc="把品牌商单、漫展招募和 COS委托做成可浏览的需求卡片，方便用户理解平台里到底流转什么。 " />
-        <div style={{ marginTop: 16, marginBottom: 16 }}>
+        <div style={{ marginTop: 16, marginBottom: 12 }}>
           <FilterBar items={["全部", "品牌商单", "漫展招募", "COS委托"]} value={demandFilter} onChange={setDemandFilter} />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <FilterBar items={["最新", "预算优先", "执行中"]} value={sortMode} onChange={setSortMode} />
         </div>
         <div className="grid three" style={{ marginTop: 16, marginBottom: 16 }}>
           {filteredDemandPool.map((item) => (
@@ -208,6 +231,7 @@ export function BusinessSection({ onNavigate }) {
               </div>
               <p className="muted">{item.desc}</p>
               <div className="tag-row">
+                <span className="tag">{item.createdAt}</span>
                 <span className="tag">预算 {item.budget}</span>
                 <span className="tag">保证金 {item.deposit}</span>
                 <span className="tag">{item.status}</span>
@@ -291,6 +315,13 @@ export function BusinessSection({ onNavigate }) {
                 <p className="muted">{selectedDemand.desc}</p>
               </InfoCard>
               <InfoCard>
+                <strong>需求方与交付</strong>
+                <div className="stack" style={{ marginTop: 12 }}>
+                  <div className="business-milestone">需求方：{selectedDemand.requester}</div>
+                  <div className="business-milestone">交付方式：{selectedDemand.delivery}</div>
+                </div>
+              </InfoCard>
+              <InfoCard>
                 <div className="row between start">
                   <strong>阶段状态</strong>
                   <span className="pill accent">{currentStageIndex >= 0 ? `进行到第 ${currentStageIndex + 1} 步` : "待开始"}</span>
@@ -301,6 +332,14 @@ export function BusinessSection({ onNavigate }) {
                       <span className="business-stage-dot" />
                       <span>{item.label}</span>
                     </div>
+                  ))}
+                </div>
+              </InfoCard>
+              <InfoCard>
+                <strong>COSER匹配结果</strong>
+                <div className="tag-row" style={{ marginTop: 12 }}>
+                  {selectedDemand.matches.map((item) => (
+                    <span className="tag" key={item}>{item}</span>
                   ))}
                 </div>
               </InfoCard>

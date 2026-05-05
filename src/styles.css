@@ -811,6 +811,17 @@ button {
   margin-top: 8px;
 }
 
+.home-focus-card {
+  border-color: rgba(183, 207, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+}
+
+.home-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .invite-poster-card {
   display: flex;
   flex-direction: column;
@@ -1664,6 +1675,12 @@ button {
   .home-upwork-hero {
     min-height: auto;
   }
+
+  .home-secondary-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
 
   .invite-poster-card {
     min-height: auto;
