@@ -1025,6 +1025,16 @@ button {
   padding: 12px;
 }
 
+.today-goal-card {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(183, 207, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(127,156,255,0.08), rgba(121,215,234,0.08)),
+    rgba(255,255,255,0.03);
+}
+
 .return-step-item {
   display: flex;
   align-items: center;

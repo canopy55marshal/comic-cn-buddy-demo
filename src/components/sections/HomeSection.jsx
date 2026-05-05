@@ -184,7 +184,7 @@ function getPickupNextFocus(pickupPoint = "") {
   };
 }
 
-function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal }) {
+function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentZone }) {
   if (pickupFlowState?.jumped && !pickupFlowCompleted) {
     if (!pickupFlowState.pickupPoint) {
       return {
@@ -205,6 +205,22 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
   }
 
   if (!completedActions.includes("map")) {
+    if (currentZone?.includes("主舞台")) {
+      return {
+        title: "先确认主舞台周边路线",
+        text: "你当前更靠近主舞台，建议先看主舞台和服务区的相对位置，避免活动开始后再临时找路。",
+        action: "map",
+        button: "去场馆地图"
+      };
+    }
+    if (currentZone?.includes("摄影")) {
+      return {
+        title: "先确认摄影区动线",
+        text: "你当前更靠近摄影区，先看主摄影棚、空景区和服务点的相对位置会更省时间。",
+        action: "map",
+        button: "去场馆地图"
+      };
+    }
     return {
       title: "先看场馆地图",
       text: "今天最该先完成的是路线判断，先知道自己在哪，再决定补给、预约还是返程。",
@@ -213,6 +229,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
     };
   }
   if (!completedActions.includes("food")) {
+    if (currentZone?.includes("服务区") || currentZone?.includes("北门")) {
+      return {
+        title: "接下来先补给或取餐",
+        text: "你现在更靠近服务区，先把补给和取餐相关安排处理掉，后面会更从容。",
+        action: "food",
+        button: "去餐饮配送"
+      };
+    }
     return {
       title: "接下来先补给",
       text: "路线确认后，下一步最适合先解决补给和取餐，不要等到体力下滑再补。",
@@ -221,6 +245,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
     };
   }
   if (!completedActions.includes("queue")) {
+    if (currentZone?.includes("主舞台") || currentZone?.includes("摄影")) {
+      return {
+        title: "接下来优先锁预约",
+        text: "你当前更靠近高热区域，适合先把热门摄影区或活动时段锁住，减少硬排。",
+        action: "queue",
+        button: "去排队预约"
+      };
+    }
     return {
       title: "接下来锁预约",
       text: "补给安排之后，建议优先把热门摄影区或活动时段锁定，减少现场硬排。",
@@ -229,6 +261,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
     };
   }
   if (!completedActions.includes("travel")) {
+    if (currentZone?.includes("北门") || currentZone?.includes("服务区")) {
+      return {
+        title: "现在就顺手处理返程",
+        text: "你已经更靠近服务区和出入口，适合现在就把返程方案定掉，避免散场再决策。",
+        action: "travel",
+        button: "去交通出行"
+      };
+    }
     return {
       title: "提前处理返程安排",
       text: "当天后半段最容易被忽略的是返程，提前定好出馆方式会轻松很多。",
@@ -319,10 +359,17 @@ export function HomeSection({
   const journeyTotal = starterTodoItems.length + pickupFlowTotal;
   const journeyDone = completedTodoCount + pickupFlowDoneCount;
   const journeyPercent = journeyTotal ? Math.round((journeyDone / journeyTotal) * 100) : 0;
+  const todayGoal = journeyPercent >= 100
+    ? "今日主线已完成"
+    : journeyPercent >= 75
+      ? "今日目标：收尾并准备返程"
+      : journeyPercent >= 40
+        ? "今日目标：完成补给、预约和取餐闭环"
+        : "今日目标：先把路线、补给和预约主线跑通";
   const pickupNextFocus = useMemo(() => getPickupNextFocus(pickupFlowState?.pickupPoint || ""), [pickupFlowState?.pickupPoint]);
   const todayNextStep = useMemo(
-    () => getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal }),
-    [completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal]
+    () => getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentZone: currentUser?.currentZone }),
+    [completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentUser?.currentZone]
   );
 
   useEffect(() => {
@@ -482,6 +529,14 @@ export function HomeSection({
               </div>
               <div className="invite-progress-track">
                 <div className="today-progress-fill" style={{ width: `${journeyPercent}%` }} />
+              </div>
+              <div className="today-goal-card">
+                <strong>{todayGoal}</strong>
+                <p className="muted">
+                  {journeyPercent >= 100
+                    ? "主线任务已经闭环，接下来可以按兴趣自由扩展直播、商业平台或更细的现场安排。"
+                    : "系统会根据你当前馆区和已完成事项，持续推荐今天最值得优先处理的下一步。"}
+                </p>
               </div>
               <div className="tag-row">
                 <span className="tag">现场任务 {completedTodoCount} / {starterTodoItems.length}</span>
