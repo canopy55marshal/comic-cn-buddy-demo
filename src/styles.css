@@ -811,6 +811,47 @@ button {
   margin-top: 8px;
 }
 
+.invite-poster-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(183, 207, 255, 0.12);
+  background:
+    radial-gradient(circle at top right, rgba(170,145,255,0.16), transparent 28%),
+    linear-gradient(135deg, rgba(127,156,255,0.14), rgba(170,145,255,0.12)),
+    rgba(255,255,255,0.03);
+}
+
+.invite-poster-card strong,
+.invite-poster-card p {
+  margin: 0;
+}
+
+.invite-poster-card p {
+  margin-top: 8px;
+}
+
+.invite-progress-track {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  margin: 12px 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+
+.invite-progress-fill {
+  height: 100%;
+  width: 66%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  box-shadow: 0 0 16px rgba(127,156,255,0.22);
+}
+
 .btn {
   padding: 10px 15px;
   border-radius: 13px;
@@ -1537,6 +1578,10 @@ button {
   }
 
   .home-upwork-hero {
+    min-height: auto;
+  }
+
+  .invite-poster-card {
     min-height: auto;
   }
 }
