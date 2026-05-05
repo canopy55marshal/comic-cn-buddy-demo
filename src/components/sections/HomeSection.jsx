@@ -5,6 +5,7 @@ import { InfoCard, SectionHead, StatsCard } from "../ui";
 const favoriteStorageKey = "comic-con-buddy-live-favorites";
 const reminderStorageKey = "comic-con-buddy-live-reminders";
 const homeActionStorageKey = "comic-con-buddy-home-actions";
+const cpsReturnStorageKey = "comic-con-buddy-cps-return";
 const platformIcons = {
   抖音: "🎵",
   B站: "📺",
@@ -154,6 +155,7 @@ export function HomeSection({
   currentUser,
   overview,
   completedActions: completedActionsProp = [],
+  pickupReminderItems = [],
   liveItineraryItems = [],
   onToggleLiveItinerary,
   onOpenLiveMap,
@@ -199,8 +201,17 @@ export function HomeSection({
     }
   });
   const [justCompleted, setJustCompleted] = useState("");
+  const [pickupFlowState, setPickupFlowState] = useState(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      return JSON.parse(window.localStorage.getItem(cpsReturnStorageKey) || "null");
+    } catch {
+      return null;
+    }
+  });
   const recommendedAction = useMemo(() => getRecommendedAction(currentUser?.currentZone || ""), [currentUser?.currentZone]);
   const completedTodoCount = starterTodoItems.filter((item) => completedActions.includes(item.id)).length;
+  const pickupFlowDoneCount = (pickupFlowState?.nextSteps || []).filter((item) => item.done).length;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -216,6 +227,24 @@ export function HomeSection({
     const timer = window.setTimeout(() => setJustCompleted(""), 1400);
     return () => window.clearTimeout(timer);
   }, [justCompleted]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const syncPickupFlow = () => {
+      try {
+        setPickupFlowState(JSON.parse(window.localStorage.getItem(cpsReturnStorageKey) || "null"));
+      } catch {
+        setPickupFlowState(null);
+      }
+    };
+    syncPickupFlow();
+    window.addEventListener("focus", syncPickupFlow);
+    document.addEventListener("visibilitychange", syncPickupFlow);
+    return () => {
+      window.removeEventListener("focus", syncPickupFlow);
+      document.removeEventListener("visibilitychange", syncPickupFlow);
+    };
+  }, []);
 
   const handleChecklistAction = (key) => {
     setCompletedActions((prev) => (prev.includes(key) ? prev : [...prev, key]));
@@ -342,6 +371,23 @@ export function HomeSection({
               <div className="invite-progress-track">
                 <div className="today-progress-fill" style={{ width: `${(completedTodoCount / starterTodoItems.length) * 100}%` }} />
               </div>
+              {(pickupFlowState?.jumped || pickupReminderItems.length > 0) && (
+                <div className="business-milestone" style={{ marginTop: 12 }}>
+                  <strong>取餐安排进度</strong>
+                  <p className="muted">
+                    {pickupFlowState?.status === "done"
+                      ? "外卖下单回流承接已完成，系统会继续按提醒时间提示你取餐。"
+                      : pickupFlowState?.nextSteps?.length
+                        ? `当前已完成 ${pickupFlowDoneCount} / ${pickupFlowState.nextSteps.length} 步，建议继续完成取餐点、提醒和路线。`
+                        : `当前已创建 ${pickupReminderItems.length} 条取餐提醒，回到餐饮页可继续安排取餐。`}
+                  </p>
+                  <div className="tag-row" style={{ marginTop: 8 }}>
+                    {pickupFlowState?.pickupPoint && <span className="tag">取餐点：{pickupFlowState.pickupPoint}</span>}
+                    {pickupReminderItems.length > 0 && <span className="tag">提醒 {pickupReminderItems.filter((item) => item.enabled).length} 项</span>}
+                    {pickupFlowState?.status === "done" && <span className="tag">承接完成</span>}
+                  </div>
+                </div>
+              )}
             </InfoCard>
             <InfoCard className={`todo-recommend-card ${completedActions.includes(recommendedAction.id) ? "completed" : ""} ${justCompleted === recommendedAction.id ? "just-completed" : ""}`}>
               <div className="row between start">

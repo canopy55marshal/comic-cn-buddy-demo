@@ -16,6 +16,7 @@ import { api } from "./services/api";
 const liveReminderStorageKey = "comic-con-buddy-live-reminders";
 const liveItineraryStorageKey = "comic-con-buddy-live-itinerary";
 const homeActionStorageKey = "comic-con-buddy-home-actions";
+const pickupReminderStorageKey = "comic-con-buddy-pickup-reminders";
 
 function resolveZoneTarget(zoneName) {
   if (!zoneName) return "";
@@ -54,6 +55,14 @@ function App() {
   const [reminderOptions, setReminderOptions] = useState([]);
   const [travelOptions, setTravelOptions] = useState([]);
   const [pickupReminderDraft, setPickupReminderDraft] = useState(null);
+  const [pickupReminderItems, setPickupReminderItems] = useState(() => {
+    if (!storage) return [];
+    try {
+      return JSON.parse(storage.getItem(pickupReminderStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  });
   const [liveMapContext, setLiveMapContext] = useState(null);
   const [liveQueueContext, setLiveQueueContext] = useState(null);
   const [liveReminderIds, setLiveReminderIds] = useState(() => {
@@ -173,6 +182,11 @@ function App() {
     if (!storage) return;
     storage.setItem(homeActionStorageKey, JSON.stringify(completedHomeActions));
   }, [completedHomeActions, storage]);
+
+  useEffect(() => {
+    if (!storage) return;
+    storage.setItem(pickupReminderStorageKey, JSON.stringify(pickupReminderItems));
+  }, [pickupReminderItems, storage]);
 
   const liveReminderItems = useMemo(
     () => liveLinks
@@ -381,6 +395,14 @@ function App() {
   };
 
   const handleToggleReminder = (item) => {
+    if (String(item.id).startsWith("pickup-")) {
+      setPickupReminderItems((prev) => prev.map((entry) => (
+        entry.id === item.id ? { ...entry, enabled: !entry.enabled } : entry
+      )));
+      notify(`${item.enabled ? "已关闭" : "已开启"} ${item.title}`);
+      return;
+    }
+
     api.toggleReminder({ reminderId: item.id })
       .then(() => api.getReminders())
       .then((list) => {
@@ -400,6 +422,11 @@ function App() {
       enabled: true
     };
     setPickupReminderDraft(draft);
+    setPickupReminderItems((prev) => {
+      const next = [draft, ...prev.filter((item) => !(item.title === draft.title && item.desc === draft.desc))];
+      return next;
+    });
+    markHomeActionComplete("food");
     setSection("reminder");
     notify(`已为 ${merchantName} 创建取餐提醒草稿`);
   };
@@ -586,7 +613,7 @@ function App() {
       case "reminder":
         return (
           <ReminderSection
-            reminderOptions={pickupReminderDraft ? [pickupReminderDraft, ...reminderOptions] : reminderOptions}
+            reminderOptions={[...pickupReminderItems, ...reminderOptions]}
             liveReminderItems={liveReminderItems}
             onToggle={handleToggleReminder}
             onToggleLiveReminder={handleToggleLiveReminder}
@@ -610,6 +637,7 @@ function App() {
             currentUser={currentUser}
             overview={overview}
             completedActions={completedHomeActions}
+            pickupReminderItems={pickupReminderItems}
             liveItineraryItems={liveItineraryItems}
             onToggleLiveItinerary={handleToggleLiveItinerary}
             onOpenLiveMap={handleOpenLiveMap}
