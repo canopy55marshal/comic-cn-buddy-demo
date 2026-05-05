@@ -10,7 +10,7 @@ import { ReminderSection } from "./components/sections/ReminderSection";
 import { BusinessSection } from "./components/sections/BusinessSection";
 import { ServiceSection } from "./components/sections/ServiceSection";
 import { TravelSection } from "./components/sections/TravelSection";
-import { liveLinks, navItems } from "./data/mockData";
+import { liveLinks, merchants as localMerchants, navItems, reminderOptions as localReminderOptions } from "./data/mockData";
 import { api } from "./services/api";
 
 const liveReminderStorageKey = "comic-con-buddy-live-reminders";
@@ -53,6 +53,7 @@ function App() {
   const [queueOptions, setQueueOptions] = useState([]);
   const [reminderOptions, setReminderOptions] = useState([]);
   const [travelOptions, setTravelOptions] = useState([]);
+  const [pickupReminderDraft, setPickupReminderDraft] = useState(null);
   const [liveMapContext, setLiveMapContext] = useState(null);
   const [liveQueueContext, setLiveQueueContext] = useState(null);
   const [liveReminderIds, setLiveReminderIds] = useState(() => {
@@ -247,6 +248,7 @@ function App() {
         const data = await api.getMerchants(foodFilter);
         setMerchants(data);
       } catch (error) {
+        setMerchants(localMerchants.filter((item) => !foodFilter || foodFilter === "全部" || item.category === foodFilter));
         notify(`补给数据加载失败：${error.message}`);
       } finally {
         setLoading((prev) => ({ ...prev, merchants: false }));
@@ -388,6 +390,20 @@ function App() {
       .catch((error) => notify(`提醒设置失败：${error.message}`));
   };
 
+  const handleCreatePickupReminder = (pickupPoint, merchantName) => {
+    const draft = {
+      id: `pickup-${Date.now()}`,
+      title: "取餐提醒",
+      time: "订单返回后 10 分钟",
+      tag: "补给",
+      desc: `${merchantName} 下单后，提醒你去 ${pickupPoint} 取餐。`,
+      enabled: true
+    };
+    setPickupReminderDraft(draft);
+    setSection("reminder");
+    notify(`已为 ${merchantName} 创建取餐提醒草稿`);
+  };
+
   const handleChooseTravel = (item) => {
     api.selectTravelOption({ travelId: item.id })
       .then(() => api.getTravelOptions())
@@ -499,6 +515,7 @@ function App() {
             loading={loading.merchants}
             onNavigate={setSection}
             onOpenPickupMap={handleOpenPickupMap}
+            onCreatePickupReminder={handleCreatePickupReminder}
             onFoodFilterChange={setFoodFilter}
             onAddToCart={handleAddToCart}
             onCreateOrder={handleCreateOrder}
@@ -569,7 +586,7 @@ function App() {
       case "reminder":
         return (
           <ReminderSection
-            reminderOptions={reminderOptions}
+            reminderOptions={pickupReminderDraft ? [pickupReminderDraft, ...reminderOptions] : reminderOptions}
             liveReminderItems={liveReminderItems}
             onToggle={handleToggleReminder}
             onToggleLiveReminder={handleToggleLiveReminder}

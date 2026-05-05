@@ -26,7 +26,8 @@ export function FoodSection({
   onAddToCart,
   onCreateOrder,
   onNavigate,
-  onOpenPickupMap
+  onOpenPickupMap,
+  onCreatePickupReminder
 }) {
   const latestOrder = orders[0];
   const cpsOffers = merchants.filter((item) => item.type === "cps");
@@ -157,6 +158,10 @@ export function FoodSection({
               <SectionHead title="馆内配送" desc="优先展示可直接在场馆内配送或现场取餐的补给项。" />
               {normalMerchants.map((item) => (
                 <InfoCard key={`${item.name}-${item.hot}`}>
+                  <div className="food-item-cover">
+                    <strong>{item.hot}</strong>
+                    <p className="muted">{item.category} · {item.price}</p>
+                  </div>
                   <div className="row between start">
                     <div>
                       <strong>{item.name}</strong>
@@ -294,6 +299,11 @@ export function FoodSection({
                   <InfoCard className="page-progress-card completed">
                     <strong>当前取餐点</strong>
                     <p className="muted">{cpsReturnState.pickupPoint}。建议下一步去设置取餐提醒，再回地图确认动线。</p>
+                    <div className="action-row">
+                      <button className="btn ghost" onClick={() => onCreatePickupReminder?.(cpsReturnState.pickupPoint, cpsReturnState.merchantName)}>
+                        去提醒页创建取餐提醒
+                      </button>
+                    </div>
                   </InfoCard>
                 )}
               </div>
@@ -320,6 +330,11 @@ export function FoodSection({
                 <span className="pill accent">{item.status}</span>
               </div>
               <p className="muted">{item.detail}</p>
+              {cpsReturnState?.pickupPoint && (item.merchantName || item.name) === cpsReturnState.merchantName && (
+                <div className="tag-row">
+                  <span className="tag">取餐点：{cpsReturnState.pickupPoint}</span>
+                </div>
+              )}
             </InfoCard>
           ))}
         </div>
