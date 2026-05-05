@@ -122,12 +122,15 @@ function getMarkerList({ activeZone, currentZone, liveMapContext, floor }) {
   const markers = [];
 
   if (liveMapContext && floor !== "屋外动线") {
+    const isPickup = liveMapContext.kind === "pickup";
     markers.push({
-      id: "live-marker",
-      kind: "live",
-      icon: "📡",
-      title: `${liveMapContext.name} 开播点`,
-      text: `${liveMapContext.name} 当前在 ${liveMapContext.zone} 附近活动，可作为你的目标落点。`,
+      id: "context-marker",
+      kind: isPickup ? "service" : "live",
+      icon: isPickup ? "🍱" : "📡",
+      title: isPickup ? `${liveMapContext.zone}` : `${liveMapContext.name} 开播点`,
+      text: isPickup
+        ? `当前已将 ${liveMapContext.zone} 设为取餐目标点，建议先确认路线再安排去取餐。`
+        : `${liveMapContext.name} 当前在 ${liveMapContext.zone} 附近活动，可作为你的目标落点。`,
       positionClass: floor === "L2 连廊层" ? "marker-live-l2" : "marker-live"
     });
   }
@@ -284,11 +287,19 @@ export function MapSection({
           <div className="stack" style={{ marginTop: 16 }}>
             <InfoCard>
               <div className="row between start">
-                <strong>来自主播行程</strong>
+                <strong>{liveMapContext.kind === "pickup" ? "来自取餐路线" : "来自主播行程"}</strong>
                 <span className="pill accent">{liveMapContext.zone}</span>
               </div>
-              <p className="muted">{liveMapContext.name} 当前在这个区域附近开播，建议先看推荐动线再决定是否转场过去。</p>
-              <p className="muted">可以把它理解成游戏里的自动寻路落点提示：先锁定目标馆区，再沿推荐动线移动过去。</p>
+              <p className="muted">
+                {liveMapContext.kind === "pickup"
+                  ? `你已将 ${liveMapContext.zone} 设为当前取餐点，建议先看推荐动线，再判断是先取餐还是顺路补妆/转场。`
+                  : `${liveMapContext.name} 当前在这个区域附近开播，建议先看推荐动线再决定是否转场过去。`}
+              </p>
+              <p className="muted">
+                {liveMapContext.kind === "pickup"
+                  ? "可以把它理解成取餐导航落点提示：先锁定取餐馆区，再沿推荐动线移动过去。"
+                  : "可以把它理解成游戏里的自动寻路落点提示：先锁定目标馆区，再沿推荐动线移动过去。"}
+              </p>
             </InfoCard>
           </div>
         )}

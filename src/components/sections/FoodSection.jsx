@@ -25,7 +25,8 @@ export function FoodSection({
   onFoodFilterChange,
   onAddToCart,
   onCreateOrder,
-  onNavigate
+  onNavigate,
+  onOpenPickupMap
 }) {
   const latestOrder = orders[0];
   const cpsOffers = merchants.filter((item) => item.type === "cps");
@@ -49,7 +50,8 @@ export function FoodSection({
       await navigator.clipboard.writeText(text);
       setCpsReturnState((prev) => ({
         ...(prev || {}),
-        feedback: successText
+        feedback: successText,
+        copiedText: text
       }));
     } catch {
       setCpsReturnState((prev) => ({
@@ -65,7 +67,10 @@ export function FoodSection({
       merchantName: item.name,
       title: item.title,
       link: item.orderLink,
-      feedback: "已跳转外卖平台，完成下单后回到应用继续安排取餐和行程。"
+      feedback: "已跳转外卖平台，完成下单后回到应用继续安排取餐和行程。",
+      copiedText: "",
+      copiedType: "",
+      jumped: true
     });
     window.open(item.orderLink, "_blank", "noopener,noreferrer");
   };
@@ -76,6 +81,7 @@ export function FoodSection({
       status: "returned",
       feedback: "欢迎回来，建议按顺序完成取餐点、提醒和路线确认，再回首页继续安排行程。",
       pickupPoint: prev?.pickupPoint || "",
+      returned: true,
       nextSteps: [
         { key: "pickup", label: "确认取餐点", done: false },
         { key: "reminder", label: "设置取餐提醒", done: false },
@@ -94,6 +100,10 @@ export function FoodSection({
         ))
       };
     });
+    if (stepKey === "route" && cpsReturnState?.pickupPoint) {
+      onOpenPickupMap?.(cpsReturnState.pickupPoint);
+      return;
+    }
     if (target) onNavigate?.(target);
   };
 
@@ -108,6 +118,17 @@ export function FoodSection({
         ))
       };
     });
+  };
+
+  const getCpsStatusTags = (item) => {
+    const tags = [];
+    if (cpsReturnState?.merchantName === item.name && cpsReturnState?.title === item.title) {
+      if (cpsReturnState.copiedType === "command") tags.push("已复制团口令");
+      if (cpsReturnState.copiedType === "link") tags.push("已复制链接");
+      if (cpsReturnState.jumped) tags.push("已跳转");
+      if (cpsReturnState.returned) tags.push("已返回");
+    }
+    return tags;
   };
 
   return (
@@ -178,6 +199,7 @@ export function FoodSection({
                     <span className="tag">{item.vendor}</span>
                     <span className="tag">后端表可配置</span>
                     {item.multiStore && <span className="tag">多店可用</span>}
+                    {getCpsStatusTags(item).map((tag) => <span className="tag" key={tag}>{tag}</span>)}
                   </div>
                   <div className="stack" style={{ marginTop: 12 }}>
                     <div className="business-milestone">
@@ -191,8 +213,24 @@ export function FoodSection({
                   </div>
                   <div className="action-row">
                     <button className="btn primary" onClick={() => handleStartCpsOrder(item)}>{item.ctaLabel}</button>
-                    <button className="btn ghost" onClick={() => copyText(item.commandText, "已复制团口令，可直接去美团粘贴打开")}>复制团口令</button>
-                    <button className="btn ghost" onClick={() => copyText(item.orderLink, "已复制下单链接")}>复制链接</button>
+                    <button
+                      className="btn ghost"
+                      onClick={async () => {
+                        await copyText(item.commandText, "已复制团口令，可直接去美团粘贴打开");
+                        setCpsReturnState((prev) => ({ ...(prev || {}), copiedType: "command", merchantName: item.name, title: item.title }));
+                      }}
+                    >
+                      复制团口令
+                    </button>
+                    <button
+                      className="btn ghost"
+                      onClick={async () => {
+                        await copyText(item.orderLink, "已复制下单链接");
+                        setCpsReturnState((prev) => ({ ...(prev || {}), copiedType: "link", merchantName: item.name, title: item.title }));
+                      }}
+                    >
+                      复制链接
+                    </button>
                   </div>
                 </InfoCard>
               ))}
@@ -225,7 +263,7 @@ export function FoodSection({
                 <>
                   <button className="btn ghost" onClick={() => handleCompleteReturnStep("pickup", "food")}>确认取餐点</button>
                   <button className="btn ghost" onClick={() => handleCompleteReturnStep("reminder", "reminder")}>设置取餐提醒</button>
-                  <button className="btn ghost" onClick={() => handleCompleteReturnStep("route", "map")}>回地图看路线</button>
+                  <button className="btn ghost" onClick={() => handleCompleteReturnStep("route", "map")} disabled={!cpsReturnState.pickupPoint}>回地图看路线</button>
                 </>
               )}
             </div>

@@ -437,6 +437,20 @@ function App() {
     notify(`已带你去排队预约，正在按 ${item.zone} 推荐更合适的预约项`);
   };
 
+  const handleOpenPickupMap = (pickupPoint) => {
+    const targetZone = resolveZoneTarget(pickupPoint);
+    setLiveMapContext({
+      name: "取餐点",
+      zone: pickupPoint,
+      targetZone,
+      kind: "pickup"
+    });
+    setSection("map");
+    setActiveZone(targetZone);
+    markHomeActionComplete("map");
+    notify(`已为你定位到 ${pickupPoint} 的取餐路线`);
+  };
+
   const handleJoinItashaDriver = () => {
     if (itashaCampaign.role === "driver") {
       notify("你已经报名过痛车车主招募");
@@ -484,6 +498,7 @@ function App() {
             orders={orders}
             loading={loading.merchants}
             onNavigate={setSection}
+            onOpenPickupMap={handleOpenPickupMap}
             onFoodFilterChange={setFoodFilter}
             onAddToCart={handleAddToCart}
             onCreateOrder={handleCreateOrder}
