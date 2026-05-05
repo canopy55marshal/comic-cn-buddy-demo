@@ -1035,6 +1035,16 @@ button {
     rgba(255,255,255,0.03);
 }
 
+.today-task-card {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(183, 207, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(127,156,255,0.1), rgba(170,145,255,0.08)),
+    rgba(255,255,255,0.03);
+}
+
 .return-step-item {
   display: flex;
   align-items: center;

@@ -184,7 +184,42 @@ function getPickupNextFocus(pickupPoint = "") {
   };
 }
 
-function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentZone }) {
+function getTimePhaseInfo(hour) {
+  if (hour < 11) {
+    return {
+      key: "morning",
+      label: "上午阶段",
+      target: "先跑通路线、补给和预约主线",
+      hint: "上午最适合先定路线、锁预约，不要把高优先级动作拖到中午以后。"
+    };
+  }
+  if (hour < 15) {
+    return {
+      key: "noon",
+      label: "中午阶段",
+      target: "完成补给、取餐和状态恢复",
+      hint: "中午更适合处理补给、取餐和休整，避免体力和妆面在下午掉下来。"
+    };
+  }
+  if (hour < 18) {
+    return {
+      key: "afternoon",
+      label: "下午阶段",
+      target: "补齐预约、同行和返程收尾",
+      hint: "下午适合把剩余预约、同行协同和返程方案一起收尾。"
+    };
+  }
+  return {
+    key: "evening",
+    label: "散场前阶段",
+    target: "确认返程、提醒和最后动线",
+    hint: "散场前优先处理返程和最后提醒，别把决策堆到出馆口。"
+  };
+}
+
+function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentZone, currentHour }) {
+  const timePhase = getTimePhaseInfo(currentHour);
+
   if (pickupFlowState?.jumped && !pickupFlowCompleted) {
     if (!pickupFlowState.pickupPoint) {
       return {
@@ -205,6 +240,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
   }
 
   if (!completedActions.includes("map")) {
+    if (timePhase.key === "evening") {
+      return {
+        title: "先确认最后动线",
+        text: "散场前先把当前位置、出入口和服务点关系看清，后面处理返程会更轻松。",
+        action: "map",
+        button: "去场馆地图"
+      };
+    }
     if (currentZone?.includes("主舞台")) {
       return {
         title: "先确认主舞台周边路线",
@@ -229,6 +272,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
     };
   }
   if (!completedActions.includes("food")) {
+    if (timePhase.key === "noon") {
+      return {
+        title: "中午先处理补给",
+        text: "现在正适合补给和取餐，把体力和状态稳住，下午会更从容。",
+        action: "food",
+        button: "去餐饮配送"
+      };
+    }
     if (currentZone?.includes("服务区") || currentZone?.includes("北门")) {
       return {
         title: "接下来先补给或取餐",
@@ -245,6 +296,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
     };
   }
   if (!completedActions.includes("queue")) {
+    if (timePhase.key === "morning") {
+      return {
+        title: "上午优先锁预约",
+        text: "上午是锁热门项目最划算的时间，先把预约拿下，后面行程会更稳。",
+        action: "queue",
+        button: "去排队预约"
+      };
+    }
     if (currentZone?.includes("主舞台") || currentZone?.includes("摄影")) {
       return {
         title: "接下来优先锁预约",
@@ -261,6 +320,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
     };
   }
   if (!completedActions.includes("travel")) {
+    if (timePhase.key === "evening" || timePhase.key === "afternoon") {
+      return {
+        title: "现在开始处理返程",
+        text: "已经进入后半段，建议先把返程方式锁定，避免散场后再临时决策。",
+        action: "travel",
+        button: "去交通出行"
+      };
+    }
     if (currentZone?.includes("北门") || currentZone?.includes("服务区")) {
       return {
         title: "现在就顺手处理返程",
@@ -359,6 +426,8 @@ export function HomeSection({
   const journeyTotal = starterTodoItems.length + pickupFlowTotal;
   const journeyDone = completedTodoCount + pickupFlowDoneCount;
   const journeyPercent = journeyTotal ? Math.round((journeyDone / journeyTotal) * 100) : 0;
+  const currentHour = new Date().getHours();
+  const timePhase = useMemo(() => getTimePhaseInfo(currentHour), [currentHour]);
   const todayGoal = journeyPercent >= 100
     ? "今日主线已完成"
     : journeyPercent >= 75
@@ -368,8 +437,8 @@ export function HomeSection({
         : "今日目标：先把路线、补给和预约主线跑通";
   const pickupNextFocus = useMemo(() => getPickupNextFocus(pickupFlowState?.pickupPoint || ""), [pickupFlowState?.pickupPoint]);
   const todayNextStep = useMemo(
-    () => getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentZone: currentUser?.currentZone }),
-    [completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentUser?.currentZone]
+    () => getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentZone: currentUser?.currentZone, currentHour }),
+    [completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentUser?.currentZone, currentHour]
   );
 
   useEffect(() => {
@@ -529,6 +598,20 @@ export function HomeSection({
               </div>
               <div className="invite-progress-track">
                 <div className="today-progress-fill" style={{ width: `${journeyPercent}%` }} />
+              </div>
+              <div className="today-task-card">
+                <div className="row between start">
+                  <div>
+                    <strong>今日任务卡</strong>
+                    <p className="muted">{timePhase.label} · {currentUser?.currentZone || "馆内移动中"}</p>
+                  </div>
+                  <span className="pill info">{journeyPercent}%</span>
+                </div>
+                <div className="tag-row">
+                  <span className="tag">{timePhase.target}</span>
+                  {currentUser?.currentZone && <span className="tag">{currentUser.currentZone}</span>}
+                </div>
+                <p className="muted">{timePhase.hint}</p>
               </div>
               <div className="today-goal-card">
                 <strong>{todayGoal}</strong>
