@@ -22,6 +22,8 @@ export function FoodSection({
   onNavigate
 }) {
   const latestOrder = orders[0];
+  const cpsOffers = merchants.filter((item) => item.type === "cps");
+  const normalMerchants = merchants.filter((item) => item.type !== "cps");
   const [cpsReturnState, setCpsReturnState] = useState(() => {
     if (typeof window === "undefined") return null;
     try {
@@ -66,8 +68,26 @@ export function FoodSection({
     setCpsReturnState((prev) => ({
       ...prev,
       status: "returned",
-      feedback: "欢迎回来，建议下一步确认取餐点、补一个提醒，再回首页继续安排行程。"
+      feedback: "欢迎回来，建议按顺序完成取餐点、提醒和路线确认，再回首页继续安排行程。",
+      nextSteps: [
+        { key: "pickup", label: "确认取餐点", done: false },
+        { key: "reminder", label: "设置取餐提醒", done: false },
+        { key: "route", label: "回地图确认路线", done: false }
+      ]
     }));
+  };
+
+  const handleCompleteReturnStep = (stepKey, target) => {
+    setCpsReturnState((prev) => {
+      if (!prev?.nextSteps) return prev;
+      return {
+        ...prev,
+        nextSteps: prev.nextSteps.map((item) => (
+          item.key === stepKey ? { ...item, done: true } : item
+        ))
+      };
+    });
+    if (target) onNavigate?.(target);
   };
 
   return (
@@ -91,17 +111,43 @@ export function FoodSection({
         <div className="stack">
           {loading && <InfoCard><p>正在加载补给数据...</p></InfoCard>}
           {!loading && merchants.length === 0 && <InfoCard><p>当前分类暂无商家。</p></InfoCard>}
-          {merchants.map((item) => (
-            <InfoCard key={`${item.name}-${item.title || item.hot}`} className={item.type === "cps" ? "cps-offer-card" : ""}>
-              <div className="row between start">
-                <div>
-                  <strong>{item.type === "cps" ? `🔥【外卖】${item.name}` : item.name}</strong>
-                  <p className="muted">{item.type === "cps" ? `${item.title} · ${item.eta}` : `${item.category} · ${item.eta}`}</p>
-                </div>
-                <span className="pill price">{item.price}</span>
-              </div>
-              {item.type === "cps" ? (
-                <>
+          {!loading && normalMerchants.length > 0 && (
+            <>
+              <SectionHead title="馆内配送" desc="优先展示可直接在场馆内配送或现场取餐的补给项。" />
+              {normalMerchants.map((item) => (
+                <InfoCard key={`${item.name}-${item.hot}`}>
+                  <div className="row between start">
+                    <div>
+                      <strong>{item.name}</strong>
+                      <p className="muted">{item.category} · {item.eta}</p>
+                    </div>
+                    <span className="pill price">{item.price}</span>
+                  </div>
+                  <p className="muted">{item.desc}</p>
+                  <div className="row between">
+                    <span className="pill success">评分 {item.score}</span>
+                    <span className="muted">爆款：{item.hot}</span>
+                  </div>
+                  <div className="action-row">
+                    <button className="btn primary" onClick={() => onAddToCart(item.name)}>加入购物车</button>
+                    <button className="btn ghost" onClick={() => onCreateOrder(item.name)}>立即下单</button>
+                  </div>
+                </InfoCard>
+              ))}
+            </>
+          )}
+          {!loading && cpsOffers.length > 0 && (
+            <>
+              <SectionHead title="外部CPS券卡" desc="这类券卡来自外卖平台或团购渠道，适合后续由后台表统一维护和投放。" />
+              {cpsOffers.map((item) => (
+                <InfoCard key={`${item.name}-${item.title}`} className="cps-offer-card">
+                  <div className="row between start">
+                    <div>
+                      <strong>{`🔥【外卖】${item.name}`}</strong>
+                      <p className="muted">{`${item.title} · ${item.eta}`}</p>
+                    </div>
+                    <span className="pill price">{item.price}</span>
+                  </div>
                   <p className="muted">💰门市价 {item.marketPrice}，现价仅需 {item.price}。{item.multiStore ? "支持多店可用，适合先囤券再安排取餐。" : item.desc}</p>
                   <div className="tag-row">
                     <span className="tag">{item.vendor}</span>
@@ -113,22 +159,10 @@ export function FoodSection({
                     <button className="btn ghost" onClick={() => copyText(item.commandText, "已复制团口令，可直接去美团粘贴打开")}>复制团口令</button>
                     <button className="btn ghost" onClick={() => copyText(item.orderLink, "已复制下单链接")}>复制链接</button>
                   </div>
-                </>
-              ) : (
-                <>
-                  <p className="muted">{item.desc}</p>
-                  <div className="row between">
-                    <span className="pill success">评分 {item.score}</span>
-                    <span className="muted">爆款：{item.hot}</span>
-                  </div>
-                  <div className="action-row">
-                    <button className="btn primary" onClick={() => onAddToCart(item.name)}>加入购物车</button>
-                    <button className="btn ghost" onClick={() => onCreateOrder(item.name)}>立即下单</button>
-                  </div>
-                </>
-              )}
-            </InfoCard>
-          ))}
+                </InfoCard>
+              ))}
+            </>
+          )}
         </div>
       </div>
       <div className="panel">
@@ -152,9 +186,24 @@ export function FoodSection({
               {cpsReturnState.status !== "returned" && (
                 <button className="btn primary" onClick={handleReturnToApp}>我已下单并返回</button>
               )}
-              <button className="btn ghost" onClick={() => onNavigate?.("reminder")}>去设置取餐提醒</button>
-              <button className="btn ghost" onClick={() => onNavigate?.("home")}>回首页继续安排</button>
+              {cpsReturnState.status === "returned" && (
+                <>
+                  <button className="btn ghost" onClick={() => handleCompleteReturnStep("pickup", "food")}>确认取餐点</button>
+                  <button className="btn ghost" onClick={() => handleCompleteReturnStep("reminder", "reminder")}>设置取餐提醒</button>
+                  <button className="btn ghost" onClick={() => handleCompleteReturnStep("route", "map")}>回地图看路线</button>
+                </>
+              )}
             </div>
+            {cpsReturnState.status === "returned" && cpsReturnState.nextSteps?.length > 0 && (
+              <div className="stack" style={{ marginTop: 12 }}>
+                {cpsReturnState.nextSteps.map((item) => (
+                  <div key={item.key} className={`return-step-item ${item.done ? "done" : ""}`}>
+                    <span className={`todo-check ${item.done ? "done" : ""}`}>{item.done ? "✓" : ""}</span>
+                    <span>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </InfoCard>
         )}
         <div className="grid two">
