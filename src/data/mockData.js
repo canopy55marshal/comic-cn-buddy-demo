@@ -30,7 +30,9 @@ export const merchants = [
     ctaLabel: "去美团下单",
     orderLink: "http://dpurl.cn/3kLbuKrz",
     commandText: "1来美团，吃得更好，生活更好❤️复制整条信息，打开👉美团👈 http:/💰trYmY3MGQ3M2Y💰",
-    multiStore: true
+    multiStore: true,
+    coverTitle: "冬菇鸡蒸蛋汤套餐",
+    coverLabel: "兑换券 · 1张"
   },
   { type: "normal", name: "次元便当研究所", category: "主食", eta: "26 分钟送达", price: "￥34 起", score: "4.8", desc: "热食便当、饭团和意面，适合长线逛展补充体力。", hot: "照烧鸡排饭团" },
   { type: "normal", name: "喵团烘焙屋", category: "甜品", eta: "20 分钟送达", price: "￥18 起", score: "4.7", desc: "适合拍照打卡的轻甜品和奶油卷。", hot: "草莓奶盖卷" },

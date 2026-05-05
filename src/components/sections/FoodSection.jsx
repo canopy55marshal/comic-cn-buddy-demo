@@ -9,6 +9,12 @@ const serviceHighlights = [
 ];
 
 const cpsReturnStorageKey = "comic-con-buddy-cps-return";
+const pickupPoints = [
+  "A馆西侧休息区",
+  "北门服务台 2号点",
+  "B馆摄影区补给点",
+  "连廊中转取餐点"
+];
 
 export function FoodSection({
   cartCount,
@@ -69,6 +75,7 @@ export function FoodSection({
       ...prev,
       status: "returned",
       feedback: "欢迎回来，建议按顺序完成取餐点、提醒和路线确认，再回首页继续安排行程。",
+      pickupPoint: prev?.pickupPoint || "",
       nextSteps: [
         { key: "pickup", label: "确认取餐点", done: false },
         { key: "reminder", label: "设置取餐提醒", done: false },
@@ -88,6 +95,19 @@ export function FoodSection({
       };
     });
     if (target) onNavigate?.(target);
+  };
+
+  const handleSelectPickupPoint = (point) => {
+    setCpsReturnState((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        pickupPoint: point,
+        nextSteps: (prev.nextSteps || []).map((item) => (
+          item.key === "pickup" ? { ...item, done: true } : item
+        ))
+      };
+    });
   };
 
   return (
@@ -141,6 +161,11 @@ export function FoodSection({
               <SectionHead title="外部CPS券卡" desc="这类券卡来自外卖平台或团购渠道，适合后续由后台表统一维护和投放。" />
               {cpsOffers.map((item) => (
                 <InfoCard key={`${item.name}-${item.title}`} className="cps-offer-card">
+                  <div className="cps-cover-card">
+                    <span className="pill accent">{item.vendor}</span>
+                    <strong>{item.coverTitle || item.title}</strong>
+                    <p className="muted">{item.coverLabel || "团购券"}</p>
+                  </div>
                   <div className="row between start">
                     <div>
                       <strong>{`🔥【外卖】${item.name}`}</strong>
@@ -153,6 +178,16 @@ export function FoodSection({
                     <span className="tag">{item.vendor}</span>
                     <span className="tag">后端表可配置</span>
                     {item.multiStore && <span className="tag">多店可用</span>}
+                  </div>
+                  <div className="stack" style={{ marginTop: 12 }}>
+                    <div className="business-milestone">
+                      <strong>下单链接</strong>
+                      <p className="muted cps-inline-text">{item.orderLink}</p>
+                    </div>
+                    <div className="business-milestone">
+                      <strong>团口令</strong>
+                      <p className="muted cps-inline-text">{item.commandText}</p>
+                    </div>
                   </div>
                   <div className="action-row">
                     <button className="btn primary" onClick={() => handleStartCpsOrder(item)}>{item.ctaLabel}</button>
@@ -196,12 +231,33 @@ export function FoodSection({
             </div>
             {cpsReturnState.status === "returned" && cpsReturnState.nextSteps?.length > 0 && (
               <div className="stack" style={{ marginTop: 12 }}>
+                <InfoCard>
+                  <strong>确认取餐点</strong>
+                  <p className="muted">先选一个你最顺路的取餐点，后续提醒和路线都会围绕这里展开。</p>
+                  <div className="tag-row" style={{ marginTop: 12 }}>
+                    {pickupPoints.map((item) => (
+                      <button
+                        key={item}
+                        className={`pickup-chip ${cpsReturnState.pickupPoint === item ? "active" : ""}`}
+                        onClick={() => handleSelectPickupPoint(item)}
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </InfoCard>
                 {cpsReturnState.nextSteps.map((item) => (
                   <div key={item.key} className={`return-step-item ${item.done ? "done" : ""}`}>
                     <span className={`todo-check ${item.done ? "done" : ""}`}>{item.done ? "✓" : ""}</span>
                     <span>{item.label}</span>
                   </div>
                 ))}
+                {cpsReturnState.pickupPoint && (
+                  <InfoCard className="page-progress-card completed">
+                    <strong>当前取餐点</strong>
+                    <p className="muted">{cpsReturnState.pickupPoint}。建议下一步去设置取餐提醒，再回地图确认动线。</p>
+                  </InfoCard>
+                )}
               </div>
             )}
           </InfoCard>

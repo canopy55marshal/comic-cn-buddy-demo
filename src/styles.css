@@ -929,6 +929,44 @@ button {
     rgba(28, 40, 86, 0.38);
 }
 
+.cps-cover-card {
+  margin-bottom: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(183, 207, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(121,215,234,0.1), rgba(170,145,255,0.12)),
+    rgba(255,255,255,0.03);
+}
+
+.cps-cover-card strong,
+.cps-cover-card p {
+  margin: 0;
+}
+
+.cps-cover-card p {
+  margin-top: 6px;
+}
+
+.cps-inline-text {
+  margin-top: 6px;
+  word-break: break-all;
+}
+
+.pickup-chip {
+  border: 1px solid rgba(183, 207, 255, 0.14);
+  background: rgba(255,255,255,0.03);
+  color: inherit;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.pickup-chip.active {
+  border-color: rgba(121, 215, 234, 0.22);
+  background: rgba(121, 215, 234, 0.12);
+}
+
 .return-step-item {
   display: flex;
   align-items: center;

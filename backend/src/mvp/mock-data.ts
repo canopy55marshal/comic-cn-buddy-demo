@@ -7,6 +7,16 @@ export type Merchant = {
   score: string;
   desc: string;
   hot: string;
+  type?: string;
+  title?: string;
+  marketPrice?: string;
+  vendor?: string;
+  ctaLabel?: string;
+  orderLink?: string;
+  commandText?: string;
+  multiStore?: boolean;
+  coverTitle?: string;
+  coverLabel?: string;
 };
 
 export type Order = {
@@ -84,10 +94,11 @@ export type TravelOption = {
 };
 
 export const merchants: Merchant[] = [
-  { id: 1, name: "樱桃汽泡补给站", category: "奶茶", eta: "18 分钟送达", price: "￥22 起", score: "4.9", desc: "高颜值奶茶和应援杯套，适合边逛边拿。", hot: "桃桃气泡波波" },
-  { id: 2, name: "次元便当研究所", category: "主食", eta: "26 分钟送达", price: "￥34 起", score: "4.8", desc: "热食便当、饭团和意面，适合长线逛展补充体力。", hot: "照烧鸡排饭团" },
-  { id: 3, name: "喵团烘焙屋", category: "甜品", eta: "20 分钟送达", price: "￥18 起", score: "4.7", desc: "适合拍照打卡的轻甜品和奶油卷。", hot: "草莓奶盖卷" },
-  { id: 4, name: "应援急救小铺", category: "应急用品", eta: "12 分钟送达", price: "￥9 起", score: "4.9", desc: "补妆棉签、发夹、充电线、防走光贴一站补齐。", hot: "便携定妆补给包" }
+  { id: 1, type: "normal", name: "樱桃汽泡补给站", category: "奶茶", eta: "18 分钟送达", price: "￥22 起", score: "4.9", desc: "高颜值奶茶和应援杯套，适合边逛边拿。", hot: "桃桃气泡波波" },
+  { id: 2, type: "cps", name: "真功夫", title: "冬菇鸡蒸蛋汤套餐兑换券", category: "主食", eta: "多店可用", price: "￥20.9", marketPrice: "￥46", score: "CPS", desc: "测试用美团 CPS 券卡，后续可以由后台表统一填入并渲染到前台。", hot: "套餐兑换券", vendor: "美团CPS", ctaLabel: "去美团下单", orderLink: "http://dpurl.cn/3kLbuKrz", commandText: "1来美团，吃得更好，生活更好❤️复制整条信息，打开👉美团👈 http:/💰trYmY3MGQ3M2Y💰", multiStore: true, coverTitle: "冬菇鸡蒸蛋汤套餐", coverLabel: "兑换券 · 1张" },
+  { id: 3, type: "normal", name: "次元便当研究所", category: "主食", eta: "26 分钟送达", price: "￥34 起", score: "4.8", desc: "热食便当、饭团和意面，适合长线逛展补充体力。", hot: "照烧鸡排饭团" },
+  { id: 4, type: "normal", name: "喵团烘焙屋", category: "甜品", eta: "20 分钟送达", price: "￥18 起", score: "4.7", desc: "适合拍照打卡的轻甜品和奶油卷。", hot: "草莓奶盖卷" },
+  { id: 5, type: "normal", name: "应援急救小铺", category: "应急用品", eta: "12 分钟送达", price: "￥9 起", score: "4.9", desc: "补妆棉签、发夹、充电线、防走光贴一站补齐。", hot: "便携定妆补给包" }
 ];
 
 export const orders: Order[] = [
