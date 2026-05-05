@@ -855,8 +855,14 @@ button {
   margin-bottom: 16px;
 }
 
+.guided-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px;
+}
+
 .today-progress-card {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .today-progress-fill {
@@ -868,6 +874,19 @@ button {
 
 .todo-like-card {
   position: relative;
+}
+
+.todo-like-card.compact {
+  min-height: auto;
+  padding: 16px;
+}
+
+.todo-like-card.compact p {
+  margin-top: 4px;
+}
+
+.todo-like-card.compact .action-row {
+  padding-top: 8px;
 }
 
 .todo-check {
@@ -1762,6 +1781,11 @@ button {
   .hero-dual-entry {
     grid-template-columns: 1fr;
   }
+
+  .guided-layout {
+    grid-template-columns: 1fr;
+  }
+
 
 
 

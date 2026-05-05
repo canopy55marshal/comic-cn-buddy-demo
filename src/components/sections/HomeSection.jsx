@@ -304,64 +304,66 @@ export function HomeSection({
         </div>
       </div>
 
-      <div className="section-layout">
-        <div className="panel">
-          <SectionHead
-            title="现场服务推荐动作"
-            desc="系统先给你一个默认动作，再用待办清单带你走完前几步。"
-            side={<span className="pill info">已完成 {completedTodoCount} / {starterTodoItems.length}</span>}
-          />
-          <InfoCard className="today-progress-card">
-            <div className="row between start">
-              <div>
-                <strong>今日完成进度</strong>
-                <p className="muted">把首页主动作当成今日待办来推进，做完会留下完成标记，帮助你形成固定节奏。</p>
-              </div>
-              <span className="pill accent">{Math.round((completedTodoCount / starterTodoItems.length) * 100)}%</span>
-            </div>
-            <div className="invite-progress-track">
-              <div className="today-progress-fill" style={{ width: `${(completedTodoCount / starterTodoItems.length) * 100}%` }} />
-            </div>
-          </InfoCard>
-          <InfoCard className={`todo-recommend-card ${completedActions.includes(recommendedAction.id) ? "completed" : ""} ${justCompleted === recommendedAction.id ? "just-completed" : ""}`}>
-            <div className="row between start">
-              <div>
-                <strong>{recommendedAction.title}</strong>
-                <p className="muted">{recommendedAction.text}</p>
-              </div>
-              <span className={`pill ${completedActions.includes(recommendedAction.id) ? "success" : "accent"}`}>
-                {completedActions.includes(recommendedAction.id) ? "已完成" : "推荐"}
-              </span>
-            </div>
-            <div className="tag-row">
-              {recommendedAction.tags.map((item) => (
-                <span className="tag" key={item}>{item}</span>
-              ))}
-            </div>
-            <div className="action-row">
-              <button className="btn primary" onClick={() => handleChecklistAction(recommendedAction.id)}>
-                {completedActions.includes(recommendedAction.id) ? "再次查看" : "按推荐开始"}
-              </button>
-            </div>
-          </InfoCard>
-          <div className="grid three" style={{ marginBottom: 16 }}>
+      <div className="panel">
+        <SectionHead
+          title="现场服务推荐动作"
+          desc="左边先选要做的事项，右边看推荐动作和今日进度，不再把这一块做成大表单。"
+          side={<span className="pill info">已完成 {completedTodoCount} / {starterTodoItems.length}</span>}
+        />
+        <div className="guided-layout">
+          <div className="stack">
             {starterTodoItems.map((item) => {
               const completed = completedActions.includes(item.id);
               return (
-              <InfoCard key={item.title} className={`todo-like-card ${completed ? "completed" : ""} ${justCompleted === item.id ? "just-completed" : ""}`}>
-                <div className="row between start">
-                  <strong>{item.title}</strong>
-                  <span className={`todo-check ${completed ? "done" : ""}`}>{completed ? "✓" : ""}</span>
-                </div>
-                <p className="muted">{item.text}</p>
-                <div className="action-row">
-                  <button className="btn ghost" onClick={() => handleChecklistAction(item.id)}>
-                    {completed ? "已完成" : item.button}
-                  </button>
-                </div>
-              </InfoCard>
+                <InfoCard key={item.title} className={`todo-like-card compact ${completed ? "completed" : ""} ${justCompleted === item.id ? "just-completed" : ""}`}>
+                  <div className="row between start">
+                    <strong>{item.title}</strong>
+                    <span className={`todo-check ${completed ? "done" : ""}`}>{completed ? "✓" : ""}</span>
+                  </div>
+                  <p className="muted">{item.text}</p>
+                  <div className="action-row">
+                    <button className="btn ghost" onClick={() => handleChecklistAction(item.id)}>
+                      {completed ? "已完成" : item.button}
+                    </button>
+                  </div>
+                </InfoCard>
               );
             })}
+          </div>
+          <div className="stack">
+            <InfoCard className="today-progress-card">
+              <div className="row between start">
+                <div>
+                  <strong>今日完成进度</strong>
+                  <p className="muted">把首页主动作当成今日待办来推进，做完会留下完成标记。</p>
+                </div>
+                <span className="pill accent">{Math.round((completedTodoCount / starterTodoItems.length) * 100)}%</span>
+              </div>
+              <div className="invite-progress-track">
+                <div className="today-progress-fill" style={{ width: `${(completedTodoCount / starterTodoItems.length) * 100}%` }} />
+              </div>
+            </InfoCard>
+            <InfoCard className={`todo-recommend-card ${completedActions.includes(recommendedAction.id) ? "completed" : ""} ${justCompleted === recommendedAction.id ? "just-completed" : ""}`}>
+              <div className="row between start">
+                <div>
+                  <strong>{recommendedAction.title}</strong>
+                  <p className="muted">{recommendedAction.text}</p>
+                </div>
+                <span className={`pill ${completedActions.includes(recommendedAction.id) ? "success" : "accent"}`}>
+                  {completedActions.includes(recommendedAction.id) ? "已完成" : "推荐"}
+                </span>
+              </div>
+              <div className="tag-row">
+                {recommendedAction.tags.map((item) => (
+                  <span className="tag" key={item}>{item}</span>
+                ))}
+              </div>
+              <div className="action-row">
+                <button className="btn primary" onClick={() => handleChecklistAction(recommendedAction.id)}>
+                  {completedActions.includes(recommendedAction.id) ? "再次查看" : "按推荐开始"}
+                </button>
+              </div>
+            </InfoCard>
           </div>
         </div>
       </div>
