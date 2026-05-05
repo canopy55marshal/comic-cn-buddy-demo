@@ -7,6 +7,7 @@ import { LiveSection } from "./components/sections/LiveSection";
 import { MapSection } from "./components/sections/MapSection";
 import { QueueSection } from "./components/sections/QueueSection";
 import { ReminderSection } from "./components/sections/ReminderSection";
+import { BusinessSection } from "./components/sections/BusinessSection";
 import { ServiceSection } from "./components/sections/ServiceSection";
 import { TravelSection } from "./components/sections/TravelSection";
 import { liveLinks, navItems } from "./data/mockData";
@@ -501,6 +502,8 @@ function App() {
             onRemind={handleRemindService}
           />
         );
+      case "business":
+        return <BusinessSection onNavigate={setSection} />;
       case "queue":
         return (
           <QueueSection

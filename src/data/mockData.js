@@ -4,6 +4,7 @@ export const navItems = [
   { key: "map", label: "场馆地图", group: "main" },
   { key: "buddy", label: "好友同行", group: "main" },
   { key: "service", label: "妆造服务", group: "main" },
+  { key: "business", label: "商业平台", group: "extended" },
   { key: "live", label: "直播链接", group: "extended" },
   { key: "queue", label: "排队预约", group: "extended" },
   { key: "reminder", label: "智能提醒", group: "extended" },

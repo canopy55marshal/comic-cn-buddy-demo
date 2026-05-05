@@ -852,6 +852,29 @@ button {
   box-shadow: 0 0 16px rgba(127,156,255,0.22);
 }
 
+.business-hero-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(183, 207, 255, 0.12);
+  background:
+    radial-gradient(circle at top right, rgba(127,156,255,0.18), transparent 28%),
+    linear-gradient(135deg, rgba(127,156,255,0.14), rgba(170,145,255,0.12)),
+    rgba(255,255,255,0.03);
+}
+
+.business-hero-card strong,
+.business-hero-card p {
+  margin: 0;
+}
+
+.business-hero-card p {
+  margin-top: 8px;
+}
+
 .btn {
   padding: 10px 15px;
   border-radius: 13px;
@@ -1582,6 +1605,10 @@ button {
   }
 
   .invite-poster-card {
+    min-height: auto;
+  }
+
+  .business-hero-card {
     min-height: auto;
   }
 }
