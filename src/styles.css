@@ -397,6 +397,20 @@ button {
   line-height: 1.72;
 }
 
+.hero-dual-entry {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.hero-entry-card {
+  border-color: rgba(183, 207, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
+    rgba(255,255,255,0.02);
+}
+
 .hero-side {
   padding: 18px;
   display: flex;
@@ -1680,6 +1694,11 @@ button {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .hero-dual-entry {
+    grid-template-columns: 1fr;
+  }
+
 
 
   .invite-poster-card {

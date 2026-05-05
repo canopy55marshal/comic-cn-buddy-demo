@@ -174,10 +174,32 @@ export function HomeSection({
               ? `${currentUser.name}，你现在在 ${currentUser.currentZone}。建议先从补给、导航、预约或好友同行里选一个主动作开始，商业平台能力放到下方继续看。`
               : "先从补给、导航、预约或好友同行里选一个主动作开始；商业平台能力放到下方继续看。"}
           </p>
-          <div className="action-row hero-cta">
-            <button className="btn primary" onClick={() => onNavigate("food")}>先看现场服务</button>
-            <button className="btn ghost" onClick={() => onNavigate("map")}>打开场馆地图</button>
-            <button className="btn ghost" onClick={() => onNavigate("business")}>进入商业平台</button>
+          <div className="hero-dual-entry">
+            <InfoCard className="hero-entry-card">
+              <strong>现场服务</strong>
+              <p className="muted">适合已经在漫展现场，先解决补给、导航、预约和同行这些即时需求。</p>
+              <div className="tag-row">
+                <span className="tag">餐饮配送</span>
+                <span className="tag">场馆导航</span>
+                <span className="tag">排队预约</span>
+              </div>
+              <div className="action-row">
+                <button className="btn primary" onClick={() => onNavigate("food")}>进入现场服务</button>
+                <button className="btn ghost" onClick={() => onNavigate("map")}>打开地图</button>
+              </div>
+            </InfoCard>
+            <InfoCard className="hero-entry-card">
+              <strong>商业平台</strong>
+              <p className="muted">适合想看品牌商单、漫展招募和 COS委托，理解平台撮合和托管交易模式。</p>
+              <div className="tag-row">
+                <span className="tag">品牌商单</span>
+                <span className="tag">漫展招募</span>
+                <span className="tag">COS委托</span>
+              </div>
+              <div className="action-row">
+                <button className="btn primary" onClick={() => onNavigate("business")}>进入商业平台</button>
+              </div>
+            </InfoCard>
           </div>
           <div className="hero-stats-strip">
             <div>
@@ -207,6 +229,27 @@ export function HomeSection({
               <StatsCard title="3" text="需求来源" />
               <StatsCard title="15%" text="平台抽佣" />
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section-layout">
+        <div className="panel">
+          <SectionHead title="新手第一步" desc="如果是第一次打开，先按这个顺序做，不容易迷路。" />
+          <div className="grid three" style={{ marginBottom: 16 }}>
+            {[
+              { title: "先定路线", text: "先打开场馆地图，确认你现在在哪、主舞台和服务点在哪。", key: "map" },
+              { title: "再补给或预约", text: "根据当前体力和安排，优先点补给或提前锁一个排队时段。", key: "food" },
+              { title: "最后看扩展入口", text: "如果要追主播、返程或看商单，再去次级入口和商业平台页。", key: "business" }
+            ].map((item) => (
+              <InfoCard key={item.title}>
+                <strong>{item.title}</strong>
+                <p className="muted">{item.text}</p>
+                <div className="action-row">
+                  <button className="btn ghost" onClick={() => onNavigate(item.key)}>去这里</button>
+                </div>
+              </InfoCard>
+            ))}
           </div>
         </div>
       </div>
