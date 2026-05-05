@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { InfoCard, SectionHead } from "../ui";
+import { useMemo, useState } from "react";
+import { FilterBar, InfoCard, SectionHead } from "../ui";
 
 const demandSources = [
   {
@@ -68,7 +68,14 @@ const demandPool = [
     status: "匹配中",
     phase: "30% 已托管",
     desc: "品牌方需要 2 位擅长国风角色演绎的 COSER，支持平面图和短视频双交付。",
-    milestone: ["已发布需求", "AI匹配中", "确认人选后托管 30%"]
+    milestone: ["已发布需求", "AI匹配中", "确认人选后托管 30%"],
+    stages: [
+      { label: "发布需求", status: "done" },
+      { label: "AI匹配", status: "current" },
+      { label: "首款托管", status: "upcoming" },
+      { label: "执行交付", status: "upcoming" },
+      { label: "成交分佣", status: "upcoming" }
+    ]
   },
   {
     id: "expo-1",
@@ -79,7 +86,14 @@ const demandPool = [
     status: "待确认",
     phase: "保证金已冻结",
     desc: "主办方需要 3 位现场驻场 COSER，负责舞台互动、巡场和用户合影环节。",
-    milestone: ["已发布需求", "保证金冻结", "等待确认排期"]
+    milestone: ["已发布需求", "保证金冻结", "等待确认排期"],
+    stages: [
+      { label: "发布需求", status: "done" },
+      { label: "保证金冻结", status: "current" },
+      { label: "确认排期", status: "upcoming" },
+      { label: "现场履约", status: "upcoming" },
+      { label: "成交分佣", status: "upcoming" }
+    ]
   },
   {
     id: "commission-1",
@@ -90,7 +104,14 @@ const demandPool = [
     status: "执行中",
     phase: "50% 已托管",
     desc: "个人委托方希望在漫展当天完成 1 组角色约拍，要求现场公共场所执行。",
-    milestone: ["方向已确认", "50% 托管中", "等待终稿交付"]
+    milestone: ["方向已确认", "50% 托管中", "等待终稿交付"],
+    stages: [
+      { label: "委托发布", status: "done" },
+      { label: "方向确认", status: "done" },
+      { label: "50% 托管", status: "current" },
+      { label: "终稿交付", status: "upcoming" },
+      { label: "尾款结算", status: "upcoming" }
+    ]
   }
 ];
 
@@ -102,7 +123,13 @@ const escrowNodes = [
 ];
 
 export function BusinessSection({ onNavigate }) {
+  const [demandFilter, setDemandFilter] = useState("全部");
   const [selectedDemand, setSelectedDemand] = useState(demandPool[0]);
+  const filteredDemandPool = useMemo(
+    () => demandPool.filter((item) => demandFilter === "全部" || item.type === demandFilter),
+    [demandFilter]
+  );
+  const currentStageIndex = selectedDemand?.stages?.findIndex((item) => item.status === "current") ?? -1;
 
   return (
     <div className="section-layout">
@@ -169,8 +196,11 @@ export function BusinessSection({ onNavigate }) {
 
       <div className="panel">
         <SectionHead title="需求池" desc="把品牌商单、漫展招募和 COS委托做成可浏览的需求卡片，方便用户理解平台里到底流转什么。 " />
+        <div style={{ marginTop: 16, marginBottom: 16 }}>
+          <FilterBar items={["全部", "品牌商单", "漫展招募", "COS委托"]} value={demandFilter} onChange={setDemandFilter} />
+        </div>
         <div className="grid three" style={{ marginTop: 16, marginBottom: 16 }}>
-          {demandPool.map((item) => (
+          {filteredDemandPool.map((item) => (
             <InfoCard key={item.id}>
               <div className="row between start">
                 <strong>{item.title}</strong>
@@ -181,6 +211,7 @@ export function BusinessSection({ onNavigate }) {
                 <span className="tag">预算 {item.budget}</span>
                 <span className="tag">保证金 {item.deposit}</span>
                 <span className="tag">{item.status}</span>
+                <span className="tag">{item.phase}</span>
               </div>
               <div className="action-row">
                 <button className="btn primary" onClick={() => setSelectedDemand(item)}>查看详情</button>
@@ -252,11 +283,26 @@ export function BusinessSection({ onNavigate }) {
               <span className="tag">预算 {selectedDemand.budget}</span>
               <span className="tag">保证金 {selectedDemand.deposit}</span>
               <span className="tag">{selectedDemand.phase}</span>
+              <span className="tag">{selectedDemand.status}</span>
             </div>
             <div className="stack" style={{ marginTop: 16 }}>
               <InfoCard>
                 <strong>需求说明</strong>
                 <p className="muted">{selectedDemand.desc}</p>
+              </InfoCard>
+              <InfoCard>
+                <div className="row between start">
+                  <strong>阶段状态</strong>
+                  <span className="pill accent">{currentStageIndex >= 0 ? `进行到第 ${currentStageIndex + 1} 步` : "待开始"}</span>
+                </div>
+                <div className="business-stage-list" style={{ marginTop: 12 }}>
+                  {selectedDemand.stages.map((item) => (
+                    <div className={`business-stage-item ${item.status}`} key={item.label}>
+                      <span className="business-stage-dot" />
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
               </InfoCard>
               <InfoCard>
                 <strong>当前里程碑</strong>
