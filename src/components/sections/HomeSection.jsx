@@ -307,7 +307,7 @@ export function HomeSection({
       <div className="panel">
         <SectionHead
           title="现场服务推荐动作"
-          desc="左边先选要做的事项，右边看推荐动作和今日进度，不再把这一块做成大表单。"
+          desc="左边先选要做的事项，右边看推荐动作和行程安排进度，不再把这一块做成大表单。"
           side={<span className="pill info">已完成 {completedTodoCount} / {starterTodoItems.length}</span>}
         />
         <div className="guided-layout">
@@ -334,8 +334,8 @@ export function HomeSection({
             <InfoCard className="today-progress-card">
               <div className="row between start">
                 <div>
-                  <strong>今日完成进度</strong>
-                  <p className="muted">把首页主动作当成今日待办来推进，做完会留下完成标记。</p>
+                  <strong>行程安排进度</strong>
+                  <p className="muted">把首页主动作当成你的行程安排来推进，做完会留下完成标记。</p>
                 </div>
                 <span className="pill accent">{Math.round((completedTodoCount / starterTodoItems.length) * 100)}%</span>
               </div>
