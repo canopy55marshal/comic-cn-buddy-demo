@@ -389,8 +389,8 @@ function getTodayNextStep({
     };
   }
   return {
-    title: "本次行程主线已推进完成",
-    text: "主线任务已经基本闭环，接下来可以按兴趣去直播、商业平台或继续细化这趟漫展安排。",
+    title: "本次行程主流程已推进完成",
+    text: "当前主流程已经基本闭环，接下来可以按兴趣去直播、商业平台或继续细化这趟漫展安排。",
     action: "live",
     button: "去直播链接"
   };
@@ -468,12 +468,12 @@ export function HomeSection({
   const currentHour = new Date().getHours();
   const timePhase = useMemo(() => getTimePhaseInfo(currentHour), [currentHour]);
   const tripGoal = journeyPercent >= 100
-    ? "本次行程主线已完成"
+    ? "本次行程主流程已完成"
     : journeyPercent >= 75
-      ? "行程目标：收尾并准备返程"
+      ? "行程目标：进入收尾并准备返程"
       : journeyPercent >= 40
         ? "行程目标：完成补给、预约和取餐闭环"
-        : "行程目标：先把路线、补给和预约主线跑通";
+        : "行程目标：先把路线、补给和预约主流程跑通";
   const pickupNextFocus = useMemo(() => getPickupNextFocus(pickupFlowState?.pickupPoint || ""), [pickupFlowState?.pickupPoint]);
   const todayNextStep = useMemo(
     () => getTodayNextStep({
@@ -549,8 +549,8 @@ export function HomeSection({
           <h2>漫展有搭子，玩展不累。<br />让 COSER 的每一分热爱都值得。</h2>
           <p className="hero-copy">
             {currentUser
-              ? `${currentUser.name}，你现在在 ${currentUser.currentZone}。建议先从补给、导航、预约或好友同行里选一个主动作开始，商业平台能力放到下方继续看。`
-              : "先从补给、导航、预约或好友同行里选一个主动作开始；商业平台能力放到下方继续看。"}
+              ? `${currentUser.name}，你现在在 ${currentUser.currentZone}。建议先从补给、导航、预约或好友同行里选一个行程动作开始，商业平台能力放到下方继续看。`
+              : "先从补给、导航、预约或好友同行里选一个行程动作开始；商业平台能力放到下方继续看。"}
           </p>
           <div className="hero-dual-entry">
             <InfoCard className="hero-entry-card">
@@ -613,8 +613,8 @@ export function HomeSection({
 
       <div className="panel">
         <SectionHead
-          title="现场服务推荐动作"
-          desc="左边先选要做的事项，右边看推荐动作和行程安排进度，让首页更像行动面板而不是大表单。"
+          title="现场服务行程动作"
+          desc="左边先选要推进的事项，右边看行程动作和行程进度，让首页更像行动面板而不是大表单。"
           side={<span className="pill info">已完成 {journeyDone} / {journeyTotal || starterTodoItems.length}</span>}
         />
         <div className="guided-layout">
@@ -642,7 +642,7 @@ export function HomeSection({
               <div className="row between start">
                 <div>
                   <strong>行程安排进度</strong>
-                  <p className="muted">把首页主动作和取餐安排放进同一条行程里推进，做完会留下完成标记。</p>
+                  <p className="muted">把首页行程动作和取餐安排放进同一条行程里推进，做完会留下完成标记。</p>
                 </div>
                 <span className="pill accent">{journeyPercent}%</span>
               </div>
@@ -683,8 +683,8 @@ export function HomeSection({
                 <strong>{tripGoal}</strong>
                 <p className="muted">
                   {journeyPercent >= 100
-                    ? "本次行程主线已经闭环，接下来可以按兴趣自由扩展直播、商业平台或更细的现场安排。"
-                    : "系统会根据你当前馆区和已完成事项，持续推荐这次行程里最值得优先处理的下一步。"}
+                    ? "本次行程主流程已经闭环，接下来可以按兴趣自由扩展直播、商业平台或更细的现场安排。"
+                    : "系统会根据你当前馆区和已完成事项，持续推荐这次行程里最值得优先推进的下一步。"}
                 </p>
               </div>
               <div className="tag-row">
@@ -738,7 +738,7 @@ export function HomeSection({
               <div className="today-next-card">
                 <div className="row between start">
                   <div>
-                    <strong>行程推荐下一步</strong>
+                    <strong>行程下一步</strong>
                     <p className="muted">{todayNextStep.title}</p>
                   </div>
                   <span className="pill accent">推荐</span>
@@ -756,7 +756,7 @@ export function HomeSection({
                   <p className="muted">{recommendedAction.text}</p>
                 </div>
                 <span className={`pill ${completedActions.includes(recommendedAction.id) ? "success" : "accent"}`}>
-                  {completedActions.includes(recommendedAction.id) ? "已完成" : "推荐"}
+                  {completedActions.includes(recommendedAction.id) ? "已完成" : "优先"}
                 </span>
               </div>
               <div className="tag-row">
@@ -766,7 +766,7 @@ export function HomeSection({
               </div>
               <div className="action-row">
                 <button className="btn primary" onClick={() => handleChecklistAction(recommendedAction.id)}>
-                  {completedActions.includes(recommendedAction.id) ? "再次查看" : "按推荐开始"}
+                  {completedActions.includes(recommendedAction.id) ? "再次查看" : "按优先项开始"}
                 </button>
               </div>
             </InfoCard>
@@ -799,7 +799,7 @@ export function HomeSection({
         </div>
 
         <div className="panel">
-          <SectionHead title="更多入口" desc="剩下的能力放成次级入口，用户先完成主动作，再按需要进入。" />
+          <SectionHead title="更多入口" desc="剩下的能力放成次级入口，先完成主流程，再按需要进入。" />
           <div className="home-secondary-actions">
             {secondaryEntrances.map((item) => (
               <button key={item.title} className="btn ghost" onClick={() => onNavigate(item.key)}>{item.title}</button>

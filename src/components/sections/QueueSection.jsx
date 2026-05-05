@@ -18,7 +18,7 @@ export function QueueSection({ queueOptions = [], onBook, liveQueueContext = nul
         <SectionHead
           title="排队预约"
           desc="左边先选要预约的事项，右边看当前进度、推荐下一步和预约策略。"
-          side={<span className={`pill ${queueCompleted ? "success" : "accent"}`}>{queueCompleted ? "本页动作已完成" : `已预约 ${bookedItems.length} 项`}</span>}
+          side={<span className={`pill ${queueCompleted ? "success" : "accent"}`}>{queueCompleted ? "当前环节已完成" : `已预约 ${bookedItems.length} 项`}</span>}
         />
         <div className="guided-layout">
           <div className="stack">
@@ -26,7 +26,7 @@ export function QueueSection({ queueOptions = [], onBook, liveQueueContext = nul
               <div className="row between start">
                 <div>
                   <strong>预约任务反馈</strong>
-                  <p className="muted">{queueCompleted ? "你已经完成过至少一次预约动作，当前可以继续补新的时段或回首页推进下一步。" : "先预约一个当前等待最短或最关键的项目，系统就会把预约动作标成已完成。"}</p>
+                  <p className="muted">{queueCompleted ? "你已经完成过至少一次预约环节，当前可以继续补新的时段或回首页推进下一步。" : "先预约一个当前等待最短或最关键的项目，系统就会把预约环节标成已完成。"}</p>
                 </div>
                 <span className={`pill ${queueCompleted ? "success" : "accent"}`}>{queueCompleted ? "已完成" : "待完成"}</span>
               </div>
@@ -64,7 +64,7 @@ export function QueueSection({ queueOptions = [], onBook, liveQueueContext = nul
               <p className="muted">{bookedItems.length > 0 ? `你已经锁定 ${bookedItems.length} 个时段，当前最早的是 ${bookedItems[0].slot}。` : "还没有预约时段，建议先锁一个等待时间最短的项目。"}</p>
             </InfoCard>
             <InfoCard>
-              <strong>推荐下一步</strong>
+              <strong>环节下一步</strong>
               <p className="muted">{nextRecommended ? `优先看 ${nextRecommended.name}，当前显示 ${nextRecommended.wait}。` : "当前可用项目都已处理完，可以回首页继续安排补给或返程。"}</p>
             </InfoCard>
             {liveQueueContext && liveRecommended && (

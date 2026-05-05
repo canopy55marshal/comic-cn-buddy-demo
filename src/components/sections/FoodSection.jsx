@@ -32,7 +32,7 @@ function getFinishedSuggestions(pickupPoint = "") {
   if (pickupPoint.includes("A馆")) {
     return [
       { title: "回主舞台或直播热区", text: "取餐后更适合继续看主舞台活动或同步直播情况。", action: "live", button: "去直播链接" },
-      { title: "回首页继续安排行程", text: "这次取餐安排已经结束，可以继续推进当天别的任务。", action: "home", button: "回首页" }
+      { title: "回首页继续安排行程", text: "这次取餐安排已经结束，可以继续推进这趟行程里的其他环节。", action: "home", button: "回首页" }
     ];
   }
   return [
@@ -361,7 +361,7 @@ export function FoodSection({
           <InfoCard className={`page-progress-card ${cpsReturnState.status === "returned" || cpsReturnState.status === "done" ? "completed" : ""}`} style={{ marginBottom: 16 }}>
             <div className="row between start">
               <div>
-                <strong>外卖跳转回流承接</strong>
+                <strong>外卖回流承接</strong>
                 <p className="muted">{cpsReturnState.feedback}</p>
               </div>
               <span className={`pill ${cpsReturnState.status === "returned" || cpsReturnState.status === "done" ? "success" : "accent"}`}>

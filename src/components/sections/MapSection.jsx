@@ -264,13 +264,13 @@ export function MapSection({
         <SectionHead
           title="场馆地图"
           desc="按馆区查看热门点位、补给点、拥挤情况和动线建议。"
-          side={<span className={`pill ${mapCompleted ? "success" : "info"}`}>{mapCompleted ? "本页动作已完成" : `当前：${currentZone.name}`}</span>}
+          side={<span className={`pill ${mapCompleted ? "success" : "info"}`}>{mapCompleted ? "当前环节已完成" : `当前：${currentZone.name}`}</span>}
         />
         <InfoCard className={`page-progress-card ${mapCompleted ? "completed" : ""}`}>
           <div className="row between start">
             <div>
-              <strong>地图任务反馈</strong>
-              <p className="muted">{mapCompleted ? "你已经完成过地图相关动作，当前可以继续细化路线或切换楼层查看。" : "先设一个途经点或跟随主播落点走一次推荐路线，系统就会记录你已完成地图动作。"}</p>
+              <strong>地图环节反馈</strong>
+              <p className="muted">{mapCompleted ? "你已经完成过地图相关环节，当前可以继续细化路线或切换楼层查看。" : "先设一个途经点或跟随主播落点走一次推荐路线，系统就会记录你已完成地图环节。"}</p>
             </div>
             <span className={`pill ${mapCompleted ? "success" : "accent"}`}>{mapCompleted ? "已完成" : "待完成"}</span>
           </div>
@@ -397,7 +397,7 @@ export function MapSection({
           </InfoCard>
           <InfoCard>
             <div className="row between start">
-              <strong>推荐动线</strong>
+              <strong>行程动线</strong>
               <span className="pill info">顺路优先</span>
             </div>
             <p className="muted">{routeSuggestions[activeZone.includes("摄影") ? 1 : activeZone.includes("主舞台") ? 0 : 2]}</p>
@@ -485,7 +485,7 @@ export function MapSection({
                 <p className="muted">{selectedMarker.text}</p>
               </InfoCard>
               <InfoCard>
-                <strong>推荐动作</strong>
+                <strong>下一环节</strong>
                 <p className="muted">
                   {selectedMarker.kind === "live"
                     ? "先看目标馆区动线，再决定是否立刻转场去追直播。"
