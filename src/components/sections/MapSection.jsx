@@ -219,6 +219,7 @@ export function MapSection({
   zoneOptions,
   currentZone,
   currentUserZone = "",
+  mapCompleted = false,
   loading,
   onNavigate,
   onZoneChange,
@@ -260,8 +261,17 @@ export function MapSection({
         <SectionHead
           title="场馆地图"
           desc="按馆区查看热门点位、补给点、拥挤情况和动线建议。"
-          side={<span className="pill success">当前：{currentZone.name}</span>}
+          side={<span className={`pill ${mapCompleted ? "success" : "info"}`}>{mapCompleted ? "本页动作已完成" : `当前：${currentZone.name}`}</span>}
         />
+        <InfoCard className={`page-progress-card ${mapCompleted ? "completed" : ""}`}>
+          <div className="row between start">
+            <div>
+              <strong>地图任务反馈</strong>
+              <p className="muted">{mapCompleted ? "你已经完成过地图相关动作，当前可以继续细化路线或切换楼层查看。" : "先设一个途经点或跟随主播落点走一次推荐路线，系统就会记录你已完成地图动作。"}</p>
+            </div>
+            <span className={`pill ${mapCompleted ? "success" : "accent"}`}>{mapCompleted ? "已完成" : "待完成"}</span>
+          </div>
+        </InfoCard>
         <FilterBar items={zoneOptions.map((item) => item.name)} value={activeZone} onChange={onZoneChange} />
         <div style={{ marginTop: 10 }}>
           <FilterBar items={floorOptions} value={floor} onChange={setFloor} />

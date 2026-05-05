@@ -855,6 +855,17 @@ button {
   margin-bottom: 16px;
 }
 
+.today-progress-card {
+  margin-bottom: 16px;
+}
+
+.today-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #79d7ea, #b3f2ff);
+  box-shadow: 0 0 16px rgba(121, 215, 234, 0.22);
+}
+
 .todo-like-card {
   position: relative;
 }
@@ -876,6 +887,11 @@ button {
   background: linear-gradient(135deg, #79d7ea, #b3f2ff);
   border-color: rgba(121, 215, 234, 0.4);
   box-shadow: 0 0 14px rgba(121, 215, 234, 0.22);
+}
+
+.page-progress-card {
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 @keyframes todoPulse {

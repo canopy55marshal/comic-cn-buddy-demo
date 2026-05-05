@@ -153,6 +153,7 @@ export function HomeSection({
   onNavigate,
   currentUser,
   overview,
+  completedActions: completedActionsProp = [],
   liveItineraryItems = [],
   onToggleLiveItinerary,
   onOpenLiveMap,
@@ -190,9 +191,11 @@ export function HomeSection({
   const [completedActions, setCompletedActions] = useState(() => {
     if (typeof window === "undefined") return [];
     try {
-      return JSON.parse(window.localStorage.getItem(homeActionStorageKey) || "[]");
+      return completedActionsProp.length > 0
+        ? completedActionsProp
+        : JSON.parse(window.localStorage.getItem(homeActionStorageKey) || "[]");
     } catch {
-      return [];
+      return completedActionsProp;
     }
   });
   const [justCompleted, setJustCompleted] = useState("");
@@ -203,6 +206,10 @@ export function HomeSection({
     if (typeof window === "undefined") return;
     window.localStorage.setItem(homeActionStorageKey, JSON.stringify(completedActions));
   }, [completedActions]);
+
+  useEffect(() => {
+    setCompletedActions(completedActionsProp);
+  }, [completedActionsProp]);
 
   useEffect(() => {
     if (!justCompleted) return undefined;
@@ -304,6 +311,18 @@ export function HomeSection({
             desc="系统先给你一个默认动作，再用待办清单带你走完前几步。"
             side={<span className="pill info">已完成 {completedTodoCount} / {starterTodoItems.length}</span>}
           />
+          <InfoCard className="today-progress-card">
+            <div className="row between start">
+              <div>
+                <strong>今日完成进度</strong>
+                <p className="muted">把首页主动作当成今日待办来推进，做完会留下完成标记，帮助你形成固定节奏。</p>
+              </div>
+              <span className="pill accent">{Math.round((completedTodoCount / starterTodoItems.length) * 100)}%</span>
+            </div>
+            <div className="invite-progress-track">
+              <div className="today-progress-fill" style={{ width: `${(completedTodoCount / starterTodoItems.length) * 100}%` }} />
+            </div>
+          </InfoCard>
           <InfoCard className={`todo-recommend-card ${completedActions.includes(recommendedAction.id) ? "completed" : ""} ${justCompleted === recommendedAction.id ? "just-completed" : ""}`}>
             <div className="row between start">
               <div>

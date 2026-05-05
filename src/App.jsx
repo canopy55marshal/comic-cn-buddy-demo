@@ -15,6 +15,7 @@ import { api } from "./services/api";
 
 const liveReminderStorageKey = "comic-con-buddy-live-reminders";
 const liveItineraryStorageKey = "comic-con-buddy-live-itinerary";
+const homeActionStorageKey = "comic-con-buddy-home-actions";
 
 function resolveZoneTarget(zoneName) {
   if (!zoneName) return "";
@@ -102,6 +103,14 @@ function App() {
     reminders: false,
     travel: false
   });
+  const [completedHomeActions, setCompletedHomeActions] = useState(() => {
+    if (!storage) return [];
+    try {
+      return JSON.parse(storage.getItem(homeActionStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  });
 
   const filteredMerchants = useMemo(
     () => merchants.filter((item) => !foodFilter || foodFilter === "全部" || item.category === foodFilter),
@@ -135,6 +144,10 @@ function App() {
     notify.timer = window.setTimeout(() => setToast(""), 2200);
   };
 
+  const markHomeActionComplete = (key) => {
+    setCompletedHomeActions((prev) => (prev.includes(key) ? prev : [...prev, key]));
+  };
+
   useEffect(() => {
     if (!storage) return;
     storage.setItem("comic-con-buddy-cart-count", String(cartCount));
@@ -154,6 +167,11 @@ function App() {
     if (!storage) return;
     storage.setItem(liveItineraryStorageKey, JSON.stringify(liveItineraryIds));
   }, [liveItineraryIds, storage]);
+
+  useEffect(() => {
+    if (!storage) return;
+    storage.setItem(homeActionStorageKey, JSON.stringify(completedHomeActions));
+  }, [completedHomeActions, storage]);
 
   const liveReminderItems = useMemo(
     () => liveLinks
@@ -310,6 +328,7 @@ function App() {
   };
 
   const handleSetSpot = (spot) => {
+    markHomeActionComplete("map");
     notify(`已将 ${spot} 设为路线途经点`);
   };
 
@@ -319,6 +338,7 @@ function App() {
         buddyName: name,
         message: "一起去漫展吧，顺便解锁同行权益"
       });
+      markHomeActionComplete("buddy");
       notify(`已生成 ${name} 的熟人同行邀约`);
     } catch (error) {
       notify(`邀约生成失败：${error.message}`);
@@ -326,6 +346,7 @@ function App() {
   };
 
   const handlePlanRoute = (name) => {
+    markHomeActionComplete("buddy");
     notify(`已为 ${name} 配置同行权益和路线建议`);
   };
 
@@ -351,6 +372,7 @@ function App() {
       .then(() => api.getQueueOptions())
       .then((list) => {
         setQueueOptions(list);
+        markHomeActionComplete("queue");
         notify(`已预约 ${item.name}`);
       })
       .catch((error) => notify(`预约失败：${error.message}`));
@@ -404,12 +426,14 @@ function App() {
     setLiveMapContext({ name: item.name, zone: item.zone, targetZone });
     setSection("map");
     setActiveZone(targetZone);
+    markHomeActionComplete("map");
     notify(`已带你去场馆地图，当前定位到 ${targetZone}`);
   };
 
   const handleOpenLiveQueue = (item) => {
     setLiveQueueContext({ name: item.name, zone: item.zone, targetZone: resolveZoneTarget(item.zone) });
     setSection("queue");
+    markHomeActionComplete("queue");
     notify(`已带你去排队预约，正在按 ${item.zone} 推荐更合适的预约项`);
   };
 
@@ -471,6 +495,7 @@ function App() {
             zoneOptions={zoneOptions}
             currentZone={currentZone}
             currentUserZone={currentUser?.currentZone}
+            mapCompleted={completedHomeActions.includes("map")}
             loading={loading.zones}
             mapResults={mapResults}
             onNavigate={setSection}
@@ -485,6 +510,7 @@ function App() {
             buddyFilter={buddyFilter}
             buddies={filteredBuddies}
             loading={loading.buddies}
+            buddyCompleted={completedHomeActions.includes("buddy")}
             userPool={userPool}
             onBuddyFilterChange={setBuddyFilter}
             onInvite={handleInviteBuddy}
@@ -508,6 +534,7 @@ function App() {
         return (
           <QueueSection
             queueOptions={queueOptions}
+            queueCompleted={completedHomeActions.includes("queue")}
             onBook={handleBookQueue}
             liveQueueContext={liveQueueContext}
           />
@@ -549,6 +576,7 @@ function App() {
             onNavigate={setSection}
             currentUser={currentUser}
             overview={overview}
+            completedActions={completedHomeActions}
             liveItineraryItems={liveItineraryItems}
             onToggleLiveItinerary={handleToggleLiveItinerary}
             onOpenLiveMap={handleOpenLiveMap}

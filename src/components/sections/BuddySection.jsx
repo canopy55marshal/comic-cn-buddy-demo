@@ -20,15 +20,24 @@ const rewardMilestones = [
   { count: 6, title: "六人裂变加成", text: "解锁限定邀请海报和更多现场权益展示位。", unlocked: false }
 ];
 
-export function BuddySection({ buddyFilter, buddies, loading, onBuddyFilterChange, onInvite, onPlanRoute, userPool = [] }) {
+export function BuddySection({ buddyFilter, buddies, loading, onBuddyFilterChange, onInvite, onPlanRoute, userPool = [], buddyCompleted = false }) {
   return (
     <div className="section-layout">
       <div className="panel">
         <SectionHead
           title="好友同行"
           desc="把熟人漫展同行做成邀约激励页：先分享，再组队，再领取同行权益，不走陌生社交。"
-          side={<span className="pill accent">邀约模版 {buddies.length} 个</span>}
+          side={<span className={`pill ${buddyCompleted ? "success" : "accent"}`}>{buddyCompleted ? "本页动作已完成" : `邀约模版 ${buddies.length} 个`}</span>}
         />
+        <InfoCard className={`page-progress-card ${buddyCompleted ? "completed" : ""}`} style={{ marginBottom: 16 }}>
+          <div className="row between start">
+            <div>
+              <strong>同行任务反馈</strong>
+              <p className="muted">{buddyCompleted ? "你已经生成过熟人同行邀约，当前可以继续补同行权益或扩大分享范围。" : "先生成一张邀请海报或配置一次同行权益，系统就会把同行动作标成已完成。"}</p>
+            </div>
+            <span className={`pill ${buddyCompleted ? "success" : "accent"}`}>{buddyCompleted ? "已完成" : "待完成"}</span>
+          </div>
+        </InfoCard>
         <FilterBar items={buddyFilterOptions} value={buddyFilter} onChange={onBuddyFilterChange} />
         <div className="grid two" style={{ marginBottom: 16 }}>
           <div className="invite-poster-card">

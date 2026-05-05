@@ -7,7 +7,7 @@ function getRecommendedQueueItem(liveQueueContext, queueOptions) {
   return queueOptions[0];
 }
 
-export function QueueSection({ queueOptions = [], onBook, liveQueueContext = null }) {
+export function QueueSection({ queueOptions = [], onBook, liveQueueContext = null, queueCompleted = false }) {
   const bookedItems = queueOptions.filter((item) => item.booked);
   const nextRecommended = queueOptions.find((item) => !item.booked);
   const liveRecommended = getRecommendedQueueItem(liveQueueContext, queueOptions);
@@ -18,8 +18,17 @@ export function QueueSection({ queueOptions = [], onBook, liveQueueContext = nul
         <SectionHead
           title="排队预约"
           desc="把热门摄影区、补妆位和摄影档期做成提前预约，而不是到现场再硬排。"
-          side={<span className="pill accent">已预约 {bookedItems.length} 项</span>}
+          side={<span className={`pill ${queueCompleted ? "success" : "accent"}`}>{queueCompleted ? "本页动作已完成" : `已预约 ${bookedItems.length} 项`}</span>}
         />
+        <InfoCard className={`page-progress-card ${queueCompleted ? "completed" : ""}`} style={{ marginBottom: 16 }}>
+          <div className="row between start">
+            <div>
+              <strong>预约任务反馈</strong>
+              <p className="muted">{queueCompleted ? "你已经完成过至少一次预约动作，当前可以继续补新的时段或回首页推进下一步。" : "先预约一个当前等待最短或最关键的项目，系统就会把预约动作标成已完成。"}</p>
+            </div>
+            <span className={`pill ${queueCompleted ? "success" : "accent"}`}>{queueCompleted ? "已完成" : "待完成"}</span>
+          </div>
+        </InfoCard>
         <div className="grid two" style={{ marginBottom: 16 }}>
           <InfoCard>
             <strong>当前预约进度</strong>
