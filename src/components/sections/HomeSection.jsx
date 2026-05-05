@@ -307,7 +307,7 @@ export function HomeSection({
       <div className="panel">
         <SectionHead
           title="现场服务推荐动作"
-          desc="左边先选要做的事项，右边看推荐动作和行程安排进度，不再把这一块做成大表单。"
+          desc="左边先选要做的事项，右边看推荐动作和行程安排进度，让首页更像行动面板而不是大表单。"
           side={<span className="pill info">已完成 {completedTodoCount} / {starterTodoItems.length}</span>}
         />
         <div className="guided-layout">
