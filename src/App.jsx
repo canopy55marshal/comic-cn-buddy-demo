@@ -636,6 +636,8 @@ function App() {
           <HomeSection
             onNavigate={setSection}
             currentUser={currentUser}
+            mapActiveZone={activeZone}
+            liveMapContext={liveMapContext}
             overview={overview}
             completedActions={completedHomeActions}
             pickupReminderItems={pickupReminderItems}

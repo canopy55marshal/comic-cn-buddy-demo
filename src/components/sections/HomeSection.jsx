@@ -217,8 +217,20 @@ function getTimePhaseInfo(hour) {
   };
 }
 
-function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentZone, currentHour }) {
+function getTodayNextStep({
+  completedActions,
+  pickupFlowState,
+  pickupFlowCompleted,
+  pickupFlowDoneCount,
+  pickupFlowTotal,
+  currentZone,
+  currentHour,
+  nextLiveReminder,
+  mapActiveZone,
+  liveMapContext
+}) {
   const timePhase = getTimePhaseInfo(currentHour);
+  const mapTargetZone = liveMapContext?.targetZone || mapActiveZone;
 
   if (pickupFlowState?.jumped && !pickupFlowCompleted) {
     if (!pickupFlowState.pickupPoint) {
@@ -237,6 +249,15 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
         button: "继续取餐安排"
       };
     }
+  }
+
+  if ((timePhase.key === "afternoon" || timePhase.key === "evening") && nextLiveReminder && !completedActions.includes("live")) {
+    return {
+      title: "留意接下来的直播提醒",
+      text: `${nextLiveReminder.title} 即将开始，现在适合先确认路线和当前位置，别错过想看的内容。`,
+      action: "live",
+      button: "去直播链接"
+    };
   }
 
   if (!completedActions.includes("map")) {
@@ -269,6 +290,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
       text: "今天最该先完成的是路线判断，先知道自己在哪，再决定补给、预约还是返程。",
       action: "map",
       button: "去场馆地图"
+    };
+  }
+  if (mapTargetZone && !completedActions.includes("queue") && (mapTargetZone.includes("主舞台") || mapTargetZone.includes("摄影"))) {
+    return {
+      title: "沿当前地图目标继续推进",
+      text: `你刚刚锁定了 ${mapTargetZone}，现在最适合继续处理该区域附近的预约或热门项目。`,
+      action: "queue",
+      button: "去排队预约"
     };
   }
   if (!completedActions.includes("food")) {
@@ -343,6 +372,14 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
       button: "去交通出行"
     };
   }
+  if (!completedActions.includes("live") && nextLiveReminder) {
+    return {
+      title: "顺手处理直播提醒",
+      text: `${nextLiveReminder.title} 已经在你的提醒列表里，适合现在确认一下开播前的位置和转场节奏。`,
+      action: "live",
+      button: "去直播链接"
+    };
+  }
   if (!completedActions.includes("buddy")) {
     return {
       title: "最后补同行协同",
@@ -362,6 +399,8 @@ function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowComplet
 export function HomeSection({
   onNavigate,
   currentUser,
+  mapActiveZone = "",
+  liveMapContext = null,
   overview,
   completedActions: completedActionsProp = [],
   pickupReminderItems = [],
@@ -437,8 +476,19 @@ export function HomeSection({
         : "今日目标：先把路线、补给和预约主线跑通";
   const pickupNextFocus = useMemo(() => getPickupNextFocus(pickupFlowState?.pickupPoint || ""), [pickupFlowState?.pickupPoint]);
   const todayNextStep = useMemo(
-    () => getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentZone: currentUser?.currentZone, currentHour }),
-    [completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentUser?.currentZone, currentHour]
+    () => getTodayNextStep({
+      completedActions,
+      pickupFlowState,
+      pickupFlowCompleted,
+      pickupFlowDoneCount,
+      pickupFlowTotal,
+      currentZone: currentUser?.currentZone,
+      currentHour,
+      nextLiveReminder,
+      mapActiveZone,
+      liveMapContext
+    }),
+    [completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal, currentUser?.currentZone, currentHour, nextLiveReminder, mapActiveZone, liveMapContext]
   );
 
   useEffect(() => {
@@ -610,8 +660,24 @@ export function HomeSection({
                 <div className="tag-row">
                   <span className="tag">{timePhase.target}</span>
                   {currentUser?.currentZone && <span className="tag">{currentUser.currentZone}</span>}
+                  {mapActiveZone && <span className="tag">地图目标：{liveMapContext?.targetZone || mapActiveZone}</span>}
+                  {nextLiveReminder && <span className="tag">直播提醒待处理</span>}
                 </div>
                 <p className="muted">{timePhase.hint}</p>
+                {(mapActiveZone || nextLiveReminder) && (
+                  <div className="stack" style={{ marginTop: 8 }}>
+                    {mapActiveZone && (
+                      <div className="business-milestone">
+                        地图当前更偏向 `{liveMapContext?.targetZone || mapActiveZone}`，首页推荐会优先沿这个区域继续推进。
+                      </div>
+                    )}
+                    {nextLiveReminder && (
+                      <div className="business-milestone">
+                        当前有直播提醒待处理：`{nextLiveReminder.title}`，建议结合所在馆区决定是否顺路切过去。
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="today-goal-card">
                 <strong>{todayGoal}</strong>
