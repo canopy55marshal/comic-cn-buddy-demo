@@ -830,10 +830,58 @@ button {
   background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
 }
 
+.home-focus-card.completed,
+.todo-like-card.completed,
+.todo-recommend-card.completed {
+  border-color: rgba(121, 215, 234, 0.18);
+  background:
+    linear-gradient(180deg, rgba(121,215,234,0.08), rgba(255,255,255,0.02)),
+    rgba(255,255,255,0.02);
+}
+
+.home-focus-card.just-completed,
+.todo-like-card.just-completed,
+.todo-recommend-card.just-completed {
+  animation: todoPulse 0.8s ease;
+}
+
 .home-secondary-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.todo-recommend-card {
+  margin-bottom: 16px;
+}
+
+.todo-like-card {
+  position: relative;
+}
+
+.todo-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(183, 207, 255, 0.18);
+  background: rgba(255,255,255,0.03);
+  color: transparent;
+}
+
+.todo-check.done {
+  color: #0a183d;
+  background: linear-gradient(135deg, #79d7ea, #b3f2ff);
+  border-color: rgba(121, 215, 234, 0.4);
+  box-shadow: 0 0 14px rgba(121, 215, 234, 0.22);
+}
+
+@keyframes todoPulse {
+  0% { transform: scale(0.98); box-shadow: 0 0 0 rgba(121,215,234,0); }
+  50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(121,215,234,0.08); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(121,215,234,0); }
 }
 
 .invite-poster-card {

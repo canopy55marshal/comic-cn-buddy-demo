@@ -1,8 +1,10 @@
+import { useEffect, useMemo, useState } from "react";
 import { liveLinks } from "../../data/mockData";
 import { InfoCard, SectionHead, StatsCard } from "../ui";
 
 const favoriteStorageKey = "comic-con-buddy-live-favorites";
 const reminderStorageKey = "comic-con-buddy-live-reminders";
+const homeActionStorageKey = "comic-con-buddy-home-actions";
 const platformIcons = {
   抖音: "🎵",
   B站: "📺",
@@ -113,6 +115,40 @@ const upworkCards = [
   }
 ];
 
+const starterTodoItems = [
+  { id: "map", title: "先确认馆区位置", text: "先打开场馆地图，确认自己和主舞台、服务点的相对位置。", button: "去地图" },
+  { id: "food", title: "再补给", text: "先把吃喝或应急用品锁掉，别等体力见底再找。", button: "去补给" },
+  { id: "queue", title: "热门项目先预约", text: "摄影区和热门活动优先锁时段，减少硬排队。", button: "去预约" },
+  { id: "buddy", title: "最后发起同行", text: "把熟人同行邀约补上，方便补给、返程和转场一起做。", button: "去邀约" }
+];
+
+function getRecommendedAction(currentZone = "") {
+  if (currentZone.includes("主舞台")) {
+    return {
+      id: "queue",
+      title: "推荐先锁排队预约",
+      text: "你现在更接近主舞台区域，先把热门活动或摄影时段锁住，后面会更从容。",
+      tags: ["主舞台", "预约优先", "避开硬排"]
+    };
+  }
+
+  if (currentZone.includes("服务区") || currentZone.includes("北门")) {
+    return {
+      id: "food",
+      title: "推荐先补给或整理状态",
+      text: "你现在更靠近服务区，适合先点补给或处理补妆、休整这些即时需求。",
+      tags: ["服务区", "补给优先", "状态恢复"]
+    };
+  }
+
+  return {
+    id: "map",
+    title: "推荐先看场馆地图",
+    text: "先确认自己在馆内的相对位置，再决定是去补给、预约还是跟着主播行程转场。",
+    tags: ["路线优先", "少走回头路", "先看位置"]
+  };
+}
+
 export function HomeSection({
   onNavigate,
   currentUser,
@@ -151,6 +187,34 @@ export function HomeSection({
     const bTime = b.startsAt || "99:99";
     return aTime.localeCompare(bTime);
   })[0];
+  const [completedActions, setCompletedActions] = useState(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return JSON.parse(window.localStorage.getItem(homeActionStorageKey) || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [justCompleted, setJustCompleted] = useState("");
+  const recommendedAction = useMemo(() => getRecommendedAction(currentUser?.currentZone || ""), [currentUser?.currentZone]);
+  const completedTodoCount = starterTodoItems.filter((item) => completedActions.includes(item.id)).length;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(homeActionStorageKey, JSON.stringify(completedActions));
+  }, [completedActions]);
+
+  useEffect(() => {
+    if (!justCompleted) return undefined;
+    const timer = window.setTimeout(() => setJustCompleted(""), 1400);
+    return () => window.clearTimeout(timer);
+  }, [justCompleted]);
+
+  const handleChecklistAction = (key) => {
+    setCompletedActions((prev) => (prev.includes(key) ? prev : [...prev, key]));
+    setJustCompleted(key);
+    onNavigate(key);
+  };
 
   return (
     <>
@@ -235,21 +299,50 @@ export function HomeSection({
 
       <div className="section-layout">
         <div className="panel">
-          <SectionHead title="新手第一步" desc="如果是第一次打开，先按这个顺序做，不容易迷路。" />
+          <SectionHead
+            title="现场服务推荐动作"
+            desc="系统先给你一个默认动作，再用待办清单带你走完前几步。"
+            side={<span className="pill info">已完成 {completedTodoCount} / {starterTodoItems.length}</span>}
+          />
+          <InfoCard className={`todo-recommend-card ${completedActions.includes(recommendedAction.id) ? "completed" : ""} ${justCompleted === recommendedAction.id ? "just-completed" : ""}`}>
+            <div className="row between start">
+              <div>
+                <strong>{recommendedAction.title}</strong>
+                <p className="muted">{recommendedAction.text}</p>
+              </div>
+              <span className={`pill ${completedActions.includes(recommendedAction.id) ? "success" : "accent"}`}>
+                {completedActions.includes(recommendedAction.id) ? "已完成" : "推荐"}
+              </span>
+            </div>
+            <div className="tag-row">
+              {recommendedAction.tags.map((item) => (
+                <span className="tag" key={item}>{item}</span>
+              ))}
+            </div>
+            <div className="action-row">
+              <button className="btn primary" onClick={() => handleChecklistAction(recommendedAction.id)}>
+                {completedActions.includes(recommendedAction.id) ? "再次查看" : "按推荐开始"}
+              </button>
+            </div>
+          </InfoCard>
           <div className="grid three" style={{ marginBottom: 16 }}>
-            {[
-              { title: "先定路线", text: "先打开场馆地图，确认你现在在哪、主舞台和服务点在哪。", key: "map" },
-              { title: "再补给或预约", text: "根据当前体力和安排，优先点补给或提前锁一个排队时段。", key: "food" },
-              { title: "最后看扩展入口", text: "如果要追主播、返程或看商单，再去次级入口和商业平台页。", key: "business" }
-            ].map((item) => (
-              <InfoCard key={item.title}>
-                <strong>{item.title}</strong>
+            {starterTodoItems.map((item) => {
+              const completed = completedActions.includes(item.id);
+              return (
+              <InfoCard key={item.title} className={`todo-like-card ${completed ? "completed" : ""} ${justCompleted === item.id ? "just-completed" : ""}`}>
+                <div className="row between start">
+                  <strong>{item.title}</strong>
+                  <span className={`todo-check ${completed ? "done" : ""}`}>{completed ? "✓" : ""}</span>
+                </div>
                 <p className="muted">{item.text}</p>
                 <div className="action-row">
-                  <button className="btn ghost" onClick={() => onNavigate(item.key)}>去这里</button>
+                  <button className="btn ghost" onClick={() => handleChecklistAction(item.id)}>
+                    {completed ? "已完成" : item.button}
+                  </button>
                 </div>
               </InfoCard>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -259,11 +352,19 @@ export function HomeSection({
           <SectionHead title="现在先做什么" desc="首页先只保留最关键的 4 个动作，避免信息太满导致不知道先点哪里。" />
           <div className="grid two">
             {quickEntrances.map((item) => (
-              <InfoCard key={item.title} className="home-focus-card">
-                <strong>{item.title}</strong>
+              <InfoCard
+                key={item.title}
+                className={`home-focus-card ${completedActions.includes(item.key) ? "completed" : ""} ${justCompleted === item.key ? "just-completed" : ""}`}
+              >
+                <div className="row between start">
+                  <strong>{item.title}</strong>
+                  {completedActions.includes(item.key) && <span className="pill success">已完成</span>}
+                </div>
                 <p className="muted">{item.text}</p>
                 <div className="action-row">
-                  <button className="btn ghost" onClick={() => onNavigate(item.key)}>进入</button>
+                  <button className="btn ghost" onClick={() => handleChecklistAction(item.key)}>
+                    {completedActions.includes(item.key) ? "再次进入" : "进入"}
+                  </button>
                 </div>
               </InfoCard>
             ))}
