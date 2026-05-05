@@ -483,6 +483,7 @@ function App() {
             merchants={filteredMerchants}
             orders={orders}
             loading={loading.merchants}
+            onNavigate={setSection}
             onFoodFilterChange={setFoodFilter}
             onAddToCart={handleAddToCart}
             onCreateOrder={handleCreateOrder}
