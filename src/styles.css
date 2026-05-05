@@ -986,6 +986,29 @@ button {
   background: rgba(121, 215, 234, 0.12);
 }
 
+.pickup-progress-card {
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(183, 207, 255, 0.1);
+  background: rgba(255,255,255,0.03);
+}
+
+.pickup-progress-card.completed {
+  border-color: rgba(121, 215, 234, 0.18);
+  background:
+    linear-gradient(135deg, rgba(121,215,234,0.1), rgba(170,145,255,0.08)),
+    rgba(255,255,255,0.03);
+  box-shadow: 0 0 0 1px rgba(121,215,234,0.08), 0 10px 30px rgba(121,215,234,0.08);
+}
+
+.pickup-finished-card {
+  border-color: rgba(121, 215, 234, 0.18);
+  background:
+    radial-gradient(circle at top right, rgba(121,215,234,0.14), transparent 28%),
+    linear-gradient(135deg, rgba(121,215,234,0.1), rgba(170,145,255,0.12)),
+    rgba(255,255,255,0.03);
+}
+
 .return-step-item {
   display: flex;
   align-items: center;

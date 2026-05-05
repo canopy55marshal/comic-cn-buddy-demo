@@ -212,6 +212,7 @@ export function HomeSection({
   const recommendedAction = useMemo(() => getRecommendedAction(currentUser?.currentZone || ""), [currentUser?.currentZone]);
   const completedTodoCount = starterTodoItems.filter((item) => completedActions.includes(item.id)).length;
   const pickupFlowDoneCount = (pickupFlowState?.nextSteps || []).filter((item) => item.done).length;
+  const pickupFlowCompleted = pickupFlowState?.status === "done";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -372,19 +373,32 @@ export function HomeSection({
                 <div className="today-progress-fill" style={{ width: `${(completedTodoCount / starterTodoItems.length) * 100}%` }} />
               </div>
               {(pickupFlowState?.jumped || pickupReminderItems.length > 0) && (
-                <div className="business-milestone" style={{ marginTop: 12 }}>
-                  <strong>取餐安排进度</strong>
+                <div className={`pickup-progress-card ${pickupFlowCompleted ? "completed" : ""}`} style={{ marginTop: 12 }}>
+                  <div className="row between start">
+                    <strong>取餐安排进度</strong>
+                    <span className={`pill ${pickupFlowCompleted ? "success" : "accent"}`}>{pickupFlowCompleted ? "已完成" : "进行中"}</span>
+                  </div>
                   <p className="muted">
-                    {pickupFlowState?.status === "done"
+                    {pickupFlowCompleted
                       ? "外卖下单回流承接已完成，系统会继续按提醒时间提示你取餐。"
                       : pickupFlowState?.nextSteps?.length
                         ? `当前已完成 ${pickupFlowDoneCount} / ${pickupFlowState.nextSteps.length} 步，建议继续完成取餐点、提醒和路线。`
                         : `当前已创建 ${pickupReminderItems.length} 条取餐提醒，回到餐饮页可继续安排取餐。`}
                   </p>
+                  {pickupFlowState?.nextSteps?.length > 0 && (
+                    <div className="invite-progress-track">
+                      <div className="today-progress-fill" style={{ width: `${pickupFlowCompleted ? 100 : Math.round((pickupFlowDoneCount / pickupFlowState.nextSteps.length) * 100)}%` }} />
+                    </div>
+                  )}
                   <div className="tag-row" style={{ marginTop: 8 }}>
                     {pickupFlowState?.pickupPoint && <span className="tag">取餐点：{pickupFlowState.pickupPoint}</span>}
                     {pickupReminderItems.length > 0 && <span className="tag">提醒 {pickupReminderItems.filter((item) => item.enabled).length} 项</span>}
-                    {pickupFlowState?.status === "done" && <span className="tag">承接完成</span>}
+                    {pickupFlowCompleted && <span className="tag">承接完成</span>}
+                  </div>
+                  <div className="action-row">
+                    <button className={`btn ${pickupFlowCompleted ? "ghost" : "primary"}`} onClick={() => onNavigate("food")}>
+                      {pickupFlowCompleted ? "查看取餐安排" : "继续完成取餐安排"}
+                    </button>
                   </div>
                 </div>
               )}

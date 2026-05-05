@@ -301,6 +301,25 @@ export function FoodSection({
       </div>
       <div className="panel">
         <SectionHead title="订单追踪" desc="从下单、制作到送达，优先展示当前最影响逛展节奏的状态。" />
+        {cpsReturnState?.status === "done" && (
+          <InfoCard className="pickup-finished-card" style={{ marginBottom: 16 }}>
+            <div className="row between start">
+              <div>
+                <strong>本次取餐安排已完成</strong>
+                <p className="muted">取餐点、提醒和路线都已经确认完毕，你现在可以安心继续逛展，系统会在合适时间提醒你取餐。</p>
+              </div>
+              <span className="pill success">已完成</span>
+            </div>
+            <div className="tag-row">
+              {cpsReturnState.merchantName && <span className="tag">{cpsReturnState.merchantName}</span>}
+              {cpsReturnState.pickupPoint && <span className="tag">取餐点：{cpsReturnState.pickupPoint}</span>}
+            </div>
+            <div className="action-row">
+              <button className="btn ghost" onClick={() => onNavigate?.("home")}>回首页看行程安排</button>
+              <button className="btn ghost" onClick={() => onNavigate?.("reminder")}>查看取餐提醒</button>
+            </div>
+          </InfoCard>
+        )}
         {cpsReturnState && (
           <InfoCard className={`page-progress-card ${cpsReturnState.status === "returned" || cpsReturnState.status === "done" ? "completed" : ""}`} style={{ marginBottom: 16 }}>
             <div className="row between start">
