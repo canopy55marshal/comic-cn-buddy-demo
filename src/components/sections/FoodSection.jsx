@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { foodCategories } from "../../data/mockData";
 import { FilterBar, InfoCard, SectionHead } from "../ui";
 
@@ -44,6 +44,42 @@ export function FoodSection({
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(cpsReturnStorageKey, JSON.stringify(cpsReturnState));
+  }, [cpsReturnState]);
+
+  useEffect(() => {
+    if (typeof document === "undefined" || !cpsReturnState?.jumped || cpsReturnState?.returned) return undefined;
+
+    const handleResume = () => {
+      setCpsReturnState((prev) => {
+        if (!prev || prev.returned || !prev.jumped) return prev;
+        return {
+          ...prev,
+          status: "returned",
+          feedback: "欢迎回来，先确认取餐点，再继续设置提醒和路线。",
+          returned: true,
+          nextSteps: prev.nextSteps?.length
+            ? prev.nextSteps
+            : [
+              { key: "pickup", label: "确认取餐点", done: false },
+              { key: "reminder", label: "设置取餐提醒", done: false },
+              { key: "route", label: "回地图确认路线", done: false }
+            ]
+        };
+      });
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        handleResume();
+      }
+    };
+
+    window.addEventListener("focus", handleResume);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("focus", handleResume);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [cpsReturnState]);
 
   const copyText = async (text, successText) => {
@@ -94,13 +130,21 @@ export function FoodSection({
   const handleCompleteReturnStep = (stepKey, target) => {
     setCpsReturnState((prev) => {
       if (!prev?.nextSteps) return prev;
+      const nextSteps = prev.nextSteps.map((item) => (
+        item.key === stepKey ? { ...item, done: true } : item
+      ));
+      const allDone = nextSteps.every((item) => item.done);
       return {
         ...prev,
-        nextSteps: prev.nextSteps.map((item) => (
-          item.key === stepKey ? { ...item, done: true } : item
-        ))
+        status: allDone ? "done" : prev.status,
+        feedback: allDone ? "本次取餐安排已完成，系统会按提醒时间提示你取餐。" : prev.feedback,
+        nextSteps
       };
     });
+    if (stepKey === "reminder" && cpsReturnState?.pickupPoint) {
+      onCreatePickupReminder?.(cpsReturnState.pickupPoint, cpsReturnState.merchantName);
+      return;
+    }
     if (stepKey === "route" && cpsReturnState?.pickupPoint) {
       onOpenPickupMap?.(cpsReturnState.pickupPoint);
       return;
@@ -111,15 +155,26 @@ export function FoodSection({
   const handleSelectPickupPoint = (point) => {
     setCpsReturnState((prev) => {
       if (!prev) return prev;
+      const nextSteps = (prev.nextSteps || []).map((item) => (
+        item.key === "pickup" ? { ...item, done: true } : item
+      ));
       return {
         ...prev,
         pickupPoint: point,
-        nextSteps: (prev.nextSteps || []).map((item) => (
-          item.key === "pickup" ? { ...item, done: true } : item
-        ))
+        nextSteps
       };
     });
   };
+
+  const progressSummary = useMemo(() => {
+    const steps = cpsReturnState?.nextSteps || [];
+    const doneCount = steps.filter((item) => item.done).length;
+    return {
+      total: steps.length,
+      done: doneCount,
+      percent: steps.length ? Math.round((doneCount / steps.length) * 100) : 0
+    };
+  }, [cpsReturnState]);
 
   const getCpsStatusTags = (item) => {
     const tags = [];
@@ -128,6 +183,7 @@ export function FoodSection({
       if (cpsReturnState.copiedType === "link") tags.push("已复制链接");
       if (cpsReturnState.jumped) tags.push("已跳转");
       if (cpsReturnState.returned) tags.push("已返回");
+      if (cpsReturnState.status === "done") tags.push("已完成安排");
     }
     return tags;
   };
@@ -246,25 +302,36 @@ export function FoodSection({
       <div className="panel">
         <SectionHead title="订单追踪" desc="从下单、制作到送达，优先展示当前最影响逛展节奏的状态。" />
         {cpsReturnState && (
-          <InfoCard className={`page-progress-card ${cpsReturnState.status === "returned" ? "completed" : ""}`} style={{ marginBottom: 16 }}>
+          <InfoCard className={`page-progress-card ${cpsReturnState.status === "returned" || cpsReturnState.status === "done" ? "completed" : ""}`} style={{ marginBottom: 16 }}>
             <div className="row between start">
               <div>
                 <strong>外卖跳转回流承接</strong>
                 <p className="muted">{cpsReturnState.feedback}</p>
               </div>
-              <span className={`pill ${cpsReturnState.status === "returned" ? "success" : "accent"}`}>
-                {cpsReturnState.status === "returned" ? "已回到应用" : "等待返回"}
+              <span className={`pill ${cpsReturnState.status === "returned" || cpsReturnState.status === "done" ? "success" : "accent"}`}>
+                {cpsReturnState.status === "done" ? "承接完成" : cpsReturnState.status === "returned" ? "已回到应用" : "等待返回"}
               </span>
             </div>
             <div className="tag-row">
               <span className="tag">{cpsReturnState.merchantName}</span>
               {cpsReturnState.title && <span className="tag">{cpsReturnState.title}</span>}
             </div>
+            {cpsReturnState.nextSteps?.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                <div className="row between start">
+                  <strong>回流承接进度</strong>
+                  <span className="pill info">{progressSummary.done} / {progressSummary.total}</span>
+                </div>
+                <div className="invite-progress-track">
+                  <div className="today-progress-fill" style={{ width: `${progressSummary.percent}%` }} />
+                </div>
+              </div>
+            )}
             <div className="action-row">
-              {cpsReturnState.status !== "returned" && (
+              {cpsReturnState.status === "pending_return" && (
                 <button className="btn primary" onClick={handleReturnToApp}>我已下单并返回</button>
               )}
-              {cpsReturnState.status === "returned" && (
+              {(cpsReturnState.status === "returned" || cpsReturnState.status === "done") && (
                 <>
                   <button className="btn ghost" onClick={() => handleCompleteReturnStep("pickup", "food")}>确认取餐点</button>
                   <button className="btn ghost" onClick={() => handleCompleteReturnStep("reminder", "reminder")}>设置取餐提醒</button>
@@ -272,7 +339,7 @@ export function FoodSection({
                 </>
               )}
             </div>
-            {cpsReturnState.status === "returned" && cpsReturnState.nextSteps?.length > 0 && (
+            {(cpsReturnState.status === "returned" || cpsReturnState.status === "done") && cpsReturnState.nextSteps?.length > 0 && (
               <div className="stack" style={{ marginTop: 12 }}>
                 <InfoCard>
                   <strong>确认取餐点</strong>
@@ -300,7 +367,7 @@ export function FoodSection({
                     <strong>当前取餐点</strong>
                     <p className="muted">{cpsReturnState.pickupPoint}。建议下一步去设置取餐提醒，再回地图确认动线。</p>
                     <div className="action-row">
-                      <button className="btn ghost" onClick={() => onCreatePickupReminder?.(cpsReturnState.pickupPoint, cpsReturnState.merchantName)}>
+                      <button className="btn ghost" onClick={() => handleCompleteReturnStep("reminder", "reminder")}>
                         去提醒页创建取餐提醒
                       </button>
                     </div>
