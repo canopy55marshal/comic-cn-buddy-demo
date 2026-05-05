@@ -1009,6 +1009,13 @@ button {
     rgba(255,255,255,0.03);
 }
 
+.pickup-next-card {
+  border-color: rgba(183, 207, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(127,156,255,0.08), rgba(170,145,255,0.08)),
+    rgba(255,255,255,0.03);
+}
+
 .return-step-item {
   display: flex;
   align-items: center;

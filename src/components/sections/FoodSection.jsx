@@ -16,6 +16,31 @@ const pickupPoints = [
   "连廊中转取餐点"
 ];
 
+function getFinishedSuggestions(pickupPoint = "") {
+  if (pickupPoint.includes("B馆")) {
+    return [
+      { title: "去补摄影预约", text: "取餐点离摄影区更近，适合顺路锁一个空档时段。", action: "queue", button: "去排队预约" },
+      { title: "回地图确认动线", text: "先看从取餐点去摄影区或服务区的最短路线。", action: "map", button: "查看路线" }
+    ];
+  }
+  if (pickupPoint.includes("北门")) {
+    return [
+      { title: "去处理返程安排", text: "你已经靠近服务区和返程点，适合顺便看返程方案。", action: "travel", button: "去交通出行" },
+      { title: "去妆造服务", text: "如果取餐后准备继续活动，可以先补妆或修整状态。", action: "service", button: "去妆造服务" }
+    ];
+  }
+  if (pickupPoint.includes("A馆")) {
+    return [
+      { title: "回主舞台或直播热区", text: "取餐后更适合继续看主舞台活动或同步直播情况。", action: "live", button: "去直播链接" },
+      { title: "回首页继续安排行程", text: "这次取餐安排已经结束，可以继续推进当天别的任务。", action: "home", button: "回首页" }
+    ];
+  }
+  return [
+    { title: "回首页继续安排", text: "这次取餐安排已经完成，适合回到首页继续推进其他事情。", action: "home", button: "回首页" },
+    { title: "查看取餐提醒", text: "如果想确认提醒状态，可以直接去提醒页统一查看。", action: "reminder", button: "去提醒页" }
+  ];
+}
+
 export function FoodSection({
   cartCount,
   foodFilter,
@@ -40,6 +65,7 @@ export function FoodSection({
       return null;
     }
   });
+  const finishedSuggestions = getFinishedSuggestions(cpsReturnState?.pickupPoint || "");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -317,6 +343,17 @@ export function FoodSection({
             <div className="action-row">
               <button className="btn ghost" onClick={() => onNavigate?.("home")}>回首页看行程安排</button>
               <button className="btn ghost" onClick={() => onNavigate?.("reminder")}>查看取餐提醒</button>
+            </div>
+            <div className="grid two" style={{ marginTop: 16 }}>
+              {finishedSuggestions.map((item) => (
+                <InfoCard key={item.title} className="pickup-next-card">
+                  <strong>{item.title}</strong>
+                  <p className="muted">{item.text}</p>
+                  <div className="action-row">
+                    <button className="btn ghost" onClick={() => onNavigate?.(item.action)}>{item.button}</button>
+                  </div>
+                </InfoCard>
+              ))}
             </div>
           </InfoCard>
         )}

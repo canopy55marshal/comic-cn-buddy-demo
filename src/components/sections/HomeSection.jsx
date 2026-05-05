@@ -150,6 +150,39 @@ function getRecommendedAction(currentZone = "") {
   };
 }
 
+function getPickupNextFocus(pickupPoint = "") {
+  if (pickupPoint.includes("B馆")) {
+    return {
+      title: "下一步建议去摄影区",
+      text: "你当前的取餐点更靠近摄影区，适合取餐后顺路去看预约档期或补拍摄动线。",
+      action: "queue",
+      button: "去排队预约"
+    };
+  }
+  if (pickupPoint.includes("北门")) {
+    return {
+      title: "下一步建议整理返程或服务",
+      text: "你当前的取餐点靠近服务区和返程点，适合取餐后顺手处理补妆或返程决策。",
+      action: "travel",
+      button: "去交通出行"
+    };
+  }
+  if (pickupPoint.includes("A馆")) {
+    return {
+      title: "下一步建议回主舞台附近",
+      text: "你当前的取餐点更靠近主舞台，适合补给后继续看活动或同步直播热度。",
+      action: "live",
+      button: "去直播链接"
+    };
+  }
+  return {
+    title: "下一步建议回首页继续安排",
+    text: "这次取餐安排已经闭环，可以回到首页继续推进当天其他任务。",
+    action: "home",
+    button: "回首页"
+  };
+}
+
 export function HomeSection({
   onNavigate,
   currentUser,
@@ -213,6 +246,11 @@ export function HomeSection({
   const completedTodoCount = starterTodoItems.filter((item) => completedActions.includes(item.id)).length;
   const pickupFlowDoneCount = (pickupFlowState?.nextSteps || []).filter((item) => item.done).length;
   const pickupFlowCompleted = pickupFlowState?.status === "done";
+  const pickupFlowTotal = pickupFlowState?.nextSteps?.length || 0;
+  const journeyTotal = starterTodoItems.length + pickupFlowTotal;
+  const journeyDone = completedTodoCount + pickupFlowDoneCount;
+  const journeyPercent = journeyTotal ? Math.round((journeyDone / journeyTotal) * 100) : 0;
+  const pickupNextFocus = useMemo(() => getPickupNextFocus(pickupFlowState?.pickupPoint || ""), [pickupFlowState?.pickupPoint]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -338,7 +376,7 @@ export function HomeSection({
         <SectionHead
           title="现场服务推荐动作"
           desc="左边先选要做的事项，右边看推荐动作和行程安排进度，让首页更像行动面板而不是大表单。"
-          side={<span className="pill info">已完成 {completedTodoCount} / {starterTodoItems.length}</span>}
+          side={<span className="pill info">已完成 {journeyDone} / {journeyTotal || starterTodoItems.length}</span>}
         />
         <div className="guided-layout">
           <div className="stack">
@@ -365,12 +403,16 @@ export function HomeSection({
               <div className="row between start">
                 <div>
                   <strong>行程安排进度</strong>
-                  <p className="muted">把首页主动作当成你的行程安排来推进，做完会留下完成标记。</p>
+                  <p className="muted">把首页主动作和取餐安排放进同一条行程里推进，做完会留下完成标记。</p>
                 </div>
-                <span className="pill accent">{Math.round((completedTodoCount / starterTodoItems.length) * 100)}%</span>
+                <span className="pill accent">{journeyPercent}%</span>
               </div>
               <div className="invite-progress-track">
-                <div className="today-progress-fill" style={{ width: `${(completedTodoCount / starterTodoItems.length) * 100}%` }} />
+                <div className="today-progress-fill" style={{ width: `${journeyPercent}%` }} />
+              </div>
+              <div className="tag-row">
+                <span className="tag">现场任务 {completedTodoCount} / {starterTodoItems.length}</span>
+                {pickupFlowTotal > 0 && <span className="tag">取餐任务 {pickupFlowDoneCount} / {pickupFlowTotal}</span>}
               </div>
               {(pickupFlowState?.jumped || pickupReminderItems.length > 0) && (
                 <div className={`pickup-progress-card ${pickupFlowCompleted ? "completed" : ""}`} style={{ marginTop: 12 }}>
@@ -399,6 +441,20 @@ export function HomeSection({
                     <button className={`btn ${pickupFlowCompleted ? "ghost" : "primary"}`} onClick={() => onNavigate("food")}>
                       {pickupFlowCompleted ? "查看取餐安排" : "继续完成取餐安排"}
                     </button>
+                  </div>
+                </div>
+              )}
+              {pickupFlowCompleted && (
+                <div className="pickup-next-card">
+                  <div className="row between start">
+                    <div>
+                      <strong>{pickupNextFocus.title}</strong>
+                      <p className="muted">{pickupNextFocus.text}</p>
+                    </div>
+                    <span className="pill success">下一步</span>
+                  </div>
+                  <div className="action-row">
+                    <button className="btn ghost" onClick={() => onNavigate(pickupNextFocus.action)}>{pickupNextFocus.button}</button>
                   </div>
                 </div>
               )}
