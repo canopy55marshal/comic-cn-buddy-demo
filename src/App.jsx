@@ -436,6 +436,7 @@ function App() {
       .then(() => api.getTravelOptions())
       .then((list) => {
         setTravelOptions(list);
+        markHomeActionComplete("travel");
         notify(`已将 ${item.title} 设为返程方案`);
       })
       .catch((error) => notify(`设置返程方案失败：${error.message}`));

@@ -120,7 +120,8 @@ const starterTodoItems = [
   { id: "map", title: "先确认馆区位置", text: "先打开场馆地图，确认自己和主舞台、服务点的相对位置。", button: "去地图" },
   { id: "food", title: "再补给", text: "先把吃喝或应急用品锁掉，别等体力见底再找。", button: "去补给" },
   { id: "queue", title: "热门项目先预约", text: "摄影区和热门活动优先锁时段，减少硬排队。", button: "去预约" },
-  { id: "buddy", title: "最后发起同行", text: "把熟人同行邀约补上，方便补给、返程和转场一起做。", button: "去邀约" }
+  { id: "buddy", title: "最后发起同行", text: "把熟人同行邀约补上，方便补给、返程和转场一起做。", button: "去邀约" },
+  { id: "travel", title: "返程方案提前锁", text: "散场前先把返程路线定好，避免最后一刻再挤在门口决策。", button: "去返程" }
 ];
 
 function getRecommendedAction(currentZone = "") {
@@ -180,6 +181,74 @@ function getPickupNextFocus(pickupPoint = "") {
     text: "这次取餐安排已经闭环，可以回到首页继续推进当天其他任务。",
     action: "home",
     button: "回首页"
+  };
+}
+
+function getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal }) {
+  if (pickupFlowState?.jumped && !pickupFlowCompleted) {
+    if (!pickupFlowState.pickupPoint) {
+      return {
+        title: "先确认取餐点",
+        text: "你已经完成外部下单，当前最关键的是先把取餐点锁定，后面的提醒和路线才有依据。",
+        action: "food",
+        button: "去完成取餐安排"
+      };
+    }
+    if (pickupFlowTotal > 0 && pickupFlowDoneCount < pickupFlowTotal) {
+      return {
+        title: "继续完成取餐闭环",
+        text: "你已经选好取餐点，建议继续补取餐提醒和路线确认，把这条链路闭环。",
+        action: "food",
+        button: "继续取餐安排"
+      };
+    }
+  }
+
+  if (!completedActions.includes("map")) {
+    return {
+      title: "先看场馆地图",
+      text: "今天最该先完成的是路线判断，先知道自己在哪，再决定补给、预约还是返程。",
+      action: "map",
+      button: "去场馆地图"
+    };
+  }
+  if (!completedActions.includes("food")) {
+    return {
+      title: "接下来先补给",
+      text: "路线确认后，下一步最适合先解决补给和取餐，不要等到体力下滑再补。",
+      action: "food",
+      button: "去餐饮配送"
+    };
+  }
+  if (!completedActions.includes("queue")) {
+    return {
+      title: "接下来锁预约",
+      text: "补给安排之后，建议优先把热门摄影区或活动时段锁定，减少现场硬排。",
+      action: "queue",
+      button: "去排队预约"
+    };
+  }
+  if (!completedActions.includes("travel")) {
+    return {
+      title: "提前处理返程安排",
+      text: "当天后半段最容易被忽略的是返程，提前定好出馆方式会轻松很多。",
+      action: "travel",
+      button: "去交通出行"
+    };
+  }
+  if (!completedActions.includes("buddy")) {
+    return {
+      title: "最后补同行协同",
+      text: "主线任务做完后，可以补一下同行邀约或共享返程，让后续安排更顺。",
+      action: "buddy",
+      button: "去好友同行"
+    };
+  }
+  return {
+    title: "今天主线已推进完成",
+    text: "主线任务已经基本闭环，接下来可以按兴趣去直播、商业平台或继续细化当天安排。",
+    action: "live",
+    button: "去直播链接"
   };
 }
 
@@ -251,6 +320,10 @@ export function HomeSection({
   const journeyDone = completedTodoCount + pickupFlowDoneCount;
   const journeyPercent = journeyTotal ? Math.round((journeyDone / journeyTotal) * 100) : 0;
   const pickupNextFocus = useMemo(() => getPickupNextFocus(pickupFlowState?.pickupPoint || ""), [pickupFlowState?.pickupPoint]);
+  const todayNextStep = useMemo(
+    () => getTodayNextStep({ completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal }),
+    [completedActions, pickupFlowState, pickupFlowCompleted, pickupFlowDoneCount, pickupFlowTotal]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -458,6 +531,19 @@ export function HomeSection({
                   </div>
                 </div>
               )}
+              <div className="today-next-card">
+                <div className="row between start">
+                  <div>
+                    <strong>今日推荐下一步</strong>
+                    <p className="muted">{todayNextStep.title}</p>
+                  </div>
+                  <span className="pill accent">推荐</span>
+                </div>
+                <p className="muted">{todayNextStep.text}</p>
+                <div className="action-row">
+                  <button className="btn primary" onClick={() => onNavigate(todayNextStep.action)}>{todayNextStep.button}</button>
+                </div>
+              </div>
             </InfoCard>
             <InfoCard className={`todo-recommend-card ${completedActions.includes(recommendedAction.id) ? "completed" : ""} ${justCompleted === recommendedAction.id ? "just-completed" : ""}`}>
               <div className="row between start">

@@ -1016,6 +1016,15 @@ button {
     rgba(255,255,255,0.03);
 }
 
+.today-next-card {
+  border-radius: 16px;
+  border: 1px solid rgba(170,145,255,0.16);
+  background:
+    linear-gradient(135deg, rgba(170,145,255,0.12), rgba(121,215,234,0.08)),
+    rgba(255,255,255,0.03);
+  padding: 12px;
+}
+
 .return-step-item {
   display: flex;
   align-items: center;
