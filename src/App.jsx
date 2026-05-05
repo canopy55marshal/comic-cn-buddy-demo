@@ -371,7 +371,7 @@ function App() {
       await api.createBooking({
         serviceName: name,
         contactName: currentUser?.name || "测试用户",
-        slotTime: "今天 14:30"
+        slotTime: "本场 14:30"
       });
       notify(`已预约 ${name}`);
     } catch (error) {

@@ -287,7 +287,7 @@ function getTodayNextStep({
     }
     return {
       title: "先看场馆地图",
-      text: "今天最该先完成的是路线判断，先知道自己在哪，再决定补给、预约还是返程。",
+      text: "这次行程最该先完成的是路线判断，先知道自己在哪，再决定补给、预约还是返程。",
       action: "map",
       button: "去场馆地图"
     };
@@ -389,8 +389,8 @@ function getTodayNextStep({
     };
   }
   return {
-    title: "今天主线已推进完成",
-    text: "主线任务已经基本闭环，接下来可以按兴趣去直播、商业平台或继续细化当天安排。",
+    title: "本次行程主线已推进完成",
+    text: "主线任务已经基本闭环，接下来可以按兴趣去直播、商业平台或继续细化这趟漫展安排。",
     action: "live",
     button: "去直播链接"
   };
