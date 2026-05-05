@@ -467,13 +467,13 @@ export function HomeSection({
   const journeyPercent = journeyTotal ? Math.round((journeyDone / journeyTotal) * 100) : 0;
   const currentHour = new Date().getHours();
   const timePhase = useMemo(() => getTimePhaseInfo(currentHour), [currentHour]);
-  const todayGoal = journeyPercent >= 100
-    ? "今日主线已完成"
+  const tripGoal = journeyPercent >= 100
+    ? "本次行程主线已完成"
     : journeyPercent >= 75
-      ? "今日目标：收尾并准备返程"
+      ? "行程目标：收尾并准备返程"
       : journeyPercent >= 40
-        ? "今日目标：完成补给、预约和取餐闭环"
-        : "今日目标：先把路线、补给和预约主线跑通";
+        ? "行程目标：完成补给、预约和取餐闭环"
+        : "行程目标：先把路线、补给和预约主线跑通";
   const pickupNextFocus = useMemo(() => getPickupNextFocus(pickupFlowState?.pickupPoint || ""), [pickupFlowState?.pickupPoint]);
   const todayNextStep = useMemo(
     () => getTodayNextStep({
@@ -652,7 +652,7 @@ export function HomeSection({
               <div className="today-task-card">
                 <div className="row between start">
                   <div>
-                    <strong>今日任务卡</strong>
+                    <strong>行程任务卡</strong>
                     <p className="muted">{timePhase.label} · {currentUser?.currentZone || "馆内移动中"}</p>
                   </div>
                   <span className="pill info">{journeyPercent}%</span>
@@ -680,11 +680,11 @@ export function HomeSection({
                 )}
               </div>
               <div className="today-goal-card">
-                <strong>{todayGoal}</strong>
+                <strong>{tripGoal}</strong>
                 <p className="muted">
                   {journeyPercent >= 100
-                    ? "主线任务已经闭环，接下来可以按兴趣自由扩展直播、商业平台或更细的现场安排。"
-                    : "系统会根据你当前馆区和已完成事项，持续推荐今天最值得优先处理的下一步。"}
+                    ? "本次行程主线已经闭环，接下来可以按兴趣自由扩展直播、商业平台或更细的现场安排。"
+                    : "系统会根据你当前馆区和已完成事项，持续推荐这次行程里最值得优先处理的下一步。"}
                 </p>
               </div>
               <div className="tag-row">
@@ -738,7 +738,7 @@ export function HomeSection({
               <div className="today-next-card">
                 <div className="row between start">
                   <div>
-                    <strong>今日推荐下一步</strong>
+                    <strong>行程推荐下一步</strong>
                     <p className="muted">{todayNextStep.title}</p>
                   </div>
                   <span className="pill accent">推荐</span>
