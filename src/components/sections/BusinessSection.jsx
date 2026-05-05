@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { InfoCard, SectionHead } from "../ui";
 
 const demandSources = [
@@ -57,7 +58,52 @@ const cosRequestTypes = [
   "C5 角色配音"
 ];
 
+const demandPool = [
+  {
+    id: "brand-1",
+    type: "品牌商单",
+    title: "国风新游角色联动拍摄",
+    budget: "¥18,000",
+    deposit: "¥2,000",
+    status: "匹配中",
+    phase: "30% 已托管",
+    desc: "品牌方需要 2 位擅长国风角色演绎的 COSER，支持平面图和短视频双交付。",
+    milestone: ["已发布需求", "AI匹配中", "确认人选后托管 30%"]
+  },
+  {
+    id: "expo-1",
+    type: "漫展招募",
+    title: "主舞台驻场互动 COSER 招募",
+    budget: "¥9,500",
+    deposit: "¥1,000",
+    status: "待确认",
+    phase: "保证金已冻结",
+    desc: "主办方需要 3 位现场驻场 COSER，负责舞台互动、巡场和用户合影环节。",
+    milestone: ["已发布需求", "保证金冻结", "等待确认排期"]
+  },
+  {
+    id: "commission-1",
+    type: "COS委托",
+    title: "漫展现场约拍委托",
+    budget: "¥1,200",
+    deposit: "¥500",
+    status: "执行中",
+    phase: "50% 已托管",
+    desc: "个人委托方希望在漫展当天完成 1 组角色约拍，要求现场公共场所执行。",
+    milestone: ["方向已确认", "50% 托管中", "等待终稿交付"]
+  }
+];
+
+const escrowNodes = [
+  { title: "需求发布", text: "发布需求免费，先进入平台需求池。" },
+  { title: "保证金 / 首付款", text: "品牌和委托先支付保证金或首阶段款，过滤假需求。" },
+  { title: "中途确认", text: "根据初稿或排期确认，继续释放第二阶段托管款。" },
+  { title: "终稿交付", text: "最终交付完成后，平台释放尾款并结算抽佣。" }
+];
+
 export function BusinessSection({ onNavigate }) {
+  const [selectedDemand, setSelectedDemand] = useState(demandPool[0]);
+
   return (
     <div className="section-layout">
       <div className="panel">
@@ -122,6 +168,50 @@ export function BusinessSection({ onNavigate }) {
       </div>
 
       <div className="panel">
+        <SectionHead title="需求池" desc="把品牌商单、漫展招募和 COS委托做成可浏览的需求卡片，方便用户理解平台里到底流转什么。 " />
+        <div className="grid three" style={{ marginTop: 16, marginBottom: 16 }}>
+          {demandPool.map((item) => (
+            <InfoCard key={item.id}>
+              <div className="row between start">
+                <strong>{item.title}</strong>
+                <span className="pill success">{item.type}</span>
+              </div>
+              <p className="muted">{item.desc}</p>
+              <div className="tag-row">
+                <span className="tag">预算 {item.budget}</span>
+                <span className="tag">保证金 {item.deposit}</span>
+                <span className="tag">{item.status}</span>
+              </div>
+              <div className="action-row">
+                <button className="btn primary" onClick={() => setSelectedDemand(item)}>查看详情</button>
+              </div>
+            </InfoCard>
+          ))}
+        </div>
+
+        <SectionHead title="托管节点" desc="先把节点讲清楚，比一上来做复杂表单更能体现平台型交易保障。" />
+        <div className="stack" style={{ marginTop: 16, marginBottom: 16 }}>
+          <InfoCard>
+            <div className="row between start">
+              <strong>当前托管进度</strong>
+              <span className="pill accent">{selectedDemand.phase}</span>
+            </div>
+            <div className="invite-progress-track">
+              <div className="business-progress-fill" />
+            </div>
+            <p className="muted">当前查看的是 `{selectedDemand.title}`，平台会按阶段释放托管款，而不是一次性打款。</p>
+          </InfoCard>
+          {escrowNodes.map((item, index) => (
+            <InfoCard key={item.title}>
+              <div className="row between start">
+                <strong>{index + 1}. {item.title}</strong>
+                <span className="pill info">节点</span>
+              </div>
+              <p className="muted">{item.text}</p>
+            </InfoCard>
+          ))}
+        </div>
+
         <SectionHead title="COS委托" desc="这是网页里新抬出来的第三种需求来源，核心价值是填补私聊交易的信任空白。" />
         <div className="grid two" style={{ marginBottom: 16 }}>
           <InfoCard>
@@ -147,6 +237,44 @@ export function BusinessSection({ onNavigate }) {
           ))}
         </div>
       </div>
+
+      {selectedDemand && (
+        <div className="overlay-backdrop" onClick={() => setSelectedDemand(null)}>
+          <div className="detail-modal business-detail-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="row between start">
+              <div>
+                <strong style={{ fontSize: 20 }}>{selectedDemand.title}</strong>
+                <p className="muted" style={{ marginTop: 8 }}>{selectedDemand.type} · {selectedDemand.status}</p>
+              </div>
+              <button className="btn ghost" onClick={() => setSelectedDemand(null)}>关闭</button>
+            </div>
+            <div className="tag-row" style={{ marginTop: 12 }}>
+              <span className="tag">预算 {selectedDemand.budget}</span>
+              <span className="tag">保证金 {selectedDemand.deposit}</span>
+              <span className="tag">{selectedDemand.phase}</span>
+            </div>
+            <div className="stack" style={{ marginTop: 16 }}>
+              <InfoCard>
+                <strong>需求说明</strong>
+                <p className="muted">{selectedDemand.desc}</p>
+              </InfoCard>
+              <InfoCard>
+                <strong>当前里程碑</strong>
+                <div className="stack" style={{ marginTop: 12 }}>
+                  {selectedDemand.milestone.map((item) => (
+                    <div className="business-milestone" key={item}>{item}</div>
+                  ))}
+                </div>
+              </InfoCard>
+            </div>
+            <div className="action-row" style={{ marginTop: 16 }}>
+              <button className="btn primary" onClick={() => onNavigate?.("service")}>查看服务供给</button>
+              <button className="btn ghost" onClick={() => onNavigate?.("live")}>查看直播引流</button>
+              <button className="btn ghost" onClick={() => onNavigate?.("home")}>回首页</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
